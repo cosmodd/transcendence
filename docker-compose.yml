@@ -1,0 +1,27 @@
+services:
+
+  # TODO: Add a database service using PostgreSQL
+
+  backend:
+    container_name: backend
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    networks:
+      - transcendence
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "80:80"
+      - "5173:5173" # Provide hot reload
+    volumes:
+      - ./frontend:/app
+    networks:
+      - transcendence
+
+networks:
+  transcendence:
+    name: transcendence-network
+    driver: bridge
