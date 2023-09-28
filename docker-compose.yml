@@ -4,11 +4,14 @@ services:
 
   backend:
     container_name: backend
-    build: ./backend
+    build: 
+      context: ./backend 
+      dockerfile: ./backend.dockerfile
     volumes:
       - ./backend:/app
     networks:
       - transcendence
+    restart: unless-stopped
 
   frontend:
     container_name: frontend
