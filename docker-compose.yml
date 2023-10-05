@@ -12,8 +12,6 @@ services:
     networks:
       - transcendence
     restart: unless-stopped
-    ports:
-      - "3000:3000" #debugging purpose
 
   frontend:
     container_name: frontend
