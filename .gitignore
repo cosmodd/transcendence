@@ -1,3 +1,9 @@
 # Node / NPM
 node_modules
 package-lock.json
+
+# Sveltekit
+.svelte-kit
+
+# NestJS
+/dist
