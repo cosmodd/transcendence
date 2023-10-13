@@ -7,3 +7,6 @@ package-lock.json
 
 # NestJS
 dist
+
+# PostgreSQL container
+postgres-data
