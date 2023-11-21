@@ -1,39 +1,29 @@
 services:
-
-  # TODO: Add a database service using PostgreSQL
-
   postgres:
     container_name: postgres
     hostname: postgres
-    image: postgres:latest 
+    image: postgres:latest
     env_file: ./.env
-    volumes: 
+    volumes:
       - ./postgres-data:/var/lib/postgresql/data
-    networks: 
+    networks:
       - transcendence
     restart: unless-stopped
 
   backend:
     container_name: backend
-    build: 
-      context: ./backend 
+    build:
+      context: ./backend
       dockerfile: ./backend.dockerfile
     volumes:
       - ./backend:/app
     networks:
       - transcendence
-    restart: unless-stopped
-
-  frontend:
-    container_name: frontend
-    build: ./frontend
     ports:
-      - "80:80"
-      - "5173:5173" # Provide hot reload
-    volumes:
-      - ./frontend:/app
-    networks:
-      - transcendence
+      - "8000:8000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
 networks:
   transcendence:
