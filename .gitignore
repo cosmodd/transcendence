@@ -1,12 +1,25 @@
-# Node / NPM
-node_modules
-package-lock.json
+# Python Venv
+.Python
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+pip-selfcheck.json
 
-# Sveltekit
-.svelte-kit
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
 
-# NestJS
-dist
-
-# PostgreSQL container
-postgres-data
+# Other
+.env
+database

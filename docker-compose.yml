@@ -1,29 +1,39 @@
+version: "3.8"
+
 services:
-  postgres:
-    container_name: postgres
-    hostname: postgres
-    image: postgres:latest
-    env_file: ./.env
+  database:
+    container_name: database
+    hostname: database
+    image: postgres:16.1
+    env_file: .env
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./database:/var/lib/postgresql/data
     networks:
       - transcendence
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  backend:
-    container_name: backend
+  app:
+    container_name: app
+    hostname: app
     build:
-      context: ./backend
-      dockerfile: ./backend.dockerfile
+      context: ./src
+      dockerfile: Dockerfile
+    env_file: .env
     volumes:
-      - ./backend:/app
+      - ./src:/app
     networks:
       - transcendence
     ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
+      - 8000:8000
     restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy # wait for database to be ready
 
 networks:
   transcendence:
