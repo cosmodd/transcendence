@@ -1,10 +1,20 @@
 # 🏓 Transcendence
 
-Transcendence is a real-time web pong game providing multiple game modes, player ranking with global leaderboards and social interactions (chat, friends, etc.).
+Transcendence is a web-based pong game that lets you play with other players online and play tournaments with a matchmaking system.
 
-## ❓ Why this project ?
+## 🧩 Modules
 
-This project is the last of our common-core at 42 school. It aims to introduce us to web technologies with certain constraints.
+> 🔶 Major module (equivalent to 2 Minor)\
+> 🔹 Minor module
+
+- 🔶 Use a Framework as backend [Python Django]
+- 🔹 Use a database for the backend [PostgreSQL]
+- 🔹 Use a frontend framework or toolkit [Bootstrap]
+- 🔶 Standard user management, auth, users across tournaments
+- 🔶 Implementing a remote authentication
+- 🔶 Remote players
+- 🔶 Live Chat
+- 🔶 Implement 2FA and JWT
 
 ## 👥 Contributors
 
