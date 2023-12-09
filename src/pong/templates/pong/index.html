@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL</title>
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'pong/style.css' %}">
+</head>
+<body>
+	<div style="position:relative;">
+    	<canvas id="glcanvas" width="600" height="480"></canvas>
+		<div id="overlay">
+			<div><span id="score"></span></div>
+		</div>
+	</div>
+	<!-- secure ?-->
+	<script>
+		var entityVertexShaderPath = "{% static 'pong/entity.vs' %}";
+		var entityFragmentShaderPath = "{% static 'pong/entity.fs' %}";
+	</script>
+	<script src="{% static 'pong/collision.js' %}" type="module"></script>
+    <script src="{% static 'pong/Ball.js' %}" type="module"></script>
+    <script src="{% static 'pong/Event.js' %}" type="module"></script>
+	<script src="{% static 'pong/overlay.js' %}" type="module"></script>
+    <script src="{% static 'pong/Vector.js' %}" type="module"></script>
+    <script src="{% static 'pong/Vertex.js' %}" type="module"></script>
+    <script src="{% static 'pong/Paddle.js' %}" type="module"></script>
+    <script src="{% static 'pong/Mesh.js' %}" type="module"></script>
+    <script src="{% static 'pong/Shader.js' %}" type="module"></script>
+    <script src="{% static 'pong/main.js' %}" type="module"></script>
+</body>
+</html>
