@@ -52,6 +52,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "sesame.backends.ModelBackend",
+]
+SESAME_MAX_AGE = 30
+
 ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [

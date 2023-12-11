@@ -3,3 +3,4 @@ Django==4.2.7
 psycopg2-binary==2.9.9
 sqlparse==0.4.4
 tzdata==2023.3
+django-sesame==3.2.1
