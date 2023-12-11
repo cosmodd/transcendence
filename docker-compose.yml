@@ -33,8 +33,10 @@ services:
     restart: unless-stopped
     depends_on:
       - database 
-      # database:
-      #   condition: service_healthy # wait for database to be ready
+      # ! ces deux lignes empechent le lancement de la commande suivant sur linux:
+      # docker compose run app /bin/zsh
+        # database:
+        #   condition: service_healthy # wait for database to be ready
 
 networks:
   transcendence:
