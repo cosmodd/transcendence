@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+import logging
+logger = logging.getLogger('websockets')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
+
 import asyncio
 import django
 import websockets
@@ -16,7 +21,7 @@ from websockets.frames import CloseCode
 
 async def handler(websocket):
     sesame = await websocket.recv()
-    user = await asyncio.to_thred(get_user, sesame)
+    user = await asyncio.to_thread(get_user, sesame)
     if user is None:
         await websocket.close(CloseCode.INTERNAL_ERROR, "authentication failed")
         return
@@ -25,7 +30,7 @@ async def handler(websocket):
 
 
 async def main():
-    async with websockets.serve(handler, "127.0.0.1", 8888):
+    async with websockets.serve(handler, "0.0.0.0", 8888):
         await asyncio.Future()  # run forever
 
 

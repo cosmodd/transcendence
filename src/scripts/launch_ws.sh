@@ -1,3 +1,3 @@
 #!/bin/sh
 export PYTHONPATH=$PYTHONPATH:/app/
-python authentication.py
+python /app/scripts/ws.py

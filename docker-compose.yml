@@ -29,7 +29,8 @@ services:
     networks:
       - transcendence
     ports:
-      - 8000:8000
+      - 8000:8000 # Django
+      - 8888:8888 # Websockets
     restart: unless-stopped
     depends_on:
       - database 
