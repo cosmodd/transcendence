@@ -8,4 +8,3 @@
 - Collision - ball reste dans les murs?
 - Collision - meilleur collision paddle/ball
 - UpdatePosition in shader ?
-- currentScale - refactor
