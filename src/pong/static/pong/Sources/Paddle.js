@@ -5,7 +5,7 @@ import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from '.
 import DataOrigin from './DataOrigin.js';
 
 class Paddle extends Mesh {
-	constructor(width, height, color = null, position = new Vec2(0., 0.)) {
+	constructor(width, height, color = null, position = new Vec2(0., 0.), currentScale) {
 		const shaderInfo = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -28,7 +28,7 @@ class Paddle extends Mesh {
 
 		const indices = [0, 1, 2, 1, 2, 3];
 
-		super(vertices, indices, (color == null), shaderInfo);
+		super(vertices, indices, (color == null), shaderInfo, currentScale);
 
 		this._uEntityPosition = position;
 		this.speed = 2.0;
@@ -38,7 +38,7 @@ class Paddle extends Mesh {
 		this.heightHalf = height / 2.;
 	}
 
-	updatePosition(dataOrigin, deltaTime, currentScale) {
+	updatePosition(dataOrigin, deltaTime) {
 		const move = this.speed * deltaTime;
 		if (dataOrigin === DataOrigin.Client) {
 			if (upKeyPressed) {
@@ -59,15 +59,15 @@ class Paddle extends Mesh {
 		this.gl.useProgram(null);
 	}
 
-	computeBoundingBox(currentScale) {
+	computeBoundingBox() {
 		this.boundingBoxLeft = this._uEntityPosition.x - this.widthHalf;
 		this.boundingBoxRight = this._uEntityPosition.x + this.widthHalf;
 		this.boundingBoxTop = this._uEntityPosition.y + this.heightHalf;
 		this.boundingBoxBottom = this._uEntityPosition.y - this.heightHalf;
-		this.boundingBoxLeft *= currentScale[0];
-		this.boundingBoxRight *= currentScale[0];
-		this.boundingBoxTop *= currentScale[1];
-		this.boundingBoxBottom *= currentScale[1];
+		this.boundingBoxLeft *= this.scalingFactor[0];
+		this.boundingBoxRight *= this.scalingFactor[0];
+		this.boundingBoxTop *= this.scalingFactor[1];
+		this.boundingBoxBottom *= this.scalingFactor[1];
 	}
 }
 

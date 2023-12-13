@@ -3,7 +3,7 @@ import { Vec2 } from './Vector.js';
 import Vertex from './Vertex.js';
 
 class Ball extends Mesh {
-	constructor (radius = 0.01, resolution = 4.0, color = null) {
+	constructor (radius = 0.01, resolution = 4.0, color = null, currentScale) {
 		const shaderInfo = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -34,7 +34,7 @@ class Ball extends Mesh {
 			indices.push(...[0, i+1, (i+1)%numFaces + 1]);
 		}
 
-		super(vertices, indices, (color == null), shaderInfo);
+		super(vertices, indices, (color == null), shaderInfo, currentScale);
 
 		this.radius = radius;
 		this._uEntityPosition = new Vec2(0., 0.);
@@ -42,7 +42,7 @@ class Ball extends Mesh {
 		this.acceleration = 0.;
 		this.direction = new Vec2(-Math.random(), Math.random());
 		// this.direction = new Vec2(-1., 0.);
-		this.direction.normalize();	  
+		this.direction.normalize();
 	}
 
 	updatePosition(deltaTime) {
@@ -71,15 +71,15 @@ class Ball extends Mesh {
 		this.gl.useProgram(null);
     }
 
-	computeBoundingBox(currentScale) {
+	computeBoundingBox() {
 		this.boundingBoxLeft = this._uEntityPosition.x - this.radius;
 		this.boundingBoxRight = this._uEntityPosition.x + this.radius;
 		this.boundingBoxTop = this._uEntityPosition.y + this.radius;
 		this.boundingBoxBottom = this._uEntityPosition.y - this.radius;
-		this.boundingBoxLeft *= currentScale[0];
-		this.boundingBoxRight *= currentScale[0];
-		this.boundingBoxTop *= currentScale[1];
-		this.boundingBoxBottom *= currentScale[1];
+		this.boundingBoxLeft *= this.scalingFactor[0];
+		this.boundingBoxRight *= this.scalingFactor[0];
+		this.boundingBoxTop *= this.scalingFactor[1];
+		this.boundingBoxBottom *= this.scalingFactor[1];
 	}
 }
 

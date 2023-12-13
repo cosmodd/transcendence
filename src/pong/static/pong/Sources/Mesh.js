@@ -3,7 +3,7 @@ import Vertex from './Vertex.js';
 import Shader from './Shader.js';
 
 class Mesh {
-	constructor(vertices, indices, randomColor = false, shaderInfo) {
+	constructor(vertices, indices, randomColor = false, shaderInfo, currentScale) {
 		this.gl = document.getElementById('glcanvas').getContext('webgl');
 		this.VBO = null;
 		this.EBO = null;
@@ -12,6 +12,7 @@ class Mesh {
 		this.attachedShader = new Shader();
 		this.randomColor = randomColor;
 		this.shaderInfo = shaderInfo;
+		this.scalingFactor = currentScale;
 	}
 
 	async setup() {
@@ -19,6 +20,7 @@ class Mesh {
 			this._setupColors();
 		this._setupBuffers();
 		await this._setupShaders();
+		this._setupUniforms()
 	}
 
 	_setupColors() {
@@ -51,6 +53,13 @@ class Mesh {
 
 	async _setupShaders() {
 		await this.attachedShader.buildProgram(this.shaderInfo);
+	}
+
+	_setupUniforms() {
+		// Rendering data shared with the scaler
+		this.gl.useProgram(this.attachedShader.program);
+		let uScalingFactor = this.gl.getUniformLocation(this.attachedShader.program, "uScalingFactor");
+		this.gl.uniform2fv(uScalingFactor, this.scalingFactor);
 	}
 
 	draw() {

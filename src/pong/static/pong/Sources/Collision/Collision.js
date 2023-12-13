@@ -6,9 +6,9 @@ import { doIntersect } from "./Collision_Utils.js";
 let Collision = {};
 
 let lastBallPos = null;
-Collision.BallPaddle = function(Ball, Paddle, currentScale) {
-    Ball.computeBoundingBox(currentScale);
-    Paddle.computeBoundingBox(currentScale);
+Collision.BallPaddle = function(Ball, Paddle) {
+    Ball.computeBoundingBox();
+    Paddle.computeBoundingBox();
 
     if (lastBallPos == null)
     {
@@ -21,13 +21,13 @@ Collision.BallPaddle = function(Ball, Paddle, currentScale) {
     {
         // bottom current Ball
         doesIntersect = doIntersect(
-        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y + Ball.radius) * currentScale[1]),
+        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y + Ball.radius) * Ball.scalingFactor[1]),
         new Vec2(Ball.boundingBoxLeft, Ball.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxRight, Paddle.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxLeft, Paddle.boundingBoxTop));
         // top current Ball
         doesIntersect = doIntersect(
-        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y + Ball.radius) * currentScale[1]),
+        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y + Ball.radius) * Ball.scalingFactor[1]),
         new Vec2(Ball.boundingBoxLeft, Ball.boundingBoxTop),
         new Vec2(Paddle.boundingBoxRight, Paddle.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxLeft, Paddle.boundingBoxTop));
@@ -36,13 +36,13 @@ Collision.BallPaddle = function(Ball, Paddle, currentScale) {
     { 
         // top current Ball
         doesIntersect = doIntersect(
-        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y - Ball.radius) * currentScale[1]),
+        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y - Ball.radius) * Ball.scalingFactor[1]),
         new Vec2(Ball.boundingBoxLeft, Ball.boundingBoxTop),
         new Vec2(Paddle.boundingBoxLeft, Paddle.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxRight, Paddle.boundingBoxTop));
         // bottom current Ball
         doesIntersect = doIntersect(
-        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y - Ball.radius) * currentScale[1]),
+        new Vec2(lastBallPos.x + Ball.radius, (lastBallPos.y - Ball.radius) * Ball.scalingFactor[1]),
         new Vec2(Ball.boundingBoxLeft, Ball.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxLeft, Paddle.boundingBoxBottom),
         new Vec2(Paddle.boundingBoxRight, Paddle.boundingBoxTop));
@@ -56,7 +56,6 @@ Collision.BallPaddle = function(Ball, Paddle, currentScale) {
             Ball.direction.y = 1.;
         if (downKeyPressed)
             Ball.direction.y = -1.;
-        Ball.computeBoundingBox(currentScale);
         lastBallPos = null;
     }
     else
@@ -65,8 +64,8 @@ Collision.BallPaddle = function(Ball, Paddle, currentScale) {
     }
 }
 
-Collision.BallWall = function(Ball, currentScale) {
-    Ball.computeBoundingBox(currentScale);
+Collision.BallWall = function(Ball) {
+    Ball.computeBoundingBox();
 
     if (Ball.boundingBoxLeft <= -1) {
         Ball.direction.x = Math.abs(Ball.direction.x);
@@ -84,8 +83,8 @@ Collision.BallWall = function(Ball, currentScale) {
     }
 }
 
-Collision.PaddleWall = function(Paddle, currentScale) {
-    Paddle.computeBoundingBox(currentScale);
+Collision.PaddleWall = function(Paddle) {
+    Paddle.computeBoundingBox();
 
     if (Paddle.boundingBoxTop > 1.)
         Paddle._uEntityPosition.y -= Paddle.boundingBoxTop - 1.;
