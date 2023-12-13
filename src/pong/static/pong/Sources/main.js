@@ -1,10 +1,10 @@
 import { Vec3, Vec2 } from './Vector.js';
 import Ball from './Ball.js';
 import Paddle from './Paddle.js'
-import { scoreNode } from './overlay.js';
+import { scoreNode } from './UI/overlay.js';
 import { upKeyPressed, downKeyPressed } from './Event.js';
 import Collision from "./Collision/Collision.js"
-import Source from './source.js';
+import DataOrigin from './DataOrigin.js';
 
 let gl = null;
 let glCanvas = null;
@@ -75,8 +75,8 @@ function drawLoop() {
 
     // Positions, events, etc
     // ball.updatePosition(deltaTime);
-    player.updatePosition(Source.Client, deltaTime, currentScale);
-    opponent.updatePosition(Source.WebSocket, deltaTime, currentScale);
+    player.updatePosition(DataOrigin.Client, deltaTime, currentScale);
+    opponent.updatePosition(DataOrigin.WebSocket, deltaTime, currentScale);
 
     // Collisions
     Collision.PaddleWall(player, currentScale);
