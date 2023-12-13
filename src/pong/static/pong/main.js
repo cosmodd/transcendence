@@ -4,6 +4,7 @@ import Paddle from './Paddle.js'
 import { scoreNode } from './overlay.js';
 import { doIntersect } from './collision.js';
 import { upKeyPressed, downKeyPressed } from './Event.js';
+import Source from './source.js';
 
 let gl = null;
 let glCanvas = null;
@@ -20,6 +21,7 @@ let previousTime = 0.0;
 // Entities
 let ball;
 let player;
+let opponent;
 
 // Game related
 let score = [];
@@ -36,10 +38,12 @@ async function init() {
     aspectRatio = glCanvas.width / glCanvas.height;
     currentScale = [1.0, aspectRatio];
 
-    player = new Paddle(0.05, 0.2, null, new Vec2(-0.9, 0.));
+    player = new Paddle(0.05, 0.2, new Vec3(0., 0., 255.), new Vec2(-0.9, 0.));
     await player.setup();
-    ball = new Ball(0.02, 4, new Vec3(1., 1., 1.));
-    await ball.setup()
+    // ball = new Ball(0.02, 4, new Vec3(1., 1., 1.));
+    // await ball.setup()
+    opponent = new Paddle(0.05, 0.2, new Vec3(255., 0., 0.), new Vec2(0.9, 0.));
+    await opponent.setup();
 
     score = [0, 0];
 
@@ -53,12 +57,16 @@ function drawLoop() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // TO REMOVE - scaling factor
-    gl.useProgram(ball.attachedShader.program);
-    uScalingFactor = gl.getUniformLocation(ball.attachedShader.program, "uScalingFactor");
-    gl.uniform2fv(uScalingFactor, currentScale);
+    // gl.useProgram(ball.attachedShader.program);
+    // uScalingFactor = gl.getUniformLocation(ball.attachedShader.program, "uScalingFactor");
+    // gl.uniform2fv(uScalingFactor, currentScale);
     gl.useProgram(player.attachedShader.program);
     uScalingFactor = gl.getUniformLocation(player.attachedShader.program, "uScalingFactor");
     gl.uniform2fv(uScalingFactor, currentScale);
+    gl.useProgram(opponent.attachedShader.program);
+    uScalingFactor = gl.getUniformLocation(opponent.attachedShader.program, "uScalingFactor");
+    gl.uniform2fv(uScalingFactor, currentScale);
+
 
     // Delta time
     currentTime = performance.now();
@@ -66,19 +74,22 @@ function drawLoop() {
     previousTime = currentTime;
 
     // Positions, events, etc
-    ball.updatePosition(deltaTime);
-    player.updatePosition(deltaTime, currentScale);
+    // ball.updatePosition(deltaTime);
+    player.updatePosition(Source.Client, deltaTime, currentScale);
+    opponent.updatePosition(Source.WebSocket, deltaTime, currentScale);
 
     // Collisions
     collisions();
 
     // Update uniforms (position in shader)
-    ball.updateUniform();
+    // ball.updateUniform();
     player.updateUniform();
+    opponent.updateUniform();
 
     // Draw
     player.draw();
-    ball.draw();
+    opponent.draw();
+    // ball.draw();
 
     scoreNode.nodeValue = score[0] + " | " + score[1];
 
@@ -86,28 +97,28 @@ function drawLoop() {
 }
 
 function collisions() {
-    ball.computeBoundingBox(currentScale);
+    // ball.computeBoundingBox(currentScale);
     player.computeBoundingBox(currentScale);
 
     // Ball -> player
-    playerBallCollision()
+    // playerBallCollision()
     // if local -> player2/ia ball collision
 
     // Ball -> wall
-    if (ball.boundingBoxLeft <= -1) {
-        ball.direction.x = Math.abs(ball.direction.x);
-        ball.reset();
-        score[1] += 1;
-    }
-    else if (ball.boundingBoxRight >= 1.) {
-        ball.direction.x = -Math.abs(ball.direction.x);
-    }
-    else if (ball.boundingBoxTop >= 1.) {
-        ball.direction.y = -Math.abs(ball.direction.y);
-    }
-    else if (ball.boundingBoxBottom <= -1.) {
-        ball.direction.y = Math.abs(ball.direction.y);
-    }
+    // if (ball.boundingBoxLeft <= -1) {
+    //     ball.direction.x = Math.abs(ball.direction.x);
+    //     ball.reset();
+    //     score[1] += 1;
+    // }
+    // else if (ball.boundingBoxRight >= 1.) {
+    //     ball.direction.x = -Math.abs(ball.direction.x);
+    // }
+    // else if (ball.boundingBoxTop >= 1.) {
+    //     ball.direction.y = -Math.abs(ball.direction.y);
+    // }
+    // else if (ball.boundingBoxBottom <= -1.) {
+    //     ball.direction.y = Math.abs(ball.direction.y);
+    // }
 
     // Player -> wall
     if (player.boundingBoxTop > 1.)

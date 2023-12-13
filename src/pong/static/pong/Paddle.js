@@ -2,6 +2,7 @@ import Mesh from './Mesh.js'
 import { Vec2, Vec3 } from './Vector.js';
 import Vertex from './Vertex.js';
 import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from './Event.js';
+import Source from './source.js';
 
 class Paddle extends Mesh {
 	constructor(width, height, color = null, position = new Vec2(0., 0.)) {
@@ -37,13 +38,15 @@ class Paddle extends Mesh {
 		this.heightHalf = height / 2.;
 	}
 
-	updatePosition(deltaTime, currentScale) {
+	updatePosition(source, deltaTime, currentScale) {
 		const move = this.speed * deltaTime;
-		if (upKeyPressed) {
-			this._uEntityPosition.y += move;
-		}
-		else if (downKeyPressed) {
-			this._uEntityPosition.y -= move;
+		if (source === Source.Client) {
+			if (upKeyPressed) {
+				this._uEntityPosition.y += move;
+			}
+			else if (downKeyPressed) {
+				this._uEntityPosition.y -= move;
+			}
 		}
 	}
 

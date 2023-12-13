@@ -20,13 +20,9 @@ from sesame.utils import get_user
 from websockets.frames import CloseCode
 
 async def handler(websocket):
-    sesame = await websocket.recv()
-    user = await asyncio.to_thread(get_user, sesame)
-    if user is None:
-        await websocket.close(CloseCode.INTERNAL_ERROR, "authentication failed")
-        return
+    message = await websocket.recv()
 
-    await websocket.send(f"Hello {user}!")
+    await websocket.send("Hello !")
 
 
 async def main():
