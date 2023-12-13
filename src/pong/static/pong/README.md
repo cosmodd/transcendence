@@ -8,4 +8,4 @@
 - Collision - ball reste dans les murs?
 - Collision - meilleur collision paddle/ball
 - UpdatePosition in shader ?
-- refactoriser uScalingFactor
+- currentScale - refactor

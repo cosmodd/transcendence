@@ -1,4 +1,4 @@
-// Given three collinear points p, q, r, the function checks if 
+ // Given three collinear points p, q, r, the function checks if 
 // point q lies on line segment 'pr' 
 function onSegment(p, q, r) 
 { 
@@ -49,4 +49,4 @@ export function doIntersect(p1, q1, p2, q2)
 	if (o4 == 0 && onSegment(p2, q1, q2)) return true; 
 	
 	return false; // Doesn't fall in any cases 
-} 
+}
