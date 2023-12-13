@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pong</title>
 	{% load static %}
-	<link rel="stylesheet" href="{% static 'pong/style.css' %}">
+	<link rel="stylesheet" href="{% static 'pong/Style/style.css' %}">
 </head>
 <body>
 	<div style="position:relative;">
@@ -16,20 +16,20 @@
 	</div>
 	<!-- secure ?-->
 	<script>
-		var entityVertexShaderPath = "{% static 'pong/entity.vs' %}";
-		var entityFragmentShaderPath = "{% static 'pong/entity.fs' %}";
+		var entityVertexShaderPath = "{% static 'pong/Shaders/entity.vs' %}";
+		var entityFragmentShaderPath = "{% static 'pong/Shaders/entity.fs' %}";
 	</script>
-	<script src="{% static 'pong/source.js' %}" type="module"></script>
-	<script src="{% static 'pong/Collision/Collision.js' %}" type="module"></script>
-	<script src="{% static 'pong/Collision/Collision_Utils.js' %}" type="module"></script>
-    <script src="{% static 'pong/Ball.js' %}" type="module"></script>
-    <script src="{% static 'pong/Event.js' %}" type="module"></script>
-	<script src="{% static 'pong/overlay.js' %}" type="module"></script>
-    <script src="{% static 'pong/Vector.js' %}" type="module"></script>
-    <script src="{% static 'pong/Vertex.js' %}" type="module"></script>
-    <script src="{% static 'pong/Paddle.js' %}" type="module"></script>
-    <script src="{% static 'pong/Mesh.js' %}" type="module"></script>
-    <script src="{% static 'pong/Shader.js' %}" type="module"></script>
-    <script src="{% static 'pong/main.js' %}" type="module"></script>
+	<script src="{% static 'pong/Sources/source.js' %}" type="module"></script>
+	<script src="{% static 'pong/Sources/Collision/Collision.js' %}" type="module"></script>
+	<script src="{% static 'pong/Sources/Collision/Collision_Utils.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Ball.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Event.js' %}" type="module"></script>
+	<script src="{% static 'pong/Sources/overlay.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Vector.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Vertex.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Paddle.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Mesh.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/Shader.js' %}" type="module"></script>
+    <script src="{% static 'pong/Sources/main.js' %}" type="module"></script>
 </body>
 </html>
