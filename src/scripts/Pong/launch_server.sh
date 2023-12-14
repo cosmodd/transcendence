@@ -1,3 +1,3 @@
 #!/bin/sh
 export PYTHONPATH=$PYTHONPATH:/app/
-python /app/scripts/ws.py
+python /app/scripts/Pong/server.py

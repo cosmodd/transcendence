@@ -1,4 +1,5 @@
 //  Game logic events
+//	* Type => game
 //	* Method
 //		- Get
 //		- Send
@@ -12,24 +13,37 @@
 //		- Acceleration [Ball]
 
 // General events // Temporaire
-// * Type
-//	- Join
-//		- Create room or got a token ?
+// * Type => init
+// * Join
+
 window.addEventListener("DOMContentLoaded", () => {
 	const websocket = new WebSocket("ws://localhost:8888");
 
 	// // Events
-	// _initGame();
+	websocketLogic._initGame(websocket);
 });
 
 // Namespace equivalent
 let websocketLogic = {};
 
-// websocketLogic._initGame = function() {
-//     const params = new URLSearchParams(window.location.search);
-//     let event = { type: "join" };
-//     if (params.has("join")) {
-//       event.join = params.get("join");
-//     } 
-//     websocket.send(JSON.stringify(event));
-// }
+websocketLogic._initGame = function(websocket) {
+	websocket.addEventListener("open", () => {
+		const params = new URLSearchParams(window.location.search);
+		let event = { type: "init" };
+
+		// Joining 
+		if (params.has("join")) {
+			event.join = params.get("join");
+			websocket.send(JSON.stringify(event));
+		} 
+		// Creating
+		else {
+		}
+
+		websocket.send(JSON.stringify(event));
+
+		websocket.addEventListener("message", (event) => {
+			console.log(event.data);
+		});
+	});
+}
