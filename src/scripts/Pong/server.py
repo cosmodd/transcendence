@@ -20,6 +20,11 @@ django.setup()
 
 #from django.core.management import call_command
 
+PLAYER1, PLAYER2 = "p1", "p2"
+# playersMap = {
+#     PLAYER1: Paddle((0, 0)),
+#     PLAYER2: Paddle((0, 0)),
+# }
 JOIN = {}
 
 async def error(websocket, message):
@@ -45,8 +50,7 @@ async def create(websocket):
         await websocket.send(json.dumps(event))
         
         # Game loop - temporary
-        async for message in websocket:
-            print(message)
+        await play(websocket, PLAYER1, connected)
 
 
     finally:
@@ -62,14 +66,54 @@ async def join(websocket, join_key):
     connected.add(websocket);
 
     for ws in connected:
-        await ws.send("Both clients are connected !")
+        response = {
+            "type": "message", 
+            "message": "both clients are connected"
+        }
+        await ws.send(json.dumps(response))
 
     #Game loop - temporary
-    async for message in websocket:
-        print(message)
+    try:
+        await play(websocket, PLAYER2, connected)
+    finally:
+        connected.remove(websocket)
 
+# Game loop
+async def play(websocket, player, connected):
+    # opponent = PLAYER2 if player == PLAYER1 else PLAYER1
+
+    async for message in websocket:
+            event = json.loads(message)
+
+            # Receive data and transmit to the other - temporary
+            if event["type"] == "send" and event["object"] == "paddle":
+                # async with lock:
+                    # playersMap[player].position = event["position"]
+                transmit = {
+                    "type": "get",
+                    "object": "paddle",
+                    "position": [event["position"][0], event["position"][1]]
+                }
+                for ws in connected:
+                    if ws != websocket:
+                        await ws.send(json.dumps(transmit))
+
+
+            # # Send data
+            # if event["type"] == "get" and event["object"] == "paddle":
+            #     async with lock:
+            #         position = playersMap[opponent].position
+            #     response = {
+            #         "type": "get",
+            #         "object": "paddle",
+            #         "position": [position[0], position[1]]
+            #     }
+            #     await websocket.send(json.dumps(response))
+                    
+                
 
 async def handler(websocket):
+    lock = asyncio.Lock()
     message = await websocket.recv()
 
     event = json.loads(message)

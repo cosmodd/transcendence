@@ -39,7 +39,7 @@ class Paddle extends Mesh {
 		this.heightHalf = height / 2.;
 	}
 
-	updatePosition(dataOrigin, deltaTime) {
+	async updatePosition(dataOrigin, deltaTime) {
 		const move = this.speed * deltaTime;
 		if (dataOrigin === DataOrigin.Client) {
 			if (upKeyPressed) {
@@ -48,7 +48,11 @@ class Paddle extends Mesh {
 			else if (downKeyPressed) {
 				this._uEntityPosition.y -= move;
 			}
-			WebsocketLogic.sendDataPaddle(this._uEntityPosition);
+			if (upKeyPressed || downKeyPressed)
+				WebsocketLogic.sendDataPaddle(this._uEntityPosition.clone());
+		}
+		else if (dataOrigin === DataOrigin.WebSocket){
+			this._uEntityPosition = await WebsocketLogic.getDataPaddle();
 		}
 	}
 
