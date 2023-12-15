@@ -3,6 +3,7 @@ import { Vec2, Vec3 } from './Vector.js';
 import Vertex from './Vertex.js';
 import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from './Event.js';
 import DataOrigin from './DataOrigin.js';
+import WebsocketLogic from './Websocket/Websocket.js';
 
 class Paddle extends Mesh {
 	constructor(width, height, color = null, position = new Vec2(0., 0.), currentScale) {
@@ -47,6 +48,7 @@ class Paddle extends Mesh {
 			else if (downKeyPressed) {
 				this._uEntityPosition.y -= move;
 			}
+			WebsocketLogic.sendDataPaddle(this._uEntityPosition);
 		}
 	}
 

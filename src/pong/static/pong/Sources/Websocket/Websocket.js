@@ -16,34 +16,45 @@
 // * Type => init
 // * Join
 
-window.addEventListener("DOMContentLoaded", () => {
-	const websocket = new WebSocket("ws://localhost:8888");
+// Namespace equivalent
+let WebsocketLogic = {};
 
-	// // Events
-	websocketLogic._initGame(websocket);
+window.addEventListener("DOMContentLoaded", () => {
+	WebsocketLogic.websocket = new WebSocket("ws://localhost:8888");
+
+	// Events
+	WebsocketLogic._initGame();
 });
 
-// Namespace equivalent
-let websocketLogic = {};
-
-websocketLogic._initGame = function(websocket) {
-	websocket.addEventListener("open", () => {
+WebsocketLogic._initGame = function() {
+	WebsocketLogic.websocket.addEventListener("open", () => {
 		const params = new URLSearchParams(window.location.search);
 		let event = { type: "init" };
 
 		// Joining 
 		if (params.has("join")) {
 			event.join = params.get("join");
-			websocket.send(JSON.stringify(event));
+			WebsocketLogic.websocket.send(JSON.stringify(event));
 		} 
 		// Creating
 		else {
 		}
 
-		websocket.send(JSON.stringify(event));
+		WebsocketLogic.websocket.send(JSON.stringify(event));
 
-		websocket.addEventListener("message", (event) => {
+		WebsocketLogic.websocket.addEventListener("message", (event) => {
 			console.log(event.data);
 		});
 	});
 }
+
+WebsocketLogic.sendDataPaddle = function(position) {
+	let event = {
+		type: "send",
+		object: "paddle",
+		position: position.toArray()
+	}
+	WebsocketLogic.websocket.send(JSON.stringify(event));
+}
+
+export default WebsocketLogic;
