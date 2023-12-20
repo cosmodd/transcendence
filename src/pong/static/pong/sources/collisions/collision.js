@@ -1,6 +1,5 @@
-import Ball from "../objects/class_ball.js";
-import Paddle from "../objects/class_paddle.js";
 import { DoIntersect } from "./collision_utils.js";
+import { kBallAccelerationStep } from "../objects/constants_objects.js";
 
 // Namespace equivalent
 let Collision = {};
@@ -51,7 +50,7 @@ Collision.BallPaddle = function(Ball, Paddle) {
     {
         Ball.direction.x = -Ball.direction.x;
         Ball._uEntityPosition.x = Paddle.boundingbox_right + Ball.radius;
-        Ball.acceleration += 1;
+        Ball.acceleration += kBallAccelerationStep;
         if (up_key_pressed)
             Ball.direction.y = 1.;
         if (down_key_pressed)

@@ -5,8 +5,11 @@
 * UX 
 
 #### Websocket
-- server.py - true logic
-- Websocket.js - optimization
+- server.py - Server authority
+	- send constants to game state
+	- assert new_position is within rules
+- server.py - Logic optimization
+- Websocket.js - Logic optimization
 - Websocket.js - refactor methods
 
 #### Specific

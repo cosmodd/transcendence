@@ -1,6 +1,7 @@
 import Mesh from './class_mesh.js'
 import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
+import { kBallSpeed } from './constants_objects.js';
 
 class Ball extends Mesh {
 	constructor (radius = 0.01, resolution = 4.0, color = null, current_scale) {
@@ -38,7 +39,7 @@ class Ball extends Mesh {
 
 		this.radius = radius;
 		this._uEntityPosition = new Vec2(0., 0.);
-		this.speed = 0.5;
+		this.speed = kBallSpeed;
 		this.acceleration = 0.;
 		this.direction = new Vec2(-Math.random(), Math.random());
 		// this.direction = new Vec2(-1., 0.);
@@ -48,9 +49,8 @@ class Ball extends Mesh {
 	UpdatePosition(delta_time) {
         const current_speed = this.speed + this.acceleration;
 
-		//new position = position + (direction * speed)
         const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
-        this._uEntityPosition.add(delta_position);
+        this._uEntityPosition.Add(delta_position);
 	}
 
 	reset() {

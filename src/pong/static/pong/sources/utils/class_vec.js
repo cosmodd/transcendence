@@ -30,7 +30,7 @@ export class Vec3 {
         return this;
     }
 
-    add(v) {
+    Add(v) {
         this.x += v.x;
         this.y += v.y;
         this.z += v.z;
@@ -67,7 +67,7 @@ export class Vec2 {
         return this;
     }
 
-    add(v) {
+    Add(v) {
         this.x += v.x;
         this.y += v.y;
         return this;

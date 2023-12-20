@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+#debug
 import logging
 logger = logging.getLogger('websockets')
 logger.setLevel(logging.DEBUG)
@@ -11,7 +12,10 @@ import websockets
 import os
 import secrets
 import json
+
 from objects import Ball, Paddle
+from play import play
+from pong import *
 #from sesame.utils import get_user
 #from websockets.frames import CloseCode
 
@@ -20,11 +24,6 @@ django.setup()
 
 #from django.core.management import call_command
 
-PLAYER1, PLAYER2 = "p1", "p2"
-# playersMap = {
-#     PLAYER1: Paddle((0, 0)),
-#     PLAYER2: Paddle((0, 0)),
-# }
 JOIN = {}
 
 async def error(websocket, message):
@@ -34,13 +33,14 @@ async def error(websocket, message):
     }
     await websocket.send(json.dumps(event))
 
+
 async def create(websocket):
     # Init set of WebSocket connections receiving moves
     connected = {websocket}
-
+    game = Pong()
     # Init secret token.
     join_key = secrets.token_urlsafe(12)
-    JOIN[join_key] = connected
+    JOIN[join_key] = game, connected
 
     try:
         event = {
@@ -49,16 +49,16 @@ async def create(websocket):
         }
         await websocket.send(json.dumps(event))
         
-        # Game loop - temporary
-        await play(websocket, PLAYER1, connected)
-
+        # Game loop
+        await play(websocket, game, PLAYER1, connected)
 
     finally:
         del JOIN[join_key]
 
+
 async def join(websocket, join_key):
     try:
-        connected = JOIN[join_key]
+        game, connected = JOIN[join_key]
     except KeyError:
         await error(websocket, "Game not found.")
         return
@@ -72,45 +72,12 @@ async def join(websocket, join_key):
         }
         await ws.send(json.dumps(response))
 
-    #Game loop - temporary
+    #Game loop
     try:
-        await play(websocket, PLAYER2, connected)
+        await play(websocket, game, PLAYER2, connected)
     finally:
         connected.remove(websocket)
 
-# Game loop
-async def play(websocket, player, connected):
-    # opponent = PLAYER2 if player == PLAYER1 else PLAYER1
-
-    async for message in websocket:
-            event = json.loads(message)
-
-            # Receive data and transmit to the other - temporary
-            if event["type"] == "send" and event["object"] == "paddle":
-                # async with lock:
-                    # playersMap[player].position = event["position"]
-                transmit = {
-                    "type": "get",
-                    "object": "paddle",
-                    "position": [event["position"][0], event["position"][1]]
-                }
-                for ws in connected:
-                    if ws != websocket:
-                        await ws.send(json.dumps(transmit))
-
-
-            # # Send data
-            # if event["type"] == "get" and event["object"] == "paddle":
-            #     async with lock:
-            #         position = playersMap[opponent].position
-            #     response = {
-            #         "type": "get",
-            #         "object": "paddle",
-            #         "position": [position[0], position[1]]
-            #     }
-            #     await websocket.send(json.dumps(response))
-                    
-                
 
 async def handler(websocket):
     lock = asyncio.Lock()

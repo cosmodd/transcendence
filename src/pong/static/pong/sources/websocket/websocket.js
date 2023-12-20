@@ -18,7 +18,7 @@
 import { Vec2 } from '../utils/class_vec.js';
 
 let opp_pos_promise = Promise.resolve();
-let opp_pos = new Vec2(0., 0.);
+let opp_pos = new Vec2(2., 2.); // Out of bounds
 
 // Namespace equivalent
 let WebsocketLogic = {};

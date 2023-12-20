@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'pong.apps.PongConfig',
+    'pong',
     'core',
     'django.contrib.admin',
     'django.contrib.auth',
