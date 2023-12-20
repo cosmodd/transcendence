@@ -5,14 +5,15 @@
 * UX 
 
 #### Websocket
+- spectator logic !
 - server.py - Server authority
 	- send constants to game state
 	- assert new_position is within rules
+	- send position.x * -1
 - server.py - Logic optimization
 	- asyncio.lock() ?
 - Websocket.js - Logic optimization
-	- change name of "get" and "send" types
-- Websocket.js - refactor methods
+	- change event.method by event.METHOD
 
 #### Specific
 - Collision - ball reste dans les murs?

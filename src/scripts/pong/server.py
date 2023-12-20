@@ -15,6 +15,7 @@ import json
 
 from play import play
 from class_pong import *
+from constants import *
 #from sesame.utils import get_user
 #from websockets.frames import CloseCode
 
@@ -27,7 +28,7 @@ JOIN = {}
 
 async def error(websocket, message):
     event = {
-        "type": "error",
+        METHOD: FROM_SERVER,
         "message": message,
     }
     await websocket.send(json.dumps(event))
@@ -43,8 +44,9 @@ async def create(websocket):
 
     try:
         event = {
-            "type": "init",
-            "join": join_key,
+            METHOD: FROM_SERVER,
+            OBJECT: OBJECT_CREATE,
+            DATA_JOINKEY: join_key,
         }
         await websocket.send(json.dumps(event))
         
@@ -66,7 +68,8 @@ async def join(websocket, join_key):
 
     for ws in connected:
         response = {
-            "type": "message", 
+            METHOD: FROM_SERVER,
+            OBJECT: "message", 
             "message": "both clients are connected"
         }
         await ws.send(json.dumps(response))
@@ -83,11 +86,12 @@ async def handler(websocket):
     message = await websocket.recv()
 
     event = json.loads(message)
-    assert event["type"] == "init"
+    assert event[METHOD] == FROM_CLIENT
 
-    if "join" in event:
-        await join(websocket, event["join"])
-    else:
+	# if OBJECT in event:
+    if event[OBJECT] == OBJECT_JOIN:
+        await join(websocket, event[DATA_JOINKEY])
+    elif event[OBJECT] == OBJECT_CREATE:
         await create(websocket)
 
 
