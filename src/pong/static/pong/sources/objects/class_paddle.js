@@ -1,9 +1,9 @@
-import Mesh from './Mesh.js'
-import { Vec2, Vec3 } from './Vector.js';
-import Vertex from './Vertex.js';
-import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from './Event.js';
-import DataOrigin from './DataOrigin.js';
-import WebsocketLogic from './Websocket/Websocket.js';
+import Mesh from './class_mesh.js'
+import { Vec2, Vec3 } from '../utils/class_vec.js';
+import Vertex from './class_vertex.js';
+import { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed } from '../events/key_listener.js';
+import DataOrigin from '../utils/data_origin.js';
+import WebsocketLogic from '../websocket/websocket.js';
 
 class Paddle extends Mesh {
 	constructor(width, height, color = null, position = new Vec2(0., 0.), currentScale) {

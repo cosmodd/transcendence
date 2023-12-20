@@ -1,10 +1,10 @@
-import { Vec3, Vec2 } from './Vector.js';
-import Ball from './Ball.js';
-import Paddle from './Paddle.js'
-import { scoreNode } from './UI/overlay.js';
-import { upKeyPressed, downKeyPressed } from './Event.js';
-import Collision from "./Collision/Collision.js"
-import DataOrigin from './DataOrigin.js';
+import { Vec3, Vec2 } from './utils/class_vec.js';
+import Ball from './objects/class_ball.js';
+import Paddle from './objects/class_paddle.js'
+import { scoreNode } from './ui/overlay.js';
+import { upKeyPressed, downKeyPressed } from './events/key_listener.js';
+import Collision from "./collisions/collision.js"
+import DataOrigin from './utils/data_origin.js';
 
 let gl = null;
 let glCanvas = null;

@@ -1,6 +1,6 @@
-import Ball from "../Ball.js";
-import Paddle from "../Paddle.js";
-import { doIntersect } from "./Collision_Utils.js";
+import Ball from "../objects/class_ball.js";
+import Paddle from "../objects/class_paddle.js";
+import { doIntersect } from "./collision_utils.js";
 
 // Namespace equivalent
 let Collision = {};

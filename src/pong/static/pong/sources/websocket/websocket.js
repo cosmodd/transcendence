@@ -15,7 +15,7 @@
 // * Type => init
 // * Join
 
-import { Vec2 } from '../Vector.js';
+import { Vec2 } from '../utils/class_vec.js';
 
 let opponentPosPromise = Promise.resolve();
 let opponentPos = new Vec2(0., 0.);

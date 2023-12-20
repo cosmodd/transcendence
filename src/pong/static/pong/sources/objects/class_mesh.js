@@ -1,6 +1,6 @@
-import { Vec3 } from './Vector.js';
-import Vertex from './Vertex.js';
-import Shader from './Shader.js';
+import { Vec3 } from '../utils/class_vec.js';
+import Vertex from './class_vertex.js';
+import Shader from './class_shader.js';
 
 class Mesh {
 	constructor(vertices, indices, randomColor = false, shaderInfo, currentScale) {

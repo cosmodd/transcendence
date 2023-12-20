@@ -1,4 +1,4 @@
-import { Vec3 } from "./Vector.js";
+import { Vec3 } from "../utils/class_vec.js";
 
 class Vertex {
     // constructor(position = null, normal = null, texCoords = null, color = null) {

@@ -1,6 +1,6 @@
-import Mesh from './Mesh.js'
-import { Vec2 } from './Vector.js';
-import Vertex from './Vertex.js';
+import Mesh from './class_mesh.js'
+import { Vec2 } from '../utils/class_vec.js';
+import Vertex from './class_vertex.js';
 
 class Ball extends Mesh {
 	constructor (radius = 0.01, resolution = 4.0, color = null, currentScale) {
