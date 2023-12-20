@@ -3,23 +3,23 @@ import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
 
 class Ball extends Mesh {
-	constructor (radius = 0.01, resolution = 4.0, color = null, currentScale) {
-		const shaderInfo = [
+	constructor (radius = 0.01, resolution = 4.0, color = null, current_scale) {
+		const shader_infos = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
-				filePath: entityVertexShaderPath,
+				file_path: kEntityVertexShaderPath,
 			},
 			{
 				type: WebGL2RenderingContext.FRAGMENT_SHADER,
-				filePath: entityFragmentShaderPath,
+				file_path: kEntityFragmentShaderPath,
 			},
 		];
 
-		let numFaces = resolution * 4.;
+		let num_faces = resolution * 4.;
 		const vertices = [];
 		vertices.push(new Vertex(new Vec2(0.0, 0.0), color)); // Origin
-		let stepAngle = 360.0 / numFaces;
-		for (let angle = 0.0; angle < 360.0 ; angle += stepAngle) {
+		let step_angle = 360.0 / num_faces;
+		for (let angle = 0.0; angle < 360.0 ; angle += step_angle) {
 			vertices.push(new Vertex(
 				new Vec2(
 					radius * Math.cos(angle * (Math.PI / 180.0)),
@@ -30,11 +30,11 @@ class Ball extends Mesh {
 		}
 
 		const indices = [];
-		for (let i = 0 ; i < numFaces ; i++) {
-			indices.push(...[0, i+1, (i+1)%numFaces + 1]);
+		for (let i = 0 ; i < num_faces ; i++) {
+			indices.push(...[0, i+1, (i+1)%num_faces + 1]);
 		}
 
-		super(vertices, indices, (color == null), shaderInfo, currentScale);
+		super(vertices, indices, (color == null), shader_infos, current_scale);
 
 		this.radius = radius;
 		this._uEntityPosition = new Vec2(0., 0.);
@@ -45,12 +45,12 @@ class Ball extends Mesh {
 		this.direction.normalize();
 	}
 
-	updatePosition(deltaTime) {
-        const currentSpeed = this.speed + this.acceleration;
+	UpdatePosition(delta_time) {
+        const current_speed = this.speed + this.acceleration;
 
 		//new position = position + (direction * speed)
-        const deltaPosition = this.direction.clone().multiplyScalar(currentSpeed * deltaTime);
-        this._uEntityPosition.add(deltaPosition);
+        const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
+        this._uEntityPosition.add(delta_position);
 	}
 
 	reset() {
@@ -61,25 +61,25 @@ class Ball extends Mesh {
 		this.acceleration = 0.;
 	}
 
-    updateUniform() {
-        this.gl.useProgram(this.attachedShader.program);
+    UpdateUniform() {
+        this.gl.useProgram(this.attached_shader.program);
         this.gl.uniform2f(
-            this.gl.getUniformLocation(this.attachedShader.program, "uEntityPosition"),
+            this.gl.getUniformLocation(this.attached_shader.program, "uEntityPosition"),
             this._uEntityPosition.x,
             this._uEntityPosition.y
         );
 		this.gl.useProgram(null);
     }
 
-	computeBoundingBox() {
-		this.boundingBoxLeft = this._uEntityPosition.x - this.radius;
-		this.boundingBoxRight = this._uEntityPosition.x + this.radius;
-		this.boundingBoxTop = this._uEntityPosition.y + this.radius;
-		this.boundingBoxBottom = this._uEntityPosition.y - this.radius;
-		this.boundingBoxLeft *= this.scalingFactor[0];
-		this.boundingBoxRight *= this.scalingFactor[0];
-		this.boundingBoxTop *= this.scalingFactor[1];
-		this.boundingBoxBottom *= this.scalingFactor[1];
+	ComputeBoundingbox() {
+		this.boundingbox_left = this._uEntityPosition.x - this.radius;
+		this.boundingbox_right = this._uEntityPosition.x + this.radius;
+		this.boundingbox_top = this._uEntityPosition.y + this.radius;
+		this.boundingbox_bottom = this._uEntityPosition.y - this.radius;
+		this.boundingbox_left *= this.scaling_factor[0];
+		this.boundingbox_right *= this.scaling_factor[0];
+		this.boundingbox_top *= this.scaling_factor[1];
+		this.boundingbox_bottom *= this.scaling_factor[1];
 	}
 }
 

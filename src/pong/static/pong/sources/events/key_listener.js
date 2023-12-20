@@ -1,31 +1,31 @@
-let upKeyPressed = false;
-let downKeyPressed = false;
-let leftKeyPressed = false;
-let rightKeyPressed = false;
+let up_key_pressed = false;
+let down_key_pressed = false;
+let left_key_pressed = false;
+let right_key_pressed = false;
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
-        upKeyPressed = true;
+        up_key_pressed = true;
     } else if (event.key === 'ArrowDown') {
-        downKeyPressed = true;
+        down_key_pressed = true;
     } else if (event.key === 'ArrowLeft') {
-        leftKeyPressed = true;
+        left_key_pressed = true;
     } else if (event.key === 'ArrowRight') {
-        rightKeyPressed = true;
+        right_key_pressed = true;
     }
 
 });
 
 document.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowUp') {
-        upKeyPressed = false;
+        up_key_pressed = false;
     } else if (event.key === 'ArrowDown') {
-        downKeyPressed = false;
+        down_key_pressed = false;
     } else if (event.key === 'ArrowLeft') {
-        leftKeyPressed = false;
+        left_key_pressed = false;
     } else if (event.key === 'ArrowRight') {
-        rightKeyPressed = false;
+        right_key_pressed = false;
     }
 });
 
-export { upKeyPressed, downKeyPressed, leftKeyPressed, rightKeyPressed};
+export { up_key_pressed, down_key_pressed, left_key_pressed, right_key_pressed};

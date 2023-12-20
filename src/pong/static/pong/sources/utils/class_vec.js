@@ -5,7 +5,7 @@ export class Vec3 {
         this.z = z || 0;
     }
 
-    toArray() {
+    ToArray() {
         return [this.x, this.y, this.z];
     }
 
@@ -19,11 +19,11 @@ export class Vec3 {
         return this;
     }
 
-    clone() {
+    Clone() {
         return new Vec3(this.x, this.y, this.z);
     }
 
-    multiplyScalar(scalar) {
+    MultiplyScalar(scalar) {
         this.x *= scalar;
         this.y *= scalar;
         this.z *= scalar;
@@ -44,7 +44,7 @@ export class Vec2 {
         this.y = y || 0;
     }
 
-    toArray() {
+    ToArray() {
         return [this.x, this.y];
     }
 
@@ -57,11 +57,11 @@ export class Vec2 {
         return this;
     }
 
-    clone() {
+    Clone() {
         return new Vec2(this.x, this.y);
     }
 
-    multiplyScalar(scalar) {
+    MultiplyScalar(scalar) {
         this.x *= scalar;
         this.y *= scalar;
         return this;

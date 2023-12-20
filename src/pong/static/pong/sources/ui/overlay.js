@@ -1,5 +1,5 @@
-let scoreElement = document.getElementById("score");
+let score_element = document.getElementById("score");
 
-export let scoreNode = document.createTextNode("");
+export let score_node = document.createTextNode("");
 
-scoreElement.appendChild(scoreNode);
+score_element.appendChild(score_node);

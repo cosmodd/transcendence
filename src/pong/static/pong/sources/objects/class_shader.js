@@ -1,16 +1,13 @@
 class Shader {
 	constructor() {
-		this._projMat = null;
-		this._viewMat = null;
-		this._modelMat = null;
 		this.program = null;
 		this.gl = document.getElementById('glcanvas').getContext('webgl');
 	}
 
-	async _compileShader(filePath, type) {
-		const response = await fetch(filePath);
+	async _CompileShader(file_path, type) {
+		const response = await fetch(file_path);
 		if (!response.ok) {
-			console.error(`Unable to fetch shader file: ${filePath}`);
+			console.error(`Unable to fetch shader file: ${file_path}`);
 			return null;
 		}
 
@@ -30,21 +27,21 @@ class Shader {
 		return shader;
 	}
 
-	async buildProgram(shaderInfo) {
-		if (!Array.isArray(shaderInfo) || shaderInfo.length !== 2) {
+	async BuildProgram(shader_infos) {
+		if (!Array.isArray(shader_infos) || shader_infos.length !== 2) {
             throw new Error("L'ensemble de shaders doit être un tableau contenant exactement deux éléments.");
         }
-        const validTypes = [WebGL2RenderingContext.VERTEX_SHADER, WebGL2RenderingContext.FRAGMENT_SHADER];
-        for (const shader of shaderInfo) {
-            if (!shader || !shader.type || !validTypes.includes(shader.type) || !shader.filePath) {
+        const valid_types = [WebGL2RenderingContext.VERTEX_SHADER, WebGL2RenderingContext.FRAGMENT_SHADER];
+        for (const shader of shader_infos) {
+            if (!shader || !shader.type || !valid_types.includes(shader.type) || !shader.file_path) {
                 throw new Error("Chaque shader de l'ensemble doit avoir un type valide et un chemin de fichier spécifié.");
             }
         }
 
 		this.program = this.gl.createProgram();
 
-		await Promise.all(shaderInfo.map(async (desc) => {
-			const shader = await this._compileShader(desc.filePath, desc.type);
+		await Promise.all(shader_infos.map(async (desc) => {
+			const shader = await this._CompileShader(desc.file_path, desc.type);
 			if (shader) {
 				this.gl.attachShader(this.program, shader);
 			}

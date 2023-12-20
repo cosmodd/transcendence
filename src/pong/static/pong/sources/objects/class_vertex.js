@@ -9,8 +9,8 @@ class Vertex {
         this.color = color || new Vec3();
     }
 
-    toArray() {
-        return [...this.position.toArray(), ...this.color.toArray()]
+    ToArray() {
+        return [...this.position.ToArray(), ...this.color.ToArray()]
     }
 }
 

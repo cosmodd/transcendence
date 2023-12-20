@@ -15,9 +15,5 @@
 - UpdatePosition in shader ?
 
 #### Guidelines
-- G. Variable Names
-- G. Constant Names
-- G. Functions Names
-
 - ES.22
 - NL.17
