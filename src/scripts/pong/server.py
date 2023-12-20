@@ -13,9 +13,8 @@ import os
 import secrets
 import json
 
-from objects import Ball, Paddle
 from play import play
-from pong import *
+from class_pong import *
 #from sesame.utils import get_user
 #from websockets.frames import CloseCode
 

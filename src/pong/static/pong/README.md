@@ -9,7 +9,9 @@
 	- send constants to game state
 	- assert new_position is within rules
 - server.py - Logic optimization
+	- asyncio.lock() ?
 - Websocket.js - Logic optimization
+	- change name of "get" and "send" types
 - Websocket.js - refactor methods
 
 #### Specific
