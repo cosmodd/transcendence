@@ -1,10 +1,10 @@
 import Mesh from './class_mesh.js'
 import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
-import { kBallSpeed } from './constants_objects.js';
+import { kBallSpeed, kBallRadius, kBallResolution } from './constants_objects.js';
 
 class Ball extends Mesh {
-	constructor (radius = 0.01, resolution = 4.0, color = null, current_scale) {
+	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale) {
 		const shader_infos = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,

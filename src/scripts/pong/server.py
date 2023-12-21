@@ -13,7 +13,7 @@ import os
 import secrets
 import json
 
-from play import play
+from play import Play
 from class_pong import *
 from constants import *
 #from sesame.utils import get_user
@@ -51,7 +51,7 @@ async def create(websocket):
         await websocket.send(json.dumps(event))
         
         # Game loop
-        await play(websocket, game, PLAYER1, connected)
+        await Play(websocket, game, PLAYER1, connected)
 
     finally:
         del JOIN[join_key]
@@ -76,7 +76,7 @@ async def join(websocket, join_key):
 
     #Game loop
     try:
-        await play(websocket, game, PLAYER2, connected)
+        await Play(websocket, game, PLAYER2, connected)
     finally:
         connected.remove(websocket)
 

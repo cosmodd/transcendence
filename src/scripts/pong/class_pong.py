@@ -1,6 +1,8 @@
 import json
 from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
+from constants import *
+from datetime import datetime
 
 __all__ = ["PLAYER1", "PLAYER2", "Pong"]
 
@@ -16,11 +18,20 @@ class Pong:
 		self._score = [0, 0]
 
 	# Players
-	def ActualizePlayerPosition(self, current_player, new_position):
-		# assert some rules
-
-		#replace player position
-		self._players[current_player].position = new_position	
+	def RegisterKeyInput(self, current_player, key):
+		self._players[current_player].key = key
 
 	def GetPlayerPosition(self, current_player):
 		return self._players[current_player].position
+	
+	def UpdatePosition(self, current_player, delta_time):
+		key = self._players[current_player].key
+		if (key == DATA_INPUT_KEY_NONE):
+			return
+
+		move = self._players[current_player].speed * delta_time
+
+		if (key == DATA_INPUT_KEY_DOWN):
+			move *= -1.0
+
+		self._players[current_player].position[1] += move
