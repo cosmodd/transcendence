@@ -77,7 +77,6 @@ ServerAPI.GetDataPaddle = async function() {
 }
 
 ServerAPI.SendDataPaddle = function(position) {
-	position.x *= -1.;
 	let event = {
 		[METHOD]: FROM_CLIENT,
 		[OBJECT]: OBJECT_PADDLE,

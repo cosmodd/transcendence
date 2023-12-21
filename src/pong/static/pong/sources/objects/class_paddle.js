@@ -6,7 +6,8 @@ import DataOrigin from '../utils/data_origin.js';
 import ServerAPI from '../websocket/server_api.js';
 
 class Paddle extends Mesh {
-	constructor(width, height, color = null, position = new Vec2(0., 0.), current_scale) {
+	constructor(width, height, color = null, position = new Vec2(0., 0.), current_scale)
+	{
 		const shader_infos = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -38,24 +39,27 @@ class Paddle extends Mesh {
 		this.height_half = height_half;
 	}
 
-	async UpdatePosition(data_origin, delta_time) {
+	async UpdatePosition(data_origin, delta_time)
+	{
 		const move = this.speed * delta_time;
-		if (data_origin === DataOrigin.Client) {
-			if (up_key_pressed) {
-				this._uEntityPosition.y += move;
-			}
-			else if (down_key_pressed) {
-				this._uEntityPosition.y -= move;
-			}
-			if (up_key_pressed || down_key_pressed)
-				ServerAPI.SendDataPaddle(this._uEntityPosition.Clone());
-		}
-		else if (data_origin === DataOrigin.WebSocket){
-			this._uEntityPosition = await ServerAPI.GetDataPaddle();
+
+		switch (data_origin) {
+			case DataOrigin.Client:
+				if (up_key_pressed)
+					this._uEntityPosition.y += move;
+				else if (down_key_pressed)
+					this._uEntityPosition.y -= move;
+				if (up_key_pressed || down_key_pressed)
+					ServerAPI.SendDataPaddle(this._uEntityPosition.Clone());
+				break;
+			case DataOrigin.WebSocket:
+				this._uEntityPosition = await ServerAPI.GetDataPaddle();
+				break ;
 		}
 	}
 
-	UpdateUniform() {
+	UpdateUniform()
+	{
 		this.gl.useProgram(this.attached_shader.program);
 		this.gl.uniform2f(
 			this.gl.getUniformLocation(this.attached_shader.program, "uEntityPosition"),
@@ -64,7 +68,8 @@ class Paddle extends Mesh {
 		this.gl.useProgram(null);
 	}
 
-	ComputeBoundingbox() {
+	ComputeBoundingbox()
+	{
 		this.boundingbox_left = this._uEntityPosition.x - this.width_half;
 		this.boundingbox_right = this._uEntityPosition.x + this.width_half;
 		this.boundingbox_top = this._uEntityPosition.y + this.height_half;

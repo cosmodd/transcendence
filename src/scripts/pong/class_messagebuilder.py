@@ -6,8 +6,10 @@ class MessageBuilder:
 	def __init__(self, game):
 		self.attached_game = game
 
-	def PlayerPosition(self, current_player):
-		position = self.attached_game.GetPlayerPosition(current_player)
+	def PlayerPosition(self, player, inverted: bool):
+		position = self.attached_game.GetPlayerPosition(player)
+		if (inverted):
+			position[0] *= -1.0
 		return json.dumps({
                     METHOD: FROM_SERVER,
                     OBJECT: OBJECT_PADDLE,

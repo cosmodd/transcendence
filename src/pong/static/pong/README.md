@@ -7,7 +7,6 @@
 #### Websocket
 - server.py - Server authority
 	- assert new_position is within rules
-	- send automatic position.x * -1
 - server.py - Logic optimization
 	- asyncio.lock() ?
 - Websocket.js - Logic optimization

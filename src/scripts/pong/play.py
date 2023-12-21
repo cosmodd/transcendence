@@ -14,10 +14,10 @@ async def play(websocket, game, current_player, connected):
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
 
-            # Receive data and transmit to the other - temporary
+            # Receive data and transmit to the other - temporary ?
             if event[OBJECT] == OBJECT_PADDLE:
                 game.ActualizePlayerPosition(current_player, event.get(DATA_POSITION))
-                paddle_data_message = game.MessageBuilder.PlayerPosition(current_player)
+                paddle_data_message = game.MessageBuilder.PlayerPosition(current_player, True)
                 await SendToOpponent(paddle_data_message, websocket, connected)
 
         except json.JSONDecodeError:
