@@ -25,9 +25,15 @@ import { Vec2 } from '../utils/class_vec.js';
 let ServerAPI = {};
 
 ServerAPI.self_pos_promise = Promise.resolve();
+ServerAPI.self_key_promise = Promise.resolve();
 ServerAPI.self_pos = new Vec2(-0.9, 0.);
+ServerAPI.self_key = DATA_INPUT_KEY_NONE
+ServerAPI.self_new_data = false;
 ServerAPI.opp_pos_promise = Promise.resolve();
+ServerAPI.opp_key_promise = Promise.resolve();
 ServerAPI.opp_pos = new Vec2(0.9, 0.);
+ServerAPI.opp_key = DATA_INPUT_KEY_NONE
+ServerAPI.opp_new_data = false;
 ServerAPI.iam = "";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -85,22 +91,34 @@ ServerAPI.UpdatePaddleData = function(event)
 	if (event[DATA_PLAYER] === DATA_PLAYER_PLAYER1 && ServerAPI.iam === DATA_PLAYER_PLAYER1) {
 		ServerAPI.self_pos_promise = ServerAPI.self_pos_promise.then(async () => {
 			ServerAPI.self_pos = new Vec2(event[DATA_POSITION][0], event[DATA_POSITION][1])});
+		ServerAPI.self_key_promise = ServerAPI.self_key_promise.then(async () => {
+			ServerAPI.self_key = event[DATA_INPUT]});
+		ServerAPI.self_new_data = true;
 	}
 	if (event[DATA_PLAYER] === DATA_PLAYER_PLAYER1 && ServerAPI.iam !== DATA_PLAYER_PLAYER1) {
 		ServerAPI.opp_pos_promise = ServerAPI.opp_pos_promise.then(async () => {
 				ServerAPI.opp_pos = new Vec2(event[DATA_POSITION][0], event[DATA_POSITION][1])});
+		ServerAPI.opp_key_promise = ServerAPI.opp_key_promise.then(async () => {
+			ServerAPI.opp_key = event[DATA_INPUT]});
+		ServerAPI.opp_new_data = true;
 	}
 	if (event[DATA_PLAYER] === DATA_PLAYER_PLAYER2 && ServerAPI.iam === DATA_PLAYER_PLAYER2) {
 		ServerAPI.self_pos_promise = ServerAPI.self_pos_promise.then(async () => {
 			ServerAPI.self_pos = new Vec2(event[DATA_POSITION][0], event[DATA_POSITION][1])});
+		ServerAPI.self_key_promise = ServerAPI.self_key_promise.then(async () => {
+			ServerAPI.self_key = event[DATA_INPUT]});
+		ServerAPI.self_new_data = true;
 	}
 	if (event[DATA_PLAYER] === DATA_PLAYER_PLAYER2 && ServerAPI.iam !== DATA_PLAYER_PLAYER2) {
 		ServerAPI.opp_pos_promise = ServerAPI.opp_pos_promise.then(async () => {
 				ServerAPI.opp_pos = new Vec2(event[DATA_POSITION][0], event[DATA_POSITION][1])});
+		ServerAPI.opp_key_promise = ServerAPI.opp_key_promise.then(async () => {
+			ServerAPI.opp_key = event[DATA_INPUT]});
+		ServerAPI.opp_new_data = true;
 	}
 }
 
-ServerAPI.GetDataOpponent = async function()
+ServerAPI.GetPositionOpponent = async function()
 {
 	await ServerAPI.opp_pos_promise;
 	let ret = ServerAPI.opp_pos.Clone();
@@ -108,10 +126,22 @@ ServerAPI.GetDataOpponent = async function()
 	return ret;
 }
 
-ServerAPI.GetDataPlayer = async function()
+ServerAPI.GetPositionPlayer = async function()
 {
 	await ServerAPI.self_pos_promise;
 	return ServerAPI.self_pos.Clone();
+}
+
+ServerAPI.GetKeyPlayer = async function()
+{
+	await ServerAPI.self_key_promise;
+	return ServerAPI.self_key;
+}
+
+ServerAPI.GetKeyOpponent = async function()
+{
+	await ServerAPI.opp_key_promise;
+	return ServerAPI.opp_key;
 }
 
 ServerAPI.SendDataKey = function(key)

@@ -6,10 +6,10 @@
 
 #### Websocket
 - server.py - Server authority
-	- input based broadcast
-	- asyncio.ensure_future(GameState())
-	- send currentscale constant
-	- Collision  - paddle with wall
+	- Refactor
+	- Collision - send currentscale constant
+	- Collision - paddle with wall
+
 - server.py - Logic optimization
 	- asyncio.lock() ?
 - Websocket.js - Logic optimization

@@ -12,18 +12,16 @@ class Pong:
 	def __init__(self):
 		self.MessageBuilder = MessageBuilder(self)
 		self._players = {}
-		self._players[PLAYER1] = Paddle([0., 0.])
-		self._players[PLAYER2] = Paddle([0., 0.])
+		self._players[PLAYER1] = Paddle([-0.9, 0.])
+		self._players[PLAYER2] = Paddle([-0.9, 0.])
 		#self._ball = Ball()
 		self._score = [0, 0]
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
 		self._players[current_player].key = key
+		self._players[current_player].has_key_changed = True
 
-	def GetPlayerPosition(self, current_player):
-		return self._players[current_player].position
-	
 	def UpdatePosition(self, current_player, delta_time):
 		key = self._players[current_player].key
 		if (key == DATA_INPUT_KEY_NONE):

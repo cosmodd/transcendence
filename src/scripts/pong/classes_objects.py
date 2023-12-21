@@ -12,4 +12,5 @@ class Paddle:
         self.position = position
         self.speed = kPaddleSpeed
         self.key = DATA_INPUT_KEY_NONE
+        self.has_key_changed = False
 

@@ -42,16 +42,12 @@ class Paddle extends Mesh {
 	}
 
 	UpdateInput(delta_time) {
-		const move = this.speed * delta_time;
-
 		if (up_key_pressed) {
-			this._uEntityPosition.y += move;
 			if (this.last_key != "KeyUp")
 				ServerAPI.SendDataKey("KeyUp");
 			this.last_key = "KeyUp";
 		}
 		else if (down_key_pressed) {
-			this._uEntityPosition.y -= move;
 			if (this.last_key != "KeyDown")
 				ServerAPI.SendDataKey("KeyDown");
 			this.last_key = "KeyDown";
@@ -63,14 +59,39 @@ class Paddle extends Mesh {
 		}
 	}
 
-	async UpdatePosition(data_origin)
+	async UpdatePosition(data_origin, delta_time)
 	{
 		switch (data_origin) {
 			case DataOrigin.Client:
-				this._uEntityPosition = await ServerAPI.GetDataPlayer();
+				if (ServerAPI.self_new_data) {
+					this._uEntityPosition = await ServerAPI.GetPositionPlayer();
+					this.last_key = await ServerAPI.GetKeyPlayer();
+					ServerAPI.self_new_data = false;
+				}
+				else { // Interpolate
+					if (this.last_key == "None")
+						return ;
+					let move = this.speed * delta_time;
+					if (this.last_key == "KeyDown")
+						move *= -1.0;
+					this._uEntityPosition.y += move;
+				}
+
 				break;
 			case DataOrigin.WebSocket:
-				this._uEntityPosition = await ServerAPI.GetDataOpponent();
+				if (ServerAPI.opp_new_data) {
+					this._uEntityPosition = await ServerAPI.GetPositionOpponent();
+					this.last_key = await ServerAPI.GetKeyOpponent();
+					ServerAPI.opp_new_data = false;
+				}
+				else { // Interpolate
+					if (this.last_key == "None")
+						return ;
+					let move = this.speed * delta_time;
+					if (this.last_key == "KeyDown")
+						move *= -1.0;
+					this._uEntityPosition.y += move;
+				}
 				break ;
 		}
 	}

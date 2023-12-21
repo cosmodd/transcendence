@@ -13,7 +13,7 @@ import os
 import secrets
 import json
 
-from play import Play
+from play import Play, StateLoop
 from class_pong import *
 from constants import *
 #from sesame.utils import get_user
@@ -76,6 +76,7 @@ async def join(websocket, join_key):
 
     #Game loop
     try:
+        asyncio.ensure_future(StateLoop(game, connected))
         await Play(websocket, game, PLAYER2, connected)
     finally:
         connected.remove(websocket)
