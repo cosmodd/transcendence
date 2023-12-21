@@ -20,10 +20,12 @@
 		const kEntityFragmentShaderPath = "{% static 'pong/shaders/entity.fs' %}";
 	</script>
 
-	<script src="{% static 'pong/sources/websocket/websocket.js' %}" type="module"></script>
+    <script src="{% static 'pong/sources/main.js' %}" type="module"></script>
+	<script src="{% static 'pong/sources/websocket/server_api.js' %}" type="module"></script>
+	<script src="{% static 'pong/sources/ui/overlay.js' %}" type="module"></script>
+    <script src="{% static 'pong/sources/events/key_listener.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/utils/class_vec.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/utils/data_origin.js' %}" type="module"></script>
-	<script src="{% static 'pong/sources/ui/overlay.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/collisions/collision.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/collisions/collision_utils.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/objects/constants_objects.js' %}" type="module"></script>
@@ -32,7 +34,5 @@
     <script src="{% static 'pong/sources/objects/class_paddle.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/objects/class_mesh.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/objects/class_shader.js' %}" type="module"></script>
-    <script src="{% static 'pong/sources/events/key_listener.js' %}" type="module"></script>
-    <script src="{% static 'pong/sources/main.js' %}" type="module"></script>
 </body>
 </html>

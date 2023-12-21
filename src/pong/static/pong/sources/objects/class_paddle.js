@@ -3,7 +3,7 @@ import { Vec2, Vec3 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
 import { up_key_pressed, down_key_pressed, left_key_pressed, right_key_pressed } from '../events/key_listener.js';
 import DataOrigin from '../utils/data_origin.js';
-import WebsocketLogic from '../websocket/websocket.js';
+import ServerAPI from '../websocket/server_api.js';
 
 class Paddle extends Mesh {
 	constructor(width, height, color = null, position = new Vec2(0., 0.), current_scale) {
@@ -48,10 +48,10 @@ class Paddle extends Mesh {
 				this._uEntityPosition.y -= move;
 			}
 			if (up_key_pressed || down_key_pressed)
-				WebsocketLogic.SendDataPaddle(this._uEntityPosition.Clone());
+				ServerAPI.SendDataPaddle(this._uEntityPosition.Clone());
 		}
 		else if (data_origin === DataOrigin.WebSocket){
-			this._uEntityPosition = await WebsocketLogic.GetDataPaddle();
+			this._uEntityPosition = await ServerAPI.GetDataPaddle();
 		}
 	}
 
