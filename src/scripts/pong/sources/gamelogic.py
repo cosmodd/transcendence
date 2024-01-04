@@ -11,7 +11,7 @@ async def SendToAll(dumped_message, connected):
         await ws.send(dumped_message)
 
 
-async def StateLoop(game: Pong, connected):
+async def ServerSendLoop(game: Pong, connected):
     last_update_time = datetime.now()
     while (True):
         current_time = datetime.now()
@@ -39,7 +39,7 @@ async def StateLoop(game: Pong, connected):
         await asyncio.sleep(0.01) 
 
 
-async def Play(websocket, game: Pong, current_player, connected):
+async def ClientRecvLoop(websocket, game: Pong, current_player, connected):
     async for message in websocket:
         try:
             event = json.loads(message)

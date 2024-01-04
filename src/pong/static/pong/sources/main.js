@@ -55,15 +55,16 @@ function DrawLoop() {
     delta_time = (current_time - previous_time) / 1000.0;
     previous_time = current_time;
 
-    // Player input - send to serverAPI
-    player.UpdateInput(delta_time);
+    // Send input to server
+    player.SendInputToServer();
 
-    // Collisions
-    Collision.PaddleWall(player);
-
-    // Get server position
+    // Get data from server or interpolate
     player.UpdatePosition(DataOrigin.Client, delta_time);
     opponent.UpdatePosition(DataOrigin.WebSocket, delta_time);
+
+    // Collisions check - for interpolation only
+    Collision.PaddleWall(player);
+    // Collision.PaddleWall(opponent);
 
     // Update uniforms (position in shader)
     // ball.UpdateUniform();

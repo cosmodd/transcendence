@@ -13,7 +13,7 @@ import os
 import secrets
 import json
 
-from play import Play, StateLoop
+from gamelogic import ClientRecvLoop, ServerSendLoop
 from class_pong import *
 from constants import *
 #from sesame.utils import get_user
@@ -33,6 +33,22 @@ async def error(websocket, message):
     }
     await websocket.send(json.dumps(event))
 
+async def main():
+    async with websockets.serve(handler, "0.0.0.0", 8888):
+        await asyncio.Future()  # run forever
+
+async def handler(websocket):
+    lock = asyncio.Lock()
+    message = await websocket.recv()
+
+    event = json.loads(message)
+    assert event[METHOD] == FROM_CLIENT
+
+	# if OBJECT in event:
+    if event[OBJECT] == OBJECT_JOIN:
+        await join(websocket, event[DATA_JOINKEY])
+    elif event[OBJECT] == OBJECT_CREATE:
+        await create(websocket)
 
 async def create(websocket):
     # Init set of WebSocket connections receiving moves
@@ -51,7 +67,7 @@ async def create(websocket):
         await websocket.send(json.dumps(event))
         
         # Game loop
-        await Play(websocket, game, PLAYER1, connected)
+        await ClientRecvLoop(websocket, game, PLAYER1, connected)
 
     finally:
         del JOIN[join_key]
@@ -76,29 +92,12 @@ async def join(websocket, join_key):
 
     #Game loop
     try:
-        asyncio.ensure_future(StateLoop(game, connected))
-        await Play(websocket, game, PLAYER2, connected)
+        asyncio.ensure_future(ServerSendLoop(game, connected))
+        await ClientRecvLoop(websocket, game, PLAYER2, connected)
     finally:
         connected.remove(websocket)
 
 
-async def handler(websocket):
-    lock = asyncio.Lock()
-    message = await websocket.recv()
-
-    event = json.loads(message)
-    assert event[METHOD] == FROM_CLIENT
-
-	# if OBJECT in event:
-    if event[OBJECT] == OBJECT_JOIN:
-        await join(websocket, event[DATA_JOINKEY])
-    elif event[OBJECT] == OBJECT_CREATE:
-        await create(websocket)
-
-
-async def main():
-    async with websockets.serve(handler, "0.0.0.0", 8888):
-        await asyncio.Future()  # run forever
 
 
 if __name__ == "__main__":

@@ -41,24 +41,24 @@ class Paddle extends Mesh {
 		this.last_key = "None";
 	}
 
-	UpdateInput(delta_time) {
+	SendInputToServer() {
+		let key_pressed = null;
+	
 		if (up_key_pressed) {
-			if (this.last_key != "KeyUp")
-				ServerAPI.SendDataKey("KeyUp");
-			this.last_key = "KeyUp";
+			key_pressed = ServerAPI.DATA_INPUT_KEY_UP;
+		} else if (down_key_pressed) {
+			key_pressed = ServerAPI.DATA_INPUT_KEY_DOWN;
+		} else {
+			key_pressed = ServerAPI.DATA_INPUT_KEY_NONE;
 		}
-		else if (down_key_pressed) {
-			if (this.last_key != "KeyDown")
-				ServerAPI.SendDataKey("KeyDown");
-			this.last_key = "KeyDown";
-		}
-		else {
-			if (this.last_key != "None")
-				ServerAPI.SendDataKey("None");
-			this.last_key = "None";
+	
+		if (key_pressed !== this.last_key) {
+			ServerAPI.SendDataKey(key_pressed);
+			this.last_key = key_pressed;
 		}
 	}
 
+    // Get new server position OR interpolate 
 	async UpdatePosition(data_origin, delta_time)
 	{
 		switch (data_origin) {
