@@ -20,7 +20,7 @@ class Pong:
 	# Players
 	def RegisterKeyInput(self, current_player, key):
 		self._players[current_player].key = key
-		self._players[current_player].has_key_changed = True
+		self._players[current_player].key_has_changed = True
 
 	def UpdatePosition(self, current_player, delta_time):
 		key = self._players[current_player].key

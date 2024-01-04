@@ -1,5 +1,6 @@
 import json
 import websockets
+import collision
 from class_pong import *
 from constants import *
 from datetime import datetime
@@ -23,18 +24,20 @@ async def ServerSendLoop(game: Pong, connected):
         game.UpdatePosition(PLAYER2, delta_time)
 
         # Collisions
+        collision.PaddleWall(game._players[PLAYER1])
+        collision.PaddleWall(game._players[PLAYER2])
 
         # Send game state to clients
-        # Only if player changed key
-        if  (game._players[PLAYER1].has_key_changed):
+            # Only if player changed key
+        if  (game._players[PLAYER1].key_has_changed):
             player1_message = game.MessageBuilder.Paddle(PLAYER1)
             await SendToAll(player1_message, connected)
-            game._players[PLAYER1].has_key_changed = False
+            game._players[PLAYER1].key_has_changed = False
 
-        if  (game._players[PLAYER2].has_key_changed):
+        if  (game._players[PLAYER2].key_has_changed):
             player2_message = game.MessageBuilder.Paddle(PLAYER2)
             await SendToAll(player2_message, connected)
-            game._players[PLAYER2].has_key_changed = False
+            game._players[PLAYER2].key_has_changed = False
 
         await asyncio.sleep(0.01) 
 

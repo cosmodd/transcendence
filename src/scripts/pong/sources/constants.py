@@ -24,7 +24,8 @@ __all__ = [
 	"kBallRadius",
 	"kPaddleSpeed",
 	"kPaddleWidth",
-	"kPaddleHeight"	
+	"kPaddleHeight",	
+	"kScalingFactor"	
 	]
 
 METHOD = "Method"
@@ -53,3 +54,4 @@ kBallRadius = 0.01
 kPaddleSpeed = 2.0
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2
+kScalingFactor = [1.0, 1.25] # temporary

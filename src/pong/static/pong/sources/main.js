@@ -64,7 +64,7 @@ function DrawLoop() {
 
     // Collisions check - for interpolation only
     Collision.PaddleWall(player);
-    // Collision.PaddleWall(opponent);
+    Collision.PaddleWall(opponent);
 
     // Update uniforms (position in shader)
     // ball.UpdateUniform();
