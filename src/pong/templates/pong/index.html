@@ -9,11 +9,24 @@
 </head>
 <body>
 	<div style="position:relative;">
-    	<canvas id="glcanvas" width="600" height="480"></canvas>
+		<canvas id="glcanvas" width="600" height="480"></canvas>
 		<div id="overlay">
 			<div><span id="score"></span></div>
 		</div>
 	</div>
+	
+	<form id="join_form">
+		<input type="text" name="token" id="token" placeholder="token">
+		<button type="button" onclick="RedirectToURL()">Rejoindre</button>
+	</form>
+	<script>
+		function RedirectToURL()
+		{
+			let token = document.getElementById('token').value;
+			window.location.href += "?join=" + token;
+		}
+	</script>
+
 	<!-- secure ?-->
 	<script>
 		const kEntityVertexShaderPath = "{% static 'pong/shaders/entity.vs' %}";
