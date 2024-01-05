@@ -2,9 +2,11 @@ import Mesh from './class_mesh.js'
 import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
 import { kBallSpeed, kBallRadius, kBallResolution } from './constants_objects.js';
+import ServerAPI from '../websocket/server_api.js';
 
 class Ball extends Mesh {
-	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale) {
+	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale)
+	{
 		const shader_infos = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
@@ -41,19 +43,30 @@ class Ball extends Mesh {
 		this._uEntityPosition = new Vec2(0., 0.);
 		this.speed = kBallSpeed;
 		this.acceleration = 0.;
-		this.direction = new Vec2(-Math.random(), Math.random());
-		// this.direction = new Vec2(-1., 0.);
-		this.direction.normalize();
+		this.direction = new Vec2(0., 0.);
 	}
 
-	UpdatePosition(delta_time) {
-        const current_speed = this.speed + this.acceleration;
-
-        const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
-        this._uEntityPosition.Add(delta_position);
+	// Get new server position OR interpolate
+	async UpdatePosition(delta_time)
+	{
+		// New pos from server
+		if (ServerAPI.ball_state.new_data_available) {
+			console.log("new server position");
+			let ball_state = await ServerAPI.GetBallState();
+			this._uEntityPosition = ball_state.position.Clone();
+			this.direction = ball_state.direction.Clone();
+			this.acceleration = ball_state.acceleration;
+			ServerAPI.ball_state.new_data_available = false;
+		}
+		else { // Interpolate
+			const current_speed = this.speed + this.acceleration;
+			const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
+			this._uEntityPosition.Add(delta_position);
+		}
 	}
 
-	reset() {
+	reset()
+	{
 		this._uEntityPosition.x = 0.;
 		this._uEntityPosition.y = 0.;
 		this.direction = new Vec2(-Math.random(), Math.random());
@@ -61,7 +74,8 @@ class Ball extends Mesh {
 		this.acceleration = 0.;
 	}
 
-    UpdateUniform() {
+    UpdateUniform()
+	{
         this.gl.useProgram(this.attached_shader.program);
         this.gl.uniform2f(
             this.gl.getUniformLocation(this.attached_shader.program, "uEntityPosition"),
@@ -71,7 +85,8 @@ class Ball extends Mesh {
 		this.gl.useProgram(null);
     }
 
-	ComputeBoundingbox() {
+	ComputeBoundingbox()
+	{
 		this.boundingbox_left = this._uEntityPosition.x - this.radius;
 		this.boundingbox_right = this._uEntityPosition.x + this.radius;
 		this.boundingbox_top = this._uEntityPosition.y + this.radius;

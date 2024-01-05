@@ -73,6 +73,8 @@ Collision.BallWall = function(Ball) {
     }
     else if (Ball.boundingbox_right >= 1.) {
         Ball.direction.x = -Math.abs(Ball.direction.x);
+        Ball.reset();
+        score[0] += 1;
     }
     else if (Ball.boundingbox_top >= 1.) {
         Ball.direction.y = -Math.abs(Ball.direction.y);

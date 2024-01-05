@@ -5,7 +5,7 @@ import { score_node } from './ui/overlay.js';
 import { up_key_pressed, down_key_pressed } from './events/key_listener.js';
 import Collision from "./collisions/collision.js"
 import DataOrigin from './utils/data_origin.js';
-import { kPaddleHeight, kPaddleWidth } from './objects/constants_objects.js';
+import { kBallRadius, kBallResolution, kPaddleHeight, kPaddleWidth } from './objects/constants_objects.js';
 
 let gl = null;
 let gl_canvas = null;
@@ -35,10 +35,10 @@ async function Init() {
 
     player = new Paddle(kPaddleWidth, kPaddleHeight, new Vec3(0., 0., 255.), new Vec2(-0.9, 0.), current_scale);
     await player.Setup();
-    // ball = new Ball(0.02, 4, new Vec3(1., 1., 1.));
-    // await ball.Setup()
     opponent = new Paddle(kPaddleWidth, kPaddleHeight, new Vec3(255., 0., 0.), new Vec2(0.9, 0.), current_scale);
     await opponent.Setup();
+    ball = new Ball(kBallRadius, kBallResolution, new Vec3(1., 1., 1.), current_scale);
+    await ball.Setup()
 
     score = [0, 0];
 
@@ -61,20 +61,22 @@ function DrawLoop() {
     // Get data from server or interpolate
     player.UpdatePosition(DataOrigin.Client, delta_time);
     opponent.UpdatePosition(DataOrigin.WebSocket, delta_time);
+    ball.UpdatePosition(delta_time);
 
     // Collisions check - for interpolation only
     Collision.PaddleWall(player);
     Collision.PaddleWall(opponent);
+    Collision.BallWall(ball);
 
     // Update uniforms (position in shader)
-    // ball.UpdateUniform();
     player.UpdateUniform();
     opponent.UpdateUniform();
+    ball.UpdateUniform();
 
     // Draw
     player.Draw();
     opponent.Draw();
-    // ball.Draw();
+    ball.Draw();
 
     score_node.nodeValue = score[0] + " | " + score[1];
 

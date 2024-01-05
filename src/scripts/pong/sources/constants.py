@@ -11,6 +11,8 @@ __all__ = [
 
 	"DATA_JOINKEY",
 	"DATA_POSITION",
+	"DATA_DIRECTION",
+	"DATA_ACCELERATION",
 	"DATA_INPUT",
 	"DATA_INPUT_KEY_UP",
 	"DATA_INPUT_KEY_DOWN",
@@ -47,10 +49,12 @@ DATA_PLAYER_SELF = "Self"
 DATA_PLAYER_OPPONENT = "Opponent"
 DATA_JOINKEY = "JoinKey"
 DATA_POSITION = "Position"
+DATA_DIRECTION = "Direction"
+DATA_ACCELERATION = "Acceleration"
 
 kBallSpeed = 0.5
 kBallAccelerationStep = 1.0
-kBallRadius = 0.01
+kBallRadius = 0.02
 kPaddleSpeed = 2.0
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2

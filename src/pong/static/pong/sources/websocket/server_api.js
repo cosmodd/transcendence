@@ -21,11 +21,14 @@ ServerAPI.DATA_PLAYER = "Player"
 ServerAPI.DATA_PLAYER_PLAYER1 = "p1"
 ServerAPI.DATA_PLAYER_PLAYER2 = "p2"
 ServerAPI.DATA_JOINKEY = "JoinKey"; // - Join key
-ServerAPI.DATA_POSITION = "Position"; // - Data position
+ServerAPI.DATA_POSITION = "Position";
+ServerAPI.DATA_DIRECTION = "Direction";
+ServerAPI.DATA_ACCELERATION = "Acceleration";
 
 // Objects state initialization
 ServerAPI.player_state = NewPaddleState(new Vec2(-0.9, 0.)); 
 ServerAPI.opponent_state = NewPaddleState(new Vec2(0.9, 0.)); 
+ServerAPI.ball_state = NewBallState();
 ServerAPI.iam = "";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -69,7 +72,10 @@ ServerAPI._Recv = function() {
 
 		switch (event[ServerAPI.OBJECT]) {
 			case ServerAPI.OBJECT_PADDLE:
-					ServerAPI.UpdatePaddleData(event);
+				ServerAPI.UpdatePaddleData(event);
+				break;
+			case ServerAPI.OBJECT_BALL:
+				ServerAPI.UpdateBallData(event);
 				break;
 			default:
 				// throw new Error(`Unsupported event type: ${event.type}.`);
@@ -108,6 +114,23 @@ ServerAPI.UpdatePaddleData = function(event)
 			ServerAPI.opponent_state.key = event[ServerAPI.DATA_INPUT]});
 		ServerAPI.opponent_state.new_data_available = true;
 	}
+}
+
+ServerAPI.UpdateBallData = function(event)
+{
+		ServerAPI.ball_state.promise = ServerAPI.ball_state.promise.then(async () => {
+			ServerAPI.ball_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
+			ServerAPI.ball_state.direction = new Vec2(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
+			ServerAPI.ball_state.acceleration = event[ServerAPI.DATA_ACCELERATION];
+		});
+		ServerAPI.ball_state.new_data_available = true;
+}
+
+ServerAPI.GetBallState = async function()
+{
+	await ServerAPI.ball_state.promise;
+	// return ServerAPI.ball_state;
+	return { ...ServerAPI.ball_state };
 }
 
 ServerAPI.GetPositionOpponent = async function()

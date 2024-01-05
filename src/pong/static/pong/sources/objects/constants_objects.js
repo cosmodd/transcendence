@@ -1,6 +1,6 @@
 export const kBallSpeed = 0.5;
 export const kBallAccelerationStep = 1.0;
-export const kBallRadius = 0.01;
+export const kBallRadius = 0.02;
 export const kBallResolution = 4.0;
 
 export const kPaddleSpeed = 2.0;
