@@ -63,10 +63,10 @@ class Paddle extends Mesh {
 	{
 		switch (data_origin) {
 			case DataOrigin.Client:
-				if (ServerAPI.self_new_data) {
+				if (ServerAPI.player_state.new_data_available) {
 					this._uEntityPosition = await ServerAPI.GetPositionPlayer();
 					this.last_key = await ServerAPI.GetKeyPlayer();
-					ServerAPI.self_new_data = false;
+					ServerAPI.player_state.new_data_available = false;
 				}
 				else { // Interpolate
 					if (this.last_key == "None")
@@ -79,10 +79,10 @@ class Paddle extends Mesh {
 
 				break;
 			case DataOrigin.WebSocket:
-				if (ServerAPI.opp_new_data) {
+				if (ServerAPI.opponent_state.new_data_available) {
 					this._uEntityPosition = await ServerAPI.GetPositionOpponent();
 					this.last_key = await ServerAPI.GetKeyOpponent();
-					ServerAPI.opp_new_data = false;
+					ServerAPI.opponent_state.new_data_available = false;
 				}
 				else { // Interpolate
 					if (this.last_key == "None")

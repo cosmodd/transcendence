@@ -1,4 +1,5 @@
 import { Vec2 } from '../utils/class_vec.js';
+import { NewPaddleState, NewBallState } from './objects_state.js'
 
 // Namespace equivalent
 let ServerAPI = {};
@@ -22,16 +23,9 @@ ServerAPI.DATA_PLAYER_PLAYER2 = "p2"
 ServerAPI.DATA_JOINKEY = "JoinKey"; // - Join key
 ServerAPI.DATA_POSITION = "Position"; // - Data position
 
-ServerAPI.self_pos_promise = Promise.resolve();
-ServerAPI.self_key_promise = Promise.resolve();
-ServerAPI.self_pos = new Vec2(-0.9, 0.);
-ServerAPI.self_key = ServerAPI.DATA_INPUT_KEY_NONE
-ServerAPI.self_new_data = false;
-ServerAPI.opp_pos_promise = Promise.resolve();
-ServerAPI.opp_key_promise = Promise.resolve();
-ServerAPI.opp_pos = new Vec2(0.9, 0.);
-ServerAPI.opp_key = ServerAPI.DATA_INPUT_KEY_NONE
-ServerAPI.opp_new_data = false;
+// Objects state initialization
+ServerAPI.player_state = NewPaddleState(new Vec2(-0.9, 0.)); 
+ServerAPI.opponent_state = NewPaddleState(new Vec2(0.9, 0.)); 
 ServerAPI.iam = "";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -87,59 +81,59 @@ ServerAPI._Recv = function() {
 ServerAPI.UpdatePaddleData = function(event)
 {
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER1 && ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) {
-		ServerAPI.self_pos_promise = ServerAPI.self_pos_promise.then(async () => {
-			ServerAPI.self_pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
-		ServerAPI.self_key_promise = ServerAPI.self_key_promise.then(async () => {
-			ServerAPI.self_key = event[ServerAPI.DATA_INPUT]});
-		ServerAPI.self_new_data = true;
+		ServerAPI.player_state.pos_promise = ServerAPI.player_state.pos_promise.then(async () => {
+			ServerAPI.player_state.pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
+		ServerAPI.player_state.key_promise = ServerAPI.player_state.key_promise.then(async () => {
+			ServerAPI.player_state.key = event[ServerAPI.DATA_INPUT]});
+		ServerAPI.player_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER1 && ServerAPI.iam !== ServerAPI.DATA_PLAYER_PLAYER1) {
-		ServerAPI.opp_pos_promise = ServerAPI.opp_pos_promise.then(async () => {
-				ServerAPI.opp_pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
-		ServerAPI.opp_key_promise = ServerAPI.opp_key_promise.then(async () => {
-			ServerAPI.opp_key = event[ServerAPI.DATA_INPUT]});
-		ServerAPI.opp_new_data = true;
+		ServerAPI.opponent_state.pos_promise = ServerAPI.opponent_state.pos_promise.then(async () => {
+				ServerAPI.opponent_state.pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
+		ServerAPI.opponent_state.key_promise = ServerAPI.opponent_state.key_promise.then(async () => {
+			ServerAPI.opponent_state.key = event[ServerAPI.DATA_INPUT]});
+		ServerAPI.opponent_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER2 && ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER2) {
-		ServerAPI.self_pos_promise = ServerAPI.self_pos_promise.then(async () => {
-			ServerAPI.self_pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
-		ServerAPI.self_key_promise = ServerAPI.self_key_promise.then(async () => {
-			ServerAPI.self_key = event[ServerAPI.DATA_INPUT]});
-		ServerAPI.self_new_data = true;
+		ServerAPI.player_state.pos_promise = ServerAPI.player_state.pos_promise.then(async () => {
+			ServerAPI.player_state.pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
+		ServerAPI.player_state.key_promise = ServerAPI.player_state.key_promise.then(async () => {
+			ServerAPI.player_state.key = event[ServerAPI.DATA_INPUT]});
+		ServerAPI.player_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER2 && ServerAPI.iam !== ServerAPI.DATA_PLAYER_PLAYER2) {
-		ServerAPI.opp_pos_promise = ServerAPI.opp_pos_promise.then(async () => {
-				ServerAPI.opp_pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
-		ServerAPI.opp_key_promise = ServerAPI.opp_key_promise.then(async () => {
-			ServerAPI.opp_key = event[ServerAPI.DATA_INPUT]});
-		ServerAPI.opp_new_data = true;
+		ServerAPI.opponent_state.pos_promise = ServerAPI.opponent_state.pos_promise.then(async () => {
+				ServerAPI.opponent_state.pos = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1])});
+		ServerAPI.opponent_state.key_promise = ServerAPI.opponent_state.key_promise.then(async () => {
+			ServerAPI.opponent_state.key = event[ServerAPI.DATA_INPUT]});
+		ServerAPI.opponent_state.new_data_available = true;
 	}
 }
 
 ServerAPI.GetPositionOpponent = async function()
 {
-	await ServerAPI.opp_pos_promise;
-	let ret = ServerAPI.opp_pos.Clone();
+	await ServerAPI.opponent_state.pos_promise;
+	let ret = ServerAPI.opponent_state.pos.Clone();
 	ret.x *= -1.0;
 	return ret;
 }
 
 ServerAPI.GetPositionPlayer = async function()
 {
-	await ServerAPI.self_pos_promise;
-	return ServerAPI.self_pos.Clone();
+	await ServerAPI.player_state.pos_promise;
+	return ServerAPI.player_state.pos.Clone();
 }
 
 ServerAPI.GetKeyPlayer = async function()
 {
-	await ServerAPI.self_key_promise;
-	return ServerAPI.self_key;
+	await ServerAPI.player_state.key_promise;
+	return ServerAPI.player_state.key;
 }
 
 ServerAPI.GetKeyOpponent = async function()
 {
-	await ServerAPI.opp_key_promise;
-	return ServerAPI.opp_key;
+	await ServerAPI.opponent_state.key_promise;
+	return ServerAPI.opponent_state.key;
 }
 
 ServerAPI.SendDataKey = function(key)
