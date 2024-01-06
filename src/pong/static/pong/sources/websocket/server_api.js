@@ -1,5 +1,6 @@
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState, NewBallState } from './objects_state.js'
+import { PrintInfo } from '../ui/info.js';
 
 // Namespace equivalent
 let ServerAPI = {};
@@ -13,6 +14,7 @@ ServerAPI.OBJECT_BALL = "Ball"; // - Ball
 ServerAPI.OBJECT_PADDLE = "Paddle"; // - Paddle
 ServerAPI.OBJECT_JOIN = "Join"; // - Join
 ServerAPI.OBJECT_CREATE = "Create"; // - Create
+ServerAPI.OBJECT_INFO = "Info";
 ServerAPI.DATA_INPUT = "Input";
 ServerAPI.DATA_INPUT_KEY_UP = "KeyUp";
 ServerAPI.DATA_INPUT_KEY_DOWN = "KeyDown";
@@ -24,6 +26,9 @@ ServerAPI.DATA_JOINKEY = "JoinKey"; // - Join key
 ServerAPI.DATA_POSITION = "Position";
 ServerAPI.DATA_DIRECTION = "Direction";
 ServerAPI.DATA_ACCELERATION = "Acceleration";
+ServerAPI.DATA_INFO_TYPE = "Info_Type";
+ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
+ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";
 
 // Objects state initialization
 ServerAPI.player_state = NewPaddleState(new Vec2(-0.9, 0.)); 
@@ -77,9 +82,12 @@ ServerAPI._Recv = function() {
 			case ServerAPI.OBJECT_BALL:
 				ServerAPI.UpdateBallData(event);
 				break;
+			case ServerAPI.OBJECT_INFO:
+				PrintInfo(event);
+				break ;
 			default:
-				// throw new Error(`Unsupported event type: ${event.type}.`);
 				console.log(event);
+				break;
 		}
 	});
 }

@@ -17,3 +17,34 @@ canvas {
 	left: 10px;
 	top: 10px;
 }
+
+.info {
+	position: fixed;
+	bottom: -100px;
+	left: 0;
+	font-size: 24px;
+	border-radius: 10px;
+	padding: 10px;
+	margin: 5px;
+	color: black;
+}
+
+.info_message {
+	background-color: rgba(0, 155, 0, 0.2);
+	animation: disappear 10s;
+}
+
+.info_error {
+	background-color: rgba(200, 0, 0, 0.4);
+	animation: disappear 10s;
+}
+
+@keyframes  disappear {
+	0%, 50% {
+		bottom: 0;
+		left: 0;
+	}
+	100% {
+		bottom: -100px;
+	}
+}

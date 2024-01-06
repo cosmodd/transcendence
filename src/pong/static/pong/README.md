@@ -19,15 +19,18 @@ Les clients:
 - server.py - Server authority
 	- Refactor - rename class_pong
 	- Collision - send currentscale constant
+	- Reconnexion
 
 - server.py - Logic optimization
 	- asyncio.lock() ?
 	- Vec2
+	- constants Object_create in Data_info
 
 - Websocket.js - Logic optimization and refactor
 	- PlayerState global getter
 	- new_data_available data race
 	- check client collision only if interpolate
+	- server api separate constants file
 
 #### Client
 - Collision - ball reste dans les murs?

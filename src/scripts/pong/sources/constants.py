@@ -8,6 +8,7 @@ __all__ = [
 	"OBJECT_PADDLE",
 	"OBJECT_JOIN",
 	"OBJECT_CREATE",
+	"OBJECT_INFO",
 
 	"DATA_JOINKEY",
 	"DATA_POSITION",
@@ -20,6 +21,9 @@ __all__ = [
 	"DATA_PLAYER",
 	"DATA_PLAYER_SELF",
 	"DATA_PLAYER_OPPONENT",
+	"DATA_INFO_TYPE",
+	"DATA_INFO_TYPE_ERROR",
+	"DATA_INFO_TYPE_MESSAGE",
 
 	"kBallSpeed",
 	"kBallAccelerationStep",
@@ -39,6 +43,7 @@ OBJECT_BALL = "Ball"
 OBJECT_PADDLE = "Paddle"
 OBJECT_JOIN = "Join"
 OBJECT_CREATE = "Create"
+OBJECT_INFO = "Info";
 
 DATA_INPUT = "Input"
 DATA_INPUT_KEY_UP = "KeyUp"
@@ -51,6 +56,10 @@ DATA_JOINKEY = "JoinKey"
 DATA_POSITION = "Position"
 DATA_DIRECTION = "Direction"
 DATA_ACCELERATION = "Acceleration"
+DATA_INFO_TYPE = "Info_Type"
+DATA_INFO_TYPE_ERROR = "Error"
+DATA_INFO_TYPE_MESSAGE = "Message"
+
 
 kBallSpeed = 0.5
 kBallAccelerationStep = 1.0

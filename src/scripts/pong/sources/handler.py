@@ -13,6 +13,7 @@ import os
 import secrets
 import json
 
+import sender
 from gamelogic import ClientRecvLoop, ServerSendLoop
 from class_pong import *
 from constants import *
@@ -26,12 +27,6 @@ django.setup()
 
 JOIN = {}
 
-async def error(websocket, message):
-    event = {
-        METHOD: FROM_SERVER,
-        "message": message,
-    }
-    await websocket.send(json.dumps(event))
 
 async def main():
     async with websockets.serve(handler, "0.0.0.0", 8888):
@@ -61,8 +56,9 @@ async def create(websocket):
     try:
         event = {
             METHOD: FROM_SERVER,
-            OBJECT: OBJECT_CREATE,
-            DATA_JOINKEY: join_key,
+            OBJECT: OBJECT_INFO,
+            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+            DATA_INFO_TYPE_MESSAGE: join_key
         }
         await websocket.send(json.dumps(event))
         
@@ -77,7 +73,7 @@ async def join(websocket, join_key):
     try:
         game, connected = JOIN[join_key]
     except KeyError:
-        await error(websocket, "Game not found.")
+        await sender.Error(websocket, "Game not found.")
         return
 
     connected.add(websocket);
@@ -85,8 +81,9 @@ async def join(websocket, join_key):
     for ws in connected:
         response = {
             METHOD: FROM_SERVER,
-            OBJECT: "message", 
-            "message": "both clients are connected"
+            OBJECT: OBJECT_INFO, 
+            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+            DATA_INFO_TYPE_MESSAGE: "Both clients are connected!"
         }
         await ws.send(json.dumps(response))
 
