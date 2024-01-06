@@ -20,12 +20,15 @@ class Vec2:
     def __truediv__(self, scalar):
         return Vec2(self.x / scalar, self.y / scalar)
 
-    def magnitude(self):
+    def Magnitude(self):
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
-    def normalize(self):
+    def Normalize(self):
         mag = self.magnitude()
         if mag != 0:
             return self / mag
         else:
             return Vec2(0, 0)
+
+    def Clone(self):
+        return (Vec2(self.x, self.y))

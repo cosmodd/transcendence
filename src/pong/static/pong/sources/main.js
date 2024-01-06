@@ -67,6 +67,8 @@ function DrawLoop() {
     Collision.PaddleWall(player);
     Collision.PaddleWall(opponent);
     Collision.BallWall(ball);
+    Collision.BallPaddle(ball, player);
+    Collision.BallPaddle(ball, opponent);
 
     // Update uniforms (position in shader)
     player.UpdateUniform();

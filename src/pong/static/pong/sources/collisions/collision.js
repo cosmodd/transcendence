@@ -1,5 +1,7 @@
 import { DoIntersect } from "./collision_utils.js";
 import { kBallAccelerationStep } from "../objects/constants_objects.js";
+import { Vec2 } from '../utils/class_vec.js'
+import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
 
 // Namespace equivalent
 let Collision = {};
