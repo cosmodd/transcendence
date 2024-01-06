@@ -28,7 +28,6 @@ Les clients:
 
 - Websocket.js - Logic optimization and refactor
 	- new_data_available data race
-	- check client collision only if interpolate
 	- server api separate constants file
 
 #### Client
