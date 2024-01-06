@@ -49,7 +49,6 @@ async def ServerSendLoop(game: Pong, connected):
             await sender.ToAll(ball_message, connected)
             game._ball.collided = False
 
-
         await asyncio.sleep(0.01) 
 
 

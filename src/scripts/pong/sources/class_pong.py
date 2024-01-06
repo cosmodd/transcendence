@@ -13,7 +13,7 @@ class Pong:
 		self.MessageBuilder = MessageBuilder(self)
 		self._players = {}
 		self._players[PLAYER1] = Paddle([-0.9, 0.])
-		self._players[PLAYER2] = Paddle([-0.9, 0.])
+		self._players[PLAYER2] = Paddle([0.9, 0.])
 		self._ball = Ball([1., 0.])
 		self._score = [0, 0]
 
@@ -33,6 +33,9 @@ class Pong:
 			move *= -1.0
 
 		self._players[current_player].position[1] += move
+		# if current_player == PLAYER2:
+		# 	print(self._players[current_player].position[0]);
+		# 	print(self._players[current_player].position[1]);
 
 	def UpdateBallPosition(self, delta_time):
 		current_speed = (self._ball.speed + self._ball.acceleration) * delta_time
