@@ -17,7 +17,6 @@ Les clients:
 
 #### Websocket
 - server.py - Server authority
-	- Refactor - rename class_pong
 	- Collision - send currentscale constant
 	- Reconnexion
 
@@ -28,7 +27,6 @@ Les clients:
 
 - Websocket.js - Logic optimization and refactor
 	- new_data_available data race
-	- server api separate constants file
 
 #### Client
 - Collision - ball reste dans les murs?

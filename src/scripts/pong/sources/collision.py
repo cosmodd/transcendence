@@ -1,4 +1,4 @@
-from class_pong import *
+from class_game import *
 from classes_objects import *
 
 def PaddleWall(player: Paddle):

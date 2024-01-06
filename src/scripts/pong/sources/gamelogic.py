@@ -2,12 +2,12 @@ import json
 import websockets
 import collision
 import sender
-from class_pong import *
+from class_game import *
 from constants import *
 from datetime import datetime
 import asyncio
 
-async def ServerSendLoop(game: Pong, connected):
+async def ServerSendLoop(game: Game, connected):
     last_update_time = datetime.now()
     # temporary
     game._ball.Reset()
@@ -52,7 +52,7 @@ async def ServerSendLoop(game: Pong, connected):
         await asyncio.sleep(0.01) 
 
 
-async def ClientRecvLoop(websocket, game: Pong, current_player, connected):
+async def ClientRecvLoop(websocket, game: Game, current_player, connected):
     async for message in websocket:
         try:
             event = json.loads(message)

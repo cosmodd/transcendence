@@ -15,7 +15,7 @@ import json
 
 import sender
 from gamelogic import ClientRecvLoop, ServerSendLoop
-from class_pong import *
+from class_game import *
 from constants import *
 #from sesame.utils import get_user
 #from websockets.frames import CloseCode
@@ -48,7 +48,7 @@ async def handler(websocket):
 async def create(websocket):
     # Init set of WebSocket connections receiving moves
     connected = {websocket}
-    game = Pong()
+    game = Game()
     # Init secret token.
     join_key = secrets.token_urlsafe(12)
     JOIN[join_key] = game, connected

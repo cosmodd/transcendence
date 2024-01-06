@@ -4,11 +4,11 @@ from class_messagebuilder import MessageBuilder
 from constants import *
 from datetime import datetime
 
-__all__ = ["PLAYER1", "PLAYER2", "Pong"]
+__all__ = ["PLAYER1", "PLAYER2", "Game"]
 
 PLAYER1, PLAYER2 = "p1", "p2"
 
-class Pong:
+class Game:
 	def __init__(self):
 		self.MessageBuilder = MessageBuilder(self)
 		self._players = {}
