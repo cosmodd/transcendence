@@ -27,7 +27,6 @@ Les clients:
 	- constants Object_create in Data_info
 
 - Websocket.js - Logic optimization and refactor
-	- PlayerState global getter
 	- new_data_available data race
 	- check client collision only if interpolate
 	- server api separate constants file

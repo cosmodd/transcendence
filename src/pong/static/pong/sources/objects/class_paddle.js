@@ -61,40 +61,29 @@ class Paddle extends Mesh {
     // Get new server position OR interpolate 
 	async UpdatePosition(data_origin, delta_time)
 	{
+		let paddle_state = null;
 		switch (data_origin) {
 			case DataOrigin.Client:
-				if (ServerAPI.player_state.new_data_available) {
-					let player_state = await ServerAPI.GetPlayerState();
-					this._uEntityPosition = player_state.position.Clone();
-					this.last_key = player_state.key;
-					ServerAPI.player_state.new_data_available = false;
-				}
-				else { // Interpolate
-					if (this.last_key == "None")
-						return ;
-					let move = this.speed * delta_time;
-					if (this.last_key == "KeyDown")
-						move *= -1.0;
-					this._uEntityPosition.y += move;
-				}
-
+				if (ServerAPI.player_state.new_data_available)
+					paddle_state = await ServerAPI.GetPlayerState();
 				break;
 			case DataOrigin.WebSocket:
-				if (ServerAPI.opponent_state.new_data_available) {
-					let opponent_state = await ServerAPI.GetOpponentState();
-					this._uEntityPosition = opponent_state.position.Clone();
-					this.last_key = opponent_state.key;
-					ServerAPI.opponent_state.new_data_available = false;
-				}
-				else { // Interpolate
-					if (this.last_key == "None")
-						return ;
-					let move = this.speed * delta_time;
-					if (this.last_key == "KeyDown")
-						move *= -1.0;
-					this._uEntityPosition.y += move;
-				}
+				if (ServerAPI.opponent_state.new_data_available)
+					paddle_state = await ServerAPI.GetOpponentState();
 				break ;
+		}
+
+		if (paddle_state != null) {
+			this._uEntityPosition = paddle_state.position.Clone();
+			this.last_key = paddle_state.key;
+		}
+		else { // Interpolate
+			if (this.last_key == "None")
+				return ;
+			let move = this.speed * delta_time;
+			if (this.last_key == "KeyDown")
+				move *= -1.0;
+			this._uEntityPosition.y += move;
 		}
 	}
 
