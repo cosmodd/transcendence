@@ -1,6 +1,6 @@
 import json
-
 from constants import *
+from class_vec2 import Vec2
 
 class MessageBuilder:
 	def __init__(self, game):
@@ -13,7 +13,7 @@ class MessageBuilder:
                     METHOD: FROM_SERVER,
                     OBJECT: OBJECT_PADDLE,
 					DATA_PLAYER: player,
-                    DATA_POSITION: [position[0], position[1]],
+                    DATA_POSITION: [position.x, position.y],
                     DATA_INPUT: key
                 })
 
@@ -24,7 +24,7 @@ class MessageBuilder:
 		return json.dumps({
                     METHOD: FROM_SERVER,
                     OBJECT: OBJECT_BALL,
-                    DATA_POSITION: [position[0], position[1]],
-                    DATA_DIRECTION: [direction[0], direction[1]],
+                    DATA_POSITION: [position.x, position.y],
+                    DATA_DIRECTION: [direction.x, direction.y],
                     DATA_ACCELERATION: acceleration
                 })

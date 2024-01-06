@@ -3,6 +3,7 @@ from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
 from constants import *
 from datetime import datetime
+from class_vec2 import Vec2
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -12,9 +13,9 @@ class Game:
 	def __init__(self):
 		self.MessageBuilder = MessageBuilder(self)
 		self._players = {}
-		self._players[PLAYER1] = Paddle([-0.9, 0.])
-		self._players[PLAYER2] = Paddle([0.9, 0.])
-		self._ball = Ball([1., 0.])
+		self._players[PLAYER1] = Paddle(Vec2(-0.9, 0.))
+		self._players[PLAYER2] = Paddle(Vec2(0.9, 0.))
+		self._ball = Ball(Vec2(1., 0.))
 		self._score = [0, 0]
 
 	# Players
@@ -32,18 +33,15 @@ class Game:
 		if (key == DATA_INPUT_KEY_DOWN):
 			move *= -1.0
 
-		self._players[current_player].position[1] += move
-		# if current_player == PLAYER2:
-		# 	print(self._players[current_player].position[0]);
-		# 	print(self._players[current_player].position[1]);
+		self._players[current_player].position.y += move
 
 	def UpdateBallPosition(self, delta_time):
 		current_speed = (self._ball.speed + self._ball.acceleration) * delta_time
 
-		delta_position = [
-			self._ball.direction[0] * current_speed,
-			self._ball.direction[1] * current_speed
-		]
+		delta_position = Vec2( 
+			self._ball.direction.x * current_speed,
+			self._ball.direction.y * current_speed
+		)	
 
-		self._ball.position[0] += delta_position[0]
-		self._ball.position[1] += delta_position[1]
+		self._ball.position.x += delta_position.x
+		self._ball.position.y += delta_position.y

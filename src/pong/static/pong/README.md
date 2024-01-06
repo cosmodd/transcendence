@@ -7,7 +7,7 @@ Le serveur:
 Les clients:
 - Envoie: un nouvel input (p.ex. KeyUp->KeyNone)
 - Recoit: nouvelles positions, nouveaux inputs (si changement avec frame precedente)
-- Interpolation locale des positions (si aucun changement avec frame precedente)
+- Interpolation locale des positions (si aucun changement d'input avec frame precedente)
 
 ## Todo
 #### General
@@ -22,7 +22,6 @@ Les clients:
 
 - server.py - Logic optimization
 	- asyncio.lock() ?
-	- Vec2
 	- constants Object_create in Data_info
 
 - Websocket.js - Logic optimization and refactor

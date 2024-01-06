@@ -1,8 +1,9 @@
 from constants import *
+from class_vec2 import Vec2
 
 class Ball:
-    def __init__(self, direction=[0., 0.]):
-        self.position = [0., 0.]
+    def __init__(self, direction=Vec2(0., 0.)):
+        self.position = Vec2(0., 0.)
         self.radius = kBallRadius
         self.speed = kBallSpeed
         self.acceleration = 0.
@@ -11,22 +12,22 @@ class Ball:
         #self.accelerationStep
     
     def Reset(self):
-        self.position = [0., 0.]
-        self.direction = [-1., 0.]
+        self.position = Vec2(0., 0.)
+        self.direction = Vec2(-1., 0.)
         self.acceleration = 0.;
 
     def ComputeBoundingbox(self):
-        self.boundingbox_left = self.position[0] - self.radius;
-        self.boundingbox_right = self.position[0] + self.radius;
-        self.boundingbox_top = self.position[1] + self.radius;
-        self.boundingbox_bottom = self.position[1] - self.radius;
+        self.boundingbox_left = self.position.x - self.radius;
+        self.boundingbox_right = self.position.x + self.radius;
+        self.boundingbox_top = self.position.y + self.radius;
+        self.boundingbox_bottom = self.position.y - self.radius;
         self.boundingbox_left *= kScalingFactor[0]
         self.boundingbox_right *= kScalingFactor[0];
         self.boundingbox_top *= kScalingFactor[1];
         self.boundingbox_bottom *= kScalingFactor[1];
 
 class Paddle:
-    def __init__(self, position):
+    def __init__(self, position: Vec2):
         self.position = position
         self.speed = kPaddleSpeed
         self.width_half = kPaddleWidth / 2.0
@@ -35,10 +36,10 @@ class Paddle:
         self.key_has_changed = False
 
     def ComputeBoundingbox(self):
-        self.boundingbox_left = self.position[0] - self.width_half;
-        self.boundingbox_right = self.position[0] + self.width_half;
-        self.boundingbox_top = self.position[1] + self.height_half;
-        self.boundingbox_bottom = self.position[1] - self.height_half;
+        self.boundingbox_left = self.position.x - self.width_half;
+        self.boundingbox_right = self.position.x + self.width_half;
+        self.boundingbox_top = self.position.y + self.height_half;
+        self.boundingbox_bottom = self.position.y - self.height_half;
         self.boundingbox_left *= kScalingFactor[0]
         self.boundingbox_right *= kScalingFactor[0];
         self.boundingbox_top *= kScalingFactor[1];
