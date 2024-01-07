@@ -42,45 +42,84 @@ def BallPaddle(ball: Ball, paddle: Paddle):
         return
 
     does_intersect = False;
-    if ball.direction.y < 0.: # ball y negatif
-        # bottom current ball
-        does_intersect = DoIntersect(
-            Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
-            Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
-            Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
-            Vec2(paddle.boundingbox_left, paddle.boundingbox_top)
-        )
-        # top current ball
-        does_intersect = DoIntersect(
-            Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
-            Vec2(ball.boundingbox_left, ball.boundingbox_top),
-            Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
-            Vec2(paddle.boundingbox_left, paddle.boundingbox_top)
-        )
-    else: # ball y positif
-        # top current ball
-        does_intersect = DoIntersect(
-            Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
-            Vec2(ball.boundingbox_left, ball.boundingbox_top),
-            Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
-            Vec2(paddle.boundingbox_right, paddle.boundingbox_top)
-        )
-        # bottom current ball
-        does_intersect = DoIntersect(
-            Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
-            Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
-            Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
-            Vec2(paddle.boundingbox_right, paddle.boundingbox_top)
-        )
+
+    if ball.direction.x < 0.:
+        if ball.direction.y < 0.: # ball y negatif
+            # bottom current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_top)
+            )
+            # top current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_left, ball.boundingbox_top),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_top)
+            )
+        else: # ball y positif
+            # top current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_left, ball.boundingbox_top),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_top)
+            )
+            # bottom current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_top)
+            )
+
+    if ball.direction.x >= 0.:
+        if ball.direction.y < 0.: # ball y negatif
+            # bottom current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom)
+            )
+            # top current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_right, ball.boundingbox_top),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom)
+            )
+        else: # ball y positif
+            # top current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_right, ball.boundingbox_top),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom)
+            )
+            # bottom current ball
+            does_intersect = DoIntersect(
+                Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * kScalingFactor[1]),
+                Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
+                Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+                Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom)
+            )
+ 
+
     if does_intersect:
+        if ball.direction.x < 0.:
+            ball.position.x = paddle.boundingbox_right + ball.radius
+        else:
+            ball.position.x = paddle.boundingbox_left - ball.radius
         ball.direction.x = -ball.direction.x
-        ball.position.x = paddle.boundingbox_right + ball.radius
         ball.acceleration += kBallAccelerationStep
         if paddle.key == DATA_INPUT_KEY_UP:
             ball.direction.y = 1.
         elif paddle.key == DATA_INPUT_KEY_DOWN:
             ball.direction.y = -1.
-        last_ball_pos = None
+        # last_ball_pos = None
         ball.collided = True
     else:
         last_ball_pos = ball.position.Clone()

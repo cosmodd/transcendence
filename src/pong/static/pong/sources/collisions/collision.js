@@ -7,92 +7,126 @@ import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
 let Collision = {};
 
 let last_ball_pos = null;
-Collision.BallPaddle = function(Ball, Paddle) {
-    Ball.ComputeBoundingbox();
-    Paddle.ComputeBoundingbox();
+Collision.BallPaddle = function(ball, paddle) {
+    ball.ComputeBoundingbox();
+    paddle.ComputeBoundingbox();
 
     if (last_ball_pos == null)
     {
-        last_ball_pos = Ball._uEntityPosition.Clone();
+        last_ball_pos = ball._uEntityPosition.Clone();
         return ;
     }
 
     let does_intersect = false;
-    if (Ball.direction.y < 0.) // Ball y negatif
-    {
-        // bottom current Ball
-        does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x + Ball.radius, (last_ball_pos.y + Ball.radius) * Ball.scaling_factor[1]),
-        new Vec2(Ball.boundingbox_left, Ball.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_right, Paddle.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_left, Paddle.boundingbox_top));
-        // top current Ball
-        does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x + Ball.radius, (last_ball_pos.y + Ball.radius) * Ball.scaling_factor[1]),
-        new Vec2(Ball.boundingbox_left, Ball.boundingbox_top),
-        new Vec2(Paddle.boundingbox_right, Paddle.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_left, Paddle.boundingbox_top));
+
+    if (ball.direction.x < 0.) {
+        if (ball.direction.y < 0.) { // ball y negatif
+            // bottom current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
+            // top current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_left, ball.boundingbox_top),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
+        }
+        else {// Balle y positif
+            // top current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_left, ball.boundingbox_top),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
+            // bottom current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
+        }
     }
-    else // Balle y positif
-    { 
-        // top current Ball
-        does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x + Ball.radius, (last_ball_pos.y - Ball.radius) * Ball.scaling_factor[1]),
-        new Vec2(Ball.boundingbox_left, Ball.boundingbox_top),
-        new Vec2(Paddle.boundingbox_left, Paddle.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_right, Paddle.boundingbox_top));
-        // bottom current Ball
-        does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x + Ball.radius, (last_ball_pos.y - Ball.radius) * Ball.scaling_factor[1]),
-        new Vec2(Ball.boundingbox_left, Ball.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_left, Paddle.boundingbox_bottom),
-        new Vec2(Paddle.boundingbox_right, Paddle.boundingbox_top));
+
+    if (ball.direction.x >= 0.) {
+        if (ball.direction.y < 0.) { // ball y negatif
+            // bottom current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+            // top current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_right, ball.boundingbox_top),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+        }
+        else {// Balle y positif
+            // top current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_right, ball.boundingbox_top),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
+            // bottom current ball
+            does_intersect = DoIntersect(
+            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
+        }
     }
-    if (does_intersect)
-    {
-        Ball.direction.x = -Ball.direction.x;
-        Ball._uEntityPosition.x = Paddle.boundingbox_right + Ball.radius;
-        Ball.acceleration += kBallAccelerationStep;
+
+    if (does_intersect) {
+        if (ball.direction.x < 0.)
+            ball._uEntityPosition.x = paddle.boundingbox_right + ball.radius;
+        else
+            ball._uEntityPosition.x = paddle.boundingbox_left - ball.radius;
+        ball.direction.x = -ball.direction.x;
+        ball.acceleration += kBallAccelerationStep;
         if (up_key_pressed)
-            Ball.direction.y = 1.;
+            ball.direction.y = 1.;
         if (down_key_pressed)
-            Ball.direction.y = -1.;
+            ball.direction.y = -1.;
         last_ball_pos = null;
     }
-    else
-    {
-        last_ball_pos = Ball._uEntityPosition.Clone();
+    else {
+        last_ball_pos = ball._uEntityPosition.Clone();
     }
 }
 
-Collision.BallWall = function(Ball) {
-    Ball.ComputeBoundingbox();
+Collision.BallWall = function(ball) {
+    ball.ComputeBoundingbox();
 
-    if (Ball.boundingbox_left <= -1) {
-        Ball.direction.x = Math.abs(Ball.direction.x);
-        Ball.reset();
+    if (ball.boundingbox_left <= -1) {
+        ball.direction.x = Math.abs(ball.direction.x);
+        ball.reset();
         score[1] += 1;
     }
-    else if (Ball.boundingbox_right >= 1.) {
-        Ball.direction.x = -Math.abs(Ball.direction.x);
-        Ball.reset();
+    else if (ball.boundingbox_right >= 1.) {
+        ball.direction.x = -Math.abs(ball.direction.x);
+        ball.reset();
         score[0] += 1;
     }
-    else if (Ball.boundingbox_top >= 1.) {
-        Ball.direction.y = -Math.abs(Ball.direction.y);
+    else if (ball.boundingbox_top >= 1.) {
+        ball.direction.y = -Math.abs(ball.direction.y);
     }
-    else if (Ball.boundingbox_bottom <= -1.) {
-        Ball.direction.y = Math.abs(Ball.direction.y);
+    else if (ball.boundingbox_bottom <= -1.) {
+        ball.direction.y = Math.abs(ball.direction.y);
     }
 }
 
-Collision.PaddleWall = function(Paddle) {
-    Paddle.ComputeBoundingbox();
+Collision.PaddleWall = function(paddle) {
+    paddle.ComputeBoundingbox();
 
-    if (Paddle.boundingbox_top > 1.)
-        Paddle._uEntityPosition.y -= Paddle.boundingbox_top - 1.;
-    else if (Paddle.boundingbox_bottom < -1.)
-        Paddle._uEntityPosition.y += -(Paddle.boundingbox_bottom + 1.);
+    if (paddle.boundingbox_top > 1.)
+        paddle._uEntityPosition.y -= paddle.boundingbox_top - 1.;
+    else if (paddle.boundingbox_bottom < -1.)
+        paddle._uEntityPosition.y += -(paddle.boundingbox_bottom + 1.);
 }
 
 export default Collision;
