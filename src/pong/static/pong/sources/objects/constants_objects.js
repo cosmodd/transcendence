@@ -1,5 +1,5 @@
 export const kBallSpeed = 0.5;
-export const kBallAccelerationStep = 0.1;
+export const kBallAccelerationStep = 1.;
 export const kBallRadius = 0.02;
 export const kBallResolution = 4.0;
 

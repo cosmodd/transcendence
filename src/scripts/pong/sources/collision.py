@@ -12,6 +12,13 @@ def PaddleWall(player: Paddle):
     elif (player.boundingbox_bottom < -1.):
         player.position.y += -(player.boundingbox_bottom + 1.)
 
+def Ball(ball: Ball, player1: Paddle, player2: Paddle):
+    intersect_p1 = BallPaddle(ball, player1)
+    intersect_p2 = BallPaddle(ball, player2)
+    if (intersect_p1 or intersect_p2):
+        return
+    BallWall(ball)
+
 def BallWall(ball: Ball):
     ball.ComputeBoundingbox()
 
@@ -39,7 +46,7 @@ def BallPaddle(ball: Ball, paddle: Paddle):
 
     if last_ball_pos is None:
         last_ball_pos = ball.position.Clone()
-        return
+        return 
 
     does_intersect = False;
 
@@ -119,7 +126,9 @@ def BallPaddle(ball: Ball, paddle: Paddle):
             ball.direction.y = 1.
         elif paddle.key == DATA_INPUT_KEY_DOWN:
             ball.direction.y = -1.
-        # last_ball_pos = None
+        last_ball_pos = None
         ball.collided = True
     else:
         last_ball_pos = ball.position.Clone()
+
+    return does_intersect

@@ -29,9 +29,10 @@ async def ServerSendLoop(game: Game, connected):
         # Collisions
         collision.PaddleWall(game._players[PLAYER1])
         collision.PaddleWall(game._players[PLAYER2])
-        collision.BallWall(game._ball)
-        collision.BallPaddle(game._ball, game._players[PLAYER1])
-        collision.BallPaddle(game._ball, game._players[PLAYER2])
+        collision.Ball(game._ball, game._players[PLAYER1], game._players[PLAYER2])
+        # collision.BallWall(game._ball)
+        # collision.BallPaddle(game._ball, game._players[PLAYER1])
+        # collision.BallPaddle(game._ball, game._players[PLAYER2])
 
         # Send game state to clients [only if:]
             # Client changed key

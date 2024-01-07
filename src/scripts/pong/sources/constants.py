@@ -62,7 +62,7 @@ DATA_INFO_TYPE_MESSAGE = "Message"
 
 
 kBallSpeed = 0.5
-kBallAccelerationStep = 0.1
+kBallAccelerationStep = 1
 kBallRadius = 0.02
 kPaddleSpeed = 2.0
 kPaddleWidth = 0.05
