@@ -10,8 +10,8 @@ import asyncio
 async def ServerSendLoop(game: Game, connected):
     last_update_time = datetime.now()
     # temporary
-    game._ball.Reset()
-    game._ball.collided = True
+    game.ball.Reset()
+    game.ball.collided = True
     while (True):
         # Check disconnection
         await CaDecoOuuu(connected);
@@ -27,30 +27,30 @@ async def ServerSendLoop(game: Game, connected):
         game.UpdateBallPosition(delta_time)
 
         # Collisions
-        collision.PaddleWall(game._players[PLAYER1])
-        collision.PaddleWall(game._players[PLAYER2])
-        collision.Ball(game._ball, game._players[PLAYER1], game._players[PLAYER2], delta_time)
-        # collision.BallWall(game._ball)
-        # collision.BallPaddle(game._ball, game._players[PLAYER1])
-        # collision.BallPaddle(game._ball, game._players[PLAYER2])
+        collision.PaddleWall(game.players[PLAYER1])
+        collision.PaddleWall(game.players[PLAYER2])
+        collision.BallPaddle(game.ball, game.players[PLAYER1])
+        collision.BallPaddle(game.ball, game.players[PLAYER2])
+        if game.ball.collided == False:
+            collision.BallWall(game.ball)
 
         # Send game state to clients [only if:]
             # Client changed key
             # Ball collided
-        if  (game._players[PLAYER1].key_has_changed):
+        if  (game.players[PLAYER1].key_has_changed):
             player1_message = game.MessageBuilder.Paddle(PLAYER1)
             await sender.ToAll(player1_message, connected)
-            game._players[PLAYER1].key_has_changed = False
+            game.players[PLAYER1].key_has_changed = False
 
-        if  (game._players[PLAYER2].key_has_changed):
+        if  (game.players[PLAYER2].key_has_changed):
             player2_message = game.MessageBuilder.Paddle(PLAYER2)
             await sender.ToAll(player2_message, connected)
-            game._players[PLAYER2].key_has_changed = False
+            game.players[PLAYER2].key_has_changed = False
 
-        if (game._ball.collided):
+        if (game.ball.collided):
             ball_message = game.MessageBuilder.Ball()
             await sender.ToAll(ball_message, connected)
-            game._ball.collided = False
+            game.ball.collided = False
 
         await asyncio.sleep(0.01) 
 

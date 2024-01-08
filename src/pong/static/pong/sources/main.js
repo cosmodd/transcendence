@@ -42,10 +42,10 @@ async function Init() {
 
     score = [0, 0];
 
-    DrawLoop();
+    GameLoop();
 }
 
-function DrawLoop() {
+function GameLoop() {
     gl.viewport(0, 0, gl_canvas.width, gl_canvas.height);
     gl.clearColor(0., 0., 0., 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -66,9 +66,9 @@ function DrawLoop() {
     // Collisions check - for interpolation only
     Collision.PaddleWall(player);
     Collision.PaddleWall(opponent);
-    // Collision.BallPaddle(ball, player);
-    // Collision.BallPaddle(ball, opponent);
-    // Collision.BallWall(ball);
+    Collision.BallPaddle(ball, player);
+    Collision.BallPaddle(ball, opponent);
+    Collision.BallWall(ball);
 
     // Update uniforms (position in shader)
     player.UpdateUniform();
@@ -82,7 +82,7 @@ function DrawLoop() {
 
     score_node.nodeValue = score[0] + " | " + score[1];
 
-    requestAnimationFrame(DrawLoop);
+    requestAnimationFrame(GameLoop);
 }
 
 export default gl;

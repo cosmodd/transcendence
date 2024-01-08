@@ -6,13 +6,15 @@ import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
 // Namespace equivalent
 let Collision = {};
 
+let last_ball_pos_needs_update = 0
 let last_ball_pos = null;
-Collision.BallPaddle = function(ball, paddle) {
+Collision.BallPaddle = function(ball, paddle)
+{
+    last_ball_pos_needs_update += 1;
     ball.ComputeBoundingbox();
     paddle.ComputeBoundingbox();
 
-    if (last_ball_pos == null)
-    {
+    if (last_ball_pos == null) {
         last_ball_pos = ball._uEntityPosition.Clone();
         return ;
     }
@@ -27,12 +29,14 @@ Collision.BallPaddle = function(ball, paddle) {
             new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
             new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
-            // top current ball
-            does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_left, ball.boundingbox_top),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
+            if (does_intersect === false) {
+                // top current ball
+                does_intersect = DoIntersect(
+                new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+                new Vec2(ball.boundingbox_left, ball.boundingbox_top),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
+            }
         }
         else {// Balle y positif
             // top current ball
@@ -42,11 +46,13 @@ Collision.BallPaddle = function(ball, paddle) {
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
             new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
             // bottom current ball
-            does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
+            if (does_intersect === false) {
+                does_intersect = DoIntersect(
+                new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+                new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
+            }
         }
     }
 
@@ -58,12 +64,14 @@ Collision.BallPaddle = function(ball, paddle) {
             new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
             new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
-            // top current ball
-            does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_right, ball.boundingbox_top),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+            if (does_intersect === false) {
+                // top current ball
+                does_intersect = DoIntersect(
+                new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
+                new Vec2(ball.boundingbox_right, ball.boundingbox_top),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+            }
         }
         else {// Balle y positif
             // top current ball
@@ -72,12 +80,14 @@ Collision.BallPaddle = function(ball, paddle) {
             new Vec2(ball.boundingbox_right, ball.boundingbox_top),
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
             new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
-            // bottom current ball
-            does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
+            if (does_intersect === false) {
+                // bottom current ball
+                does_intersect = DoIntersect(
+                new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
+                new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
+            }
         }
     }
 
@@ -95,7 +105,8 @@ Collision.BallPaddle = function(ball, paddle) {
         last_ball_pos = null;
     }
     else {
-        last_ball_pos = ball._uEntityPosition.Clone();
+        if ((last_ball_pos_needs_update % 2) == 0) // Second iteration
+            last_ball_pos = ball._uEntityPosition.Clone();
     }
 }
 
