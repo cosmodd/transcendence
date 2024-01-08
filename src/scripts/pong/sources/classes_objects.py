@@ -4,6 +4,7 @@ from class_vec2 import Vec2
 class Ball:
     def __init__(self, direction=Vec2(0., 0.)):
         self.position = Vec2(0., 0.)
+        self.previous_position = Vec2(0., 0.)
         self.radius = kBallRadius
         self.speed = kBallSpeed
         self.acceleration = 0.

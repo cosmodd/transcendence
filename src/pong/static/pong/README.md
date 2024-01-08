@@ -28,6 +28,7 @@ Les clients:
 - Websocket.js - Logic optimization and refactor
 	- new_data_available data race
 	- interpolation seulement si pas de data ?
+	- Collision.BallPaddle rework (like in py)
 
 #### Client
 - Collision - ball reste dans les murs?
