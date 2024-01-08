@@ -7,8 +7,8 @@ class MessageBuilder:
 		self.attached_game = game
 
 	def Paddle(self, player):
-		position = self.attached_game._players[player].position
-		key = self.attached_game._players[player].key
+		position = self.attached_game.players[player].position
+		key = self.attached_game.players[player].key
 		return json.dumps({
                     METHOD: FROM_SERVER,
                     OBJECT: OBJECT_PADDLE,
@@ -18,9 +18,9 @@ class MessageBuilder:
                 })
 
 	def Ball(self):
-		position = self.attached_game._ball.position
-		direction = self.attached_game._ball.direction
-		acceleration = self.attached_game._ball.acceleration
+		position = self.attached_game.ball.position
+		direction = self.attached_game.ball.direction
+		acceleration = self.attached_game.ball.acceleration
 		return json.dumps({
                     METHOD: FROM_SERVER,
                     OBJECT: OBJECT_BALL,
