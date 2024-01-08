@@ -16,22 +16,20 @@ Les clients:
 * UX 
 
 #### Websocket
-- server.py - Server authority
-	- Collision - send currentscale constant
-	- Reconnexion
+- server.py 
+	- receive currentscale at room creation ?
+	- Refactor - constants Object_create in Data_info
 
-- server.py - Logic optimization
-	- asyncio.lock() ?
-	- constants Object_create in Data_info
-
-- Websocket.js - Logic optimization and refactor
+- Websocket.js 
 	- interpolation seulement si pas de data ?
 	- Send & receive errors (shutdown server ingame to test)
 
-#### Client
-- Collision - ball reste dans les murs?
+#### General
+- Score
+- BallPaddle - ball.direction.y selon endroit de la collision ?
+- Ball Reset - selon le gagnant
 - Collision - meilleur collision paddle/ball
-- UpdatePosition in shader ?
+- Reconnexion
 
 #### Guidelines
 - ES.22
