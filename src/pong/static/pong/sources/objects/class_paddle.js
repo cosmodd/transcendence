@@ -64,11 +64,11 @@ class Paddle extends Mesh {
 		let paddle_state = null;
 		switch (data_origin) {
 			case DataOrigin.Client:
-				if (ServerAPI.player_state.new_data_available)
+				if (await ServerAPI.IsNewPlayerStateAvailable())
 					paddle_state = await ServerAPI.GetPlayerState();
 				break;
 			case DataOrigin.WebSocket:
-				if (ServerAPI.opponent_state.new_data_available)
+				if (await ServerAPI.IsNewOpponentStateAvailable())
 					paddle_state = await ServerAPI.GetOpponentState();
 				break ;
 		}

@@ -25,7 +25,6 @@ Les clients:
 	- constants Object_create in Data_info
 
 - Websocket.js - Logic optimization and refactor
-	- new_data_available data race
 	- interpolation seulement si pas de data ?
 	- Send & receive errors (shutdown server ingame to test)
 

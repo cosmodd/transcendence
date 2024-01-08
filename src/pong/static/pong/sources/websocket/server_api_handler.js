@@ -70,38 +70,38 @@ ServerAPI.UpdatePaddleData = function(event)
 		ServerAPI.player_state.promise = ServerAPI.player_state.promise.then(async () => {
 			ServerAPI.player_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 			ServerAPI.player_state.key = event[ServerAPI.DATA_INPUT];
+			ServerAPI.player_state.new_data_available = true;
 		});
-		ServerAPI.player_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER1 && ServerAPI.iam !== ServerAPI.DATA_PLAYER_PLAYER1) {
 		ServerAPI.opponent_state.promise = ServerAPI.opponent_state.promise.then(async () => {
 			ServerAPI.opponent_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 			ServerAPI.opponent_state.key = event[ServerAPI.DATA_INPUT];
+			ServerAPI.opponent_state.new_data_available = true;
 		});
-		ServerAPI.opponent_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER2 && ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER2) {
 		ServerAPI.player_state.promise = ServerAPI.player_state.promise.then(async () => {
 			ServerAPI.player_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 			ServerAPI.player_state.key = event[ServerAPI.DATA_INPUT];
+			ServerAPI.player_state.new_data_available = true;
 		});
-		ServerAPI.player_state.new_data_available = true;
 	}
 	if (event[ServerAPI.DATA_PLAYER] === ServerAPI.DATA_PLAYER_PLAYER2 && ServerAPI.iam !== ServerAPI.DATA_PLAYER_PLAYER2) {
 		ServerAPI.opponent_state.promise = ServerAPI.opponent_state.promise.then(async () => {
 			ServerAPI.opponent_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 			ServerAPI.opponent_state.key = event[ServerAPI.DATA_INPUT];
+			ServerAPI.opponent_state.new_data_available = true;
 		});
-		ServerAPI.opponent_state.new_data_available = true;
 	}
 }
 
 ServerAPI.UpdateBallData = function(event)
 {
-		ServerAPI.ball_state.promise = ServerAPI.ball_state.promise.then(async () => {
-			ServerAPI.ball_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
-			ServerAPI.ball_state.direction = new Vec2(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
-			ServerAPI.ball_state.acceleration = event[ServerAPI.DATA_ACCELERATION];
-		});
+	ServerAPI.ball_state.promise = ServerAPI.ball_state.promise.then(async () => {
+		ServerAPI.ball_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
+		ServerAPI.ball_state.direction = new Vec2(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
+		ServerAPI.ball_state.acceleration = event[ServerAPI.DATA_ACCELERATION];
 		ServerAPI.ball_state.new_data_available = true;
+	});
 }
