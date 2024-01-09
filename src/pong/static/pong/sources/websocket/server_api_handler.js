@@ -1,14 +1,15 @@
 import ServerAPI from "./server_api.js";
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState, NewBallState } from './objects_state.js'
-import { PrintInfo } from '../ui/info.js';
+import { PrintInfo, PrintError } from '../ui/info.js';
 
 window.addEventListener("DOMContentLoaded", () => {
 	ServerAPI.websocket = new WebSocket("ws://localhost:8888");
 
 	// Events
 	ServerAPI._InitGame();
-	ServerAPI._Recv()
+	ServerAPI._Recv();
+	ServerAPI._Close();
 });
 
 ServerAPI._InitGame = function()
@@ -59,6 +60,20 @@ ServerAPI._Recv = function() {
 				break ;
 			default:
 				console.log(event);
+				break;
+		}
+	});
+}
+
+ServerAPI._Close = function()
+{
+	ServerAPI.websocket.addEventListener("close", (event) => {
+		switch (event.code) {
+			case 1006:
+				PrintError("Connection closed: 1006: Abnormal Closure");
+				break;
+			default:
+				PrintError(event.reason);	
 				break;
 		}
 	});
