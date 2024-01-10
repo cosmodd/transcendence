@@ -52,7 +52,7 @@ async def ServerSendLoop(game: Game, connected):
             await sender.ToAll(ball_message, connected)
             game.ball.collided = False
 
-        await asyncio.sleep(0.01) 
+        await asyncio.sleep(0.001) 
 
 
 async def ClientRecvLoop(websocket, game: Game, current_player, connected):

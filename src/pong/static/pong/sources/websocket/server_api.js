@@ -35,23 +35,48 @@ ServerAPI.opponent_state = null;
 ServerAPI.ball_state = NewBallState();
 ServerAPI.iam = "";
 
+ServerAPI.IsNewBallStateAvailable = async function()
+{
+	await ServerAPI.ball_state.promise;
+	return (ServerAPI.ball_state.new_data_available);
+}
+
+ServerAPI.IsNewPlayerStateAvailable = async function()
+{
+	await ServerAPI.player_statepromise;
+	return (ServerAPI.player_state.new_data_available);
+}
+
+ServerAPI.IsNewOpponentStateAvailable = async function()
+{
+	await ServerAPI.opponent_state;
+	return (ServerAPI.opponent_state.new_data_available);
+}
+
 ServerAPI.GetBallState = async function()
 {
 	await ServerAPI.ball_state.promise;
+	ServerAPI.ball_state.promise = ServerAPI.ball_state.promise.then(async () => {
+		ServerAPI.ball_state.new_data_available = false;
+	});
 	return { ...ServerAPI.ball_state };
 }
 
 ServerAPI.GetOpponentState = async function()
 {
 	await ServerAPI.opponent_state.promise;
-	ServerAPI.opponent_state.new_data_available = false;
+	ServerAPI.opponent_state.promise = ServerAPI.opponent_state.promise.then(async () => {
+		ServerAPI.opponent_state.new_data_available = false;
+	});
 	return { ...ServerAPI.opponent_state};
 }
 
 ServerAPI.GetPlayerState = async function()
 {
 	await ServerAPI.player_state.promise;
-	ServerAPI.player_state.new_data_available = false;
+	ServerAPI.player_state.promise = ServerAPI.player_state.promise.then(async () => {
+		ServerAPI.player_state.new_data_available = false;
+	});
 	return { ...ServerAPI.player_state};
 }
 

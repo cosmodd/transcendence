@@ -49,16 +49,13 @@ class Ball extends Mesh {
 	// Get new server position OR interpolate
 	async UpdatePosition(delta_time)
 	{
-		// New pos from server
-		if (ServerAPI.ball_state.new_data_available) {
-			console.log("new server position");
+		if (await ServerAPI.IsNewBallStateAvailable()) {
 			let ball_state = await ServerAPI.GetBallState();
 			this._uEntityPosition = ball_state.position.Clone();
 			this.direction = ball_state.direction.Clone();
 			this.acceleration = ball_state.acceleration;
-			ServerAPI.ball_state.new_data_available = false;
 		}
-		else { // Interpolate
+		else {
 			const current_speed = this.speed + this.acceleration;
 			const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
 			this._uEntityPosition.Add(delta_position);
