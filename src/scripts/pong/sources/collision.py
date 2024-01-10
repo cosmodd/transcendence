@@ -126,3 +126,19 @@ def BallPaddle(ball: Ball, paddle: Paddle):
 
 
     return does_intersect
+
+def test(ball: Ball, paddle: Paddle):
+    # x segment
+    if not (min(ball.previous_position.x, ball.position.x) <= paddle.position.x <= max(ball.previous_position.x, ball.position.x)):
+        return
+
+    k = paddle.position.x
+    m = (ball.previous_position.y - ball.position.y) / (ball.previous_position.x - ball.position.x)
+    y = m * (k - ball.position.x) + ball.position.y
+
+	# y segment
+    if not (min(ball.previous_position.y, ball.position.y) <= y <= max(ball.previous_position.y, ball.position.y)):
+        return
+
+    print("Intersection!")
+    print(Vec2(k, y))
