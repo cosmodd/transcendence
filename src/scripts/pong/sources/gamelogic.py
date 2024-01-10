@@ -29,7 +29,6 @@ async def ServerSendLoop(game: Game, connected):
         # Collisions
         collision.PaddleWall(game.players[PLAYER1])
         collision.PaddleWall(game.players[PLAYER2])
-        collision.test(game.ball, game.players[PLAYER2])
         collision.BallPaddle(game.ball, game.players[PLAYER1])
         collision.BallPaddle(game.ball, game.players[PLAYER2])
         if game.ball.collided == False:
