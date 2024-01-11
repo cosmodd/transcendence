@@ -5,28 +5,31 @@ let ServerAPI = {};
 
 // Server messaging logic
 ServerAPI.METHOD = "Method";
-ServerAPI.FROM_SERVER = "FromServer"; // - FromServer
-ServerAPI.FROM_CLIENT = "FromClient"; // - FromClient
+/**/ServerAPI.FROM_SERVER = "FromServer"; // - FromServer
+/**/ServerAPI.FROM_CLIENT = "FromClient"; // - FromClient
 ServerAPI.OBJECT = "Object";
-ServerAPI.OBJECT_BALL = "Ball"; // - Ball
-ServerAPI.OBJECT_PADDLE = "Paddle"; // - Paddle
-ServerAPI.OBJECT_JOIN = "Join"; // - Join
-ServerAPI.OBJECT_CREATE = "Create"; // - Create
-ServerAPI.OBJECT_INFO = "Info";
+/**/ServerAPI.OBJECT_BALL = "Ball"; // - Ball
+/**/ServerAPI.OBJECT_PADDLE = "Paddle"; // - Paddle
+/**/ServerAPI.OBJECT_LOBBY = "Lobby";
+/**/ServerAPI.OBJECT_INFO = "Info";
 ServerAPI.DATA_INPUT = "Input";
-ServerAPI.DATA_INPUT_KEY_UP = "KeyUp";
-ServerAPI.DATA_INPUT_KEY_DOWN = "KeyDown";
-ServerAPI.DATA_INPUT_KEY_NONE = "None"
-ServerAPI.DATA_PLAYER = "Player"
-ServerAPI.DATA_PLAYER_PLAYER1 = "p1"
-ServerAPI.DATA_PLAYER_PLAYER2 = "p2"
-ServerAPI.DATA_JOINKEY = "JoinKey"; // - Join key
+/**/ServerAPI.DATA_INPUT_KEY_UP = "KeyUp";
+/**/ServerAPI.DATA_INPUT_KEY_DOWN = "KeyDown";
+/**/ServerAPI.DATA_INPUT_KEY_NONE = "None";
+ServerAPI.DATA_PLAYER = "Player";
+/**/ServerAPI.DATA_PLAYER_PLAYER1 = "p1";
+/**/ServerAPI.DATA_PLAYER_PLAYER2 = "p2";
+ServerAPI.DATA_LOBBY_STATE = "State";
+/**/ServerAPI.DATA_LOBBY_CREATE = "Create";
+/**/ServerAPI.DATA_LOBBY_JOIN = "Join";
+ServerAPI.DATA_LOBBY_JOINKEY = "JoinKey"; // - Join key
+ServerAPI.DATA_INFO_TYPE = "Info_Type";
+/**/ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
+/**/ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";
 ServerAPI.DATA_POSITION = "Position";
 ServerAPI.DATA_DIRECTION = "Direction";
 ServerAPI.DATA_ACCELERATION = "Acceleration";
-ServerAPI.DATA_INFO_TYPE = "Info_Type";
-ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
-ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";
+
 // Constants
 
 // Objects state initialization

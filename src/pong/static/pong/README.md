@@ -18,17 +18,14 @@ Les clients:
 #### Websocket
 - server.py 
 	- receive currentscale at room creation ?
-	- Refactor - constants Object_create in Data_info
 
 - Websocket.js 
-	- interpolation seulement si pas de data ?
-	- Send & receive errors (shutdown server ingame to test)
 
 #### General
 - Score
-- BallPaddle - ball.direction.y selon endroit de la collision ?
-- Ball Reset - selon le gagnant
+- Ball Reset - selon le gagnant + attente
 - Collision - meilleur collision paddle/ball
+  - ball.direction.y selon endroit de la collision ?
 - Reconnexion
 
 #### Guidelines

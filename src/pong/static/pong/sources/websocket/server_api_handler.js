@@ -20,8 +20,9 @@ ServerAPI._InitGame = function()
 		// Joining 
 		if (params.has("join")) {
 			event = {	[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-						[ServerAPI.OBJECT]: ServerAPI.OBJECT_JOIN,
-						[ServerAPI.DATA_JOINKEY]: params.get("join")
+						[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+						[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_JOIN,
+						[ServerAPI.DATA_LOBBY_JOINKEY]: params.get("join")
 			}
 			ServerAPI.iam = ServerAPI.DATA_PLAYER_PLAYER2;
 			ServerAPI.player_state = NewPaddleState(new Vec2(0.9, 0.));
@@ -31,7 +32,8 @@ ServerAPI._InitGame = function()
 		// Creating
 		else {
 			event = {	[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-						[ServerAPI.OBJECT]: ServerAPI.OBJECT_CREATE
+						[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+						[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_CREATE
 			}
 			ServerAPI.iam = ServerAPI.DATA_PLAYER_PLAYER1;
 			ServerAPI.player_state = NewPaddleState(new Vec2(-0.9, 0.));

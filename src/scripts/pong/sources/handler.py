@@ -38,11 +38,12 @@ async def handler(websocket):
 
     event = json.loads(message)
     assert event[METHOD] == FROM_CLIENT
+    assert event[OBJECT] == OBJECT_LOBBY
 
 	# if OBJECT in event:
-    if event[OBJECT] == OBJECT_JOIN:
-        await join(websocket, event[DATA_JOINKEY])
-    elif event[OBJECT] == OBJECT_CREATE:
+    if event[DATA_LOBBY_STATE] == DATA_LOBBY_JOIN:
+        await join(websocket, event[DATA_LOBBY_JOINKEY])
+    elif event[DATA_LOBBY_STATE] == DATA_LOBBY_CREATE:
         await create(websocket)
 
 async def create(websocket):
