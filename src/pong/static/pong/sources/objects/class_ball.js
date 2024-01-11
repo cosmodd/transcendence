@@ -49,7 +49,7 @@ class Ball extends Mesh {
 	// Get new server position OR interpolate
 	async UpdatePosition(delta_time)
 	{
-		if (await ServerAPI.IsNewBallStateAvailable()) {
+		if (await ServerAPI.NewBallStateAvailable()) {
 			let ball_state = await ServerAPI.GetBallState();
 			this._uEntityPosition = ball_state.position.Clone();
 			this.direction = ball_state.direction.Clone();

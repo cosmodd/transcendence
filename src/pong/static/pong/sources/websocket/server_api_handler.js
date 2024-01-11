@@ -60,6 +60,9 @@ ServerAPI._Recv = function() {
 			case ServerAPI.OBJECT_INFO:
 				PrintInfo(event);
 				break ;
+			case ServerAPI.OBJECT_LOBBY:
+				ServerAPI.UpdateLobby(event);
+				break ;
 			default:
 				console.log(event);
 				break;
@@ -101,6 +104,16 @@ ServerAPI.UpdateBallData = function(event)
 		ServerAPI.ball_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 		ServerAPI.ball_state.direction = new Vec2(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
 		ServerAPI.ball_state.acceleration = event[ServerAPI.DATA_ACCELERATION];
+		ServerAPI.ball_state.new_data_available = true;
+	});
+}
+
+ServerAPI.UpdateLobby = function(event)
+{
+	let score = event[ServerAPI.DATA_LOBBY_SCORE];
+	ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
+		ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER1] = score[0];
+		ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
 		ServerAPI.ball_state.new_data_available = true;
 	});
 }

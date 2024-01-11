@@ -2,10 +2,10 @@ import { Vec3, Vec2 } from './utils/class_vec.js';
 import Ball from './objects/class_ball.js';
 import Paddle from './objects/class_paddle.js'
 import { score_node } from './ui/overlay.js';
-import { up_key_pressed, down_key_pressed } from './events/key_listener.js';
 import Collision from "./collisions/collision.js"
 import DataOrigin from './utils/data_origin.js';
 import { kBallRadius, kBallResolution, kPaddleHeight, kPaddleWidth } from './objects/constants_objects.js';
+import ServerAPI from './websocket/server_api.js';
 
 let gl = null;
 let gl_canvas = null;
@@ -63,7 +63,7 @@ function GameLoop() {
     opponent.UpdatePosition(DataOrigin.WebSocket, delta_time);
     ball.UpdatePosition(delta_time);
 
-    // Collisions check - for interpolation only
+    // Collisions check - for ia/local only
     // Collision.PaddleWall(player);
     // Collision.PaddleWall(opponent);
     // Collision.BallPaddle(ball, player);
@@ -80,9 +80,22 @@ function GameLoop() {
     opponent.Draw();
     ball.Draw();
 
+    //Update and draw score
+    UpdateScore(DataOrigin.WebSocket);
     score_node.nodeValue = score[0] + " | " + score[1];
 
     requestAnimationFrame(GameLoop);
+}
+
+async function UpdateScore(data_origin)
+{
+    if (data_origin == DataOrigin.WebSocket) {
+        if (ServerAPI.NewScoreStateAvailable()) {
+            let score_state = await ServerAPI.GetScoreState();
+            score[0] = score_state.score[ServerAPI.DATA_PLAYER_PLAYER1];
+            score[1] = score_state.score[ServerAPI.DATA_PLAYER_PLAYER2];
+        }
+    }
 }
 
 export default gl;

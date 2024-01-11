@@ -1,4 +1,4 @@
-import { NewPaddleState, NewBallState } from './objects_state.js'
+import { NewPaddleState, NewBallState, NewScoreState } from './objects_state.js'
 
 // Namespace equivalent
 let ServerAPI = {};
@@ -23,6 +23,7 @@ ServerAPI.DATA_LOBBY_STATE = "State";
 /**/ServerAPI.DATA_LOBBY_CREATE = "Create";
 /**/ServerAPI.DATA_LOBBY_JOIN = "Join";
 ServerAPI.DATA_LOBBY_JOINKEY = "JoinKey"; // - Join key
+ServerAPI.DATA_LOBBY_SCORE = "Score"; // - Join key
 ServerAPI.DATA_INFO_TYPE = "Info_Type";
 /**/ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
 /**/ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";
@@ -36,24 +37,31 @@ ServerAPI.DATA_ACCELERATION = "Acceleration";
 ServerAPI.player_state = null;
 ServerAPI.opponent_state = null;
 ServerAPI.ball_state = NewBallState();
+ServerAPI.score_state = NewScoreState(); 
 ServerAPI.iam = "";
 
-ServerAPI.IsNewBallStateAvailable = async function()
+ServerAPI.NewBallStateAvailable = async function()
 {
 	await ServerAPI.ball_state.promise;
 	return (ServerAPI.ball_state.new_data_available);
 }
 
-ServerAPI.IsNewPlayerStateAvailable = async function()
+ServerAPI.NewPlayerStateAvailable = async function()
 {
-	await ServerAPI.player_statepromise;
+	await ServerAPI.player_state.promise;
 	return (ServerAPI.player_state.new_data_available);
 }
 
-ServerAPI.IsNewOpponentStateAvailable = async function()
+ServerAPI.NewOpponentStateAvailable = async function()
 {
-	await ServerAPI.opponent_state;
+	await ServerAPI.opponent_state.promise;
 	return (ServerAPI.opponent_state.new_data_available);
+}
+
+ServerAPI.NewScoreStateAvailable = async function()
+{
+	await ServerAPI.score_state.promise;
+	return (ServerAPI.score_state.new_data_available);
 }
 
 ServerAPI.GetBallState = async function()
@@ -81,6 +89,15 @@ ServerAPI.GetPlayerState = async function()
 		ServerAPI.player_state.new_data_available = false;
 	});
 	return { ...ServerAPI.player_state};
+}
+
+ServerAPI.GetScoreState = async function()
+{
+	await ServerAPI.score_state.promise;
+	ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
+		ServerAPI.score_state.new_data_available = false;
+	});
+	return { ...ServerAPI.score_state};
 }
 
 ServerAPI.SendDataKey = function(key)

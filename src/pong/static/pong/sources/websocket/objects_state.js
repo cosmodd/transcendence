@@ -21,3 +21,12 @@ export function NewBallState()
 	  new_data_available: true
 	};
 }
+
+export function NewScoreState()
+{
+	return {
+		promise: Promise.resolve(),
+		score: {["p1"]: 0, ["p2"]: 0},
+		new_data_available: true
+	}
+}

@@ -15,11 +15,12 @@ Les clients:
 * 2 players via local/ia
 * UX 
 
-#### Websocket
+#### Specific
 - server.py 
 	- receive currentscale at room creation ?
 
 - Websocket.js 
+	- Game Class and instance
 
 #### General
 - Score
@@ -27,6 +28,7 @@ Les clients:
 - Collision - meilleur collision paddle/ball
   - ball.direction.y selon endroit de la collision ?
 - Reconnexion
+- IA! / Local?
 
 #### Guidelines
 - ES.22

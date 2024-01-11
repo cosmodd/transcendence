@@ -1,6 +1,6 @@
 import json
 import websockets
-import collision
+import scripts.pong.sources.class_collision as class_collision
 import sender
 from class_game import *
 from constants import *
@@ -27,16 +27,17 @@ async def ServerSendLoop(game: Game, connected):
         game.UpdateBallPosition(delta_time)
 
         # Collisions
-        collision.PaddleWall(game.players[PLAYER1])
-        collision.PaddleWall(game.players[PLAYER2])
-        collision.BallPaddle(game.ball, game.players[PLAYER1])
-        collision.BallPaddle(game.ball, game.players[PLAYER2])
+        game.Collision.PaddleWall(game.players[PLAYER1])
+        game.Collision.PaddleWall(game.players[PLAYER2])
+        game.Collision.BallPaddle(game.ball, game.players[PLAYER1])
+        game.Collision.BallPaddle(game.ball, game.players[PLAYER2])
         if game.ball.collided == False:
-            collision.BallWall(game.ball)
+            game.Collision.BallWall(game.ball)
 
         # Send game state to clients [only if:]
             # Client changed key
             # Ball collided
+            # Score
         if  (game.players[PLAYER1].key_has_changed):
             player1_message = game.MessageBuilder.Paddle(PLAYER1)
             await sender.ToAll(player1_message, connected)
@@ -51,6 +52,11 @@ async def ServerSendLoop(game: Game, connected):
             ball_message = game.MessageBuilder.Ball()
             await sender.ToAll(ball_message, connected)
             game.ball.collided = False
+
+        if (game.someone_scored):
+            score_message = game.MessageBuilder.Score()
+            await sender.ToAll(score_message, connected)
+            game.someone_scored = False
 
         await asyncio.sleep(0.001) 
 
