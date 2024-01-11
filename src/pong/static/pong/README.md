@@ -23,7 +23,6 @@ Les clients:
 	- Game Class and instance
 
 #### General
-- Score
 - Ball Reset - selon le gagnant + attente
 - Collision - meilleur collision paddle/ball
   - ball.direction.y selon endroit de la collision ?

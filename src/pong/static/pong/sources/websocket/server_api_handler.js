@@ -78,7 +78,7 @@ ServerAPI._Close = function()
 				PrintError("Connection closed: 1006: Abnormal Closure");
 				break;
 			default:
-				PrintError(event.reason);	
+				// PrintError(event.reason);	
 				break;
 		}
 	});

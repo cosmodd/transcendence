@@ -1,5 +1,3 @@
-import asyncio
-import websockets
 import json
 from constants import *
 
