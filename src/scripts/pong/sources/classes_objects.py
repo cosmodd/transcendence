@@ -13,7 +13,7 @@ class Ball:
         #self.accelerationStep
     
     def Reset(self):
-        self.position = Vec2(0., 0.5)
+        self.position = Vec2(0., 0.)
         self.direction = Vec2(-1., 0.)
         self.acceleration = 0.;
 
