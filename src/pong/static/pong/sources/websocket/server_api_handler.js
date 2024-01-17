@@ -3,14 +3,15 @@ import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState, NewBallState } from './objects_state.js'
 import { PrintInfo, PrintError } from '../ui/info.js';
 
-window.addEventListener("DOMContentLoaded", () => {
+ServerAPI.InitConnection = function()
+{
 	ServerAPI.websocket = new WebSocket("ws://localhost:8888");
 
 	// Events
 	ServerAPI._InitGame();
 	ServerAPI._Recv();
 	ServerAPI._Close();
-});
+}
 
 ServerAPI._InitGame = function()
 {

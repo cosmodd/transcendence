@@ -19,6 +19,9 @@ class Game {
 		this.delta_time;
 		this.current_time;
 		this.previous_time = 0.0;
+
+		if (this.game_type === GameType.Online)
+			ServerAPI.InitConnection();
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
