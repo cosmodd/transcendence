@@ -35,7 +35,7 @@ function GameLoop() {
     if (game.game_type === GameType.Online)
         game.player.SendInputToServer();
 
-    // Get data from server or interpolate
+    // Get data from server or interpolate with known keys
     game.UpdatePositions();
 
     // Collisions check - for ia/local only

@@ -45,29 +45,37 @@ class Paddle extends Mesh {
 
 	SendInputToServer() {
 		let key_pressed = null;
-	
-		if (up_key_pressed) {
-			key_pressed = ServerAPI.DATA_INPUT_KEY_UP;
-		} else if (down_key_pressed) {
-			key_pressed = ServerAPI.DATA_INPUT_KEY_DOWN;
-		} else {
-			key_pressed = ServerAPI.DATA_INPUT_KEY_NONE;
-		}
-	
-		if (key_pressed !== this.last_key) {
-			ServerAPI.SendDataKey(key_pressed);
-			this.last_key = key_pressed;
+		
+		if (this.data_origin === DataOrigin.WebSocket) {
+			if (this.iam === PLAYER) {
+				if (up_key_pressed) {
+					key_pressed = ServerAPI.DATA_INPUT_KEY_UP;
+				} else if (down_key_pressed) {
+					key_pressed = ServerAPI.DATA_INPUT_KEY_DOWN;
+				} else {
+					key_pressed = ServerAPI.DATA_INPUT_KEY_NONE;
+				}
+			
+				if (key_pressed !== this.last_key) {
+					ServerAPI.SendDataKey(key_pressed);
+					this.last_key = key_pressed;
+				}
+			}
 		}
 	}
 
-    // Get new server position OR interpolate 
+    // Get data from server or interpolate with known keys
 	async UpdatePosition(delta_time)
 	{
 		let paddle_state = null;
 		switch (this.data_origin) {
 			case DataOrigin.Client:
-				// Local game
-				// Get ia
+				if (this.iam === PLAYER) {
+					// Do something (update key from input)
+				}
+				else if (this.iam === OPPONENT) {
+					// Do something (update key from IA API ?)
+				}
 				break;
 			case DataOrigin.WebSocket:
 				if (this.iam === PLAYER && await ServerAPI.NewPlayerStateAvailable())
@@ -81,7 +89,7 @@ class Paddle extends Mesh {
 			this._uEntityPosition = paddle_state.position.Clone();
 			this.last_key = paddle_state.key;
 		}
-		else { // Interpolate
+		else { // Interpolate and/or local
 			if (this.last_key == "None")
 				return ;
 			let move = this.speed * delta_time;

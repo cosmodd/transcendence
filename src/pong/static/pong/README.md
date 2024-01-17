@@ -16,20 +16,18 @@ Les clients:
 * UX 
 
 #### Specific
-- server.py 
+- Server
 	- receive currentscale at room creation ?
 
-- Websocket.js 
-	- Game Class and instance
-	- Game Class with game type (local, online)
-    	- DataOrigin in object 
+- Client
+  - IA + API
 
 #### General
 - Ball Reset - selon le gagnant + attente
 - Collision - meilleur collision paddle/ball
   - ball.direction.y selon endroit de la collision ?
 - Reconnexion
-- IA! / Local?
+- Server optimisation
 
 #### Guidelines
 - ES.22
