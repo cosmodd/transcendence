@@ -21,6 +21,8 @@ Les clients:
 
 - Websocket.js 
 	- Game Class and instance
+	- Game Class with game type (local, online)
+    	- DataOrigin in object 
 
 #### General
 - Ball Reset - selon le gagnant + attente
