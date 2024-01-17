@@ -4,11 +4,13 @@ import { score_node } from '../ui/overlay.js';
 import Paddle from "./class_paddle.js";
 import Ball from "./class_ball.js"
 import DataOrigin from "../utils/data_origin.js";
+import GameType from "../utils/game_type.js";
 import ServerAPI from "../websocket/server_api.js";
 
 class Game {
-	constructor(current_scale)
+	constructor(game_type = GameType.Local, current_scale)
 	{
+		this.game_type = game_type;
 		this.player = null;
 		this.opponent = null;
 		this.ball = null;
@@ -21,19 +23,22 @@ class Game {
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
 	{
-		this.player = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale);
+		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
+		this.player = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale, data_origin, k.PLAYER);
 		await this.player.Setup();
 	}
 
 	async SetupOpponent(color = null, position = new Vec2(0.0, 0.0))
 	{
-		this.opponent = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale);
+		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
+		this.opponent = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale, data_origin, k.OPPONENT);
 		await this.opponent.Setup();
 	}
 
 	async SetupBall(color = null)
 	{
-		this.ball = new Ball(k.kBallRadius, k.kBallResolution, color, this.current_scale);
+		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
+		this.ball = new Ball(k.kBallRadius, k.kBallResolution, color, this.current_scale, data_origin);
 		await this.ball.Setup()
 	}
 
@@ -47,8 +52,8 @@ class Game {
 	UpdatePositions()
 	{
 		// Get data from server or interpolate
-		this.player.UpdatePosition(DataOrigin.Client, this.delta_time);
-		this.opponent.UpdatePosition(DataOrigin.WebSocket, this.delta_time);
+		this.player.UpdatePosition(this.delta_time);
+		this.opponent.UpdatePosition(this.delta_time);
 		this.ball.UpdatePosition(this.delta_time);
 	}
 
@@ -67,15 +72,16 @@ class Game {
     	score_node.nodeValue = this.score[0] + " | " + this.score[1];
 	}
 
-	async UpdateScore(data_origin)
+	async UpdateScore()
 	{
-		if (data_origin == DataOrigin.WebSocket) {
+		if (this.game_type == GameType.Online) {
 			if (ServerAPI.NewScoreStateAvailable()) {
 				let score_state = await ServerAPI.GetScoreState();
 				this.score[0] = score_state.score[ServerAPI.DATA_PLAYER_PLAYER1];
 				this.score[1] = score_state.score[ServerAPI.DATA_PLAYER_PLAYER2];
 			}
 		}
+		// else ?
 	}
 }
 

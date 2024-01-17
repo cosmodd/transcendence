@@ -3,9 +3,10 @@ import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
 import { kBallSpeed, kBallRadius, kBallResolution } from './constants_objects.js';
 import ServerAPI from '../websocket/server_api.js';
+import DataOrigin from '../utils/data_origin.js';
 
 class Ball extends Mesh {
-	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale)
+	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale, data_origin)
 	{
 		const shader_infos = [
 			{
@@ -44,16 +45,18 @@ class Ball extends Mesh {
 		this.speed = kBallSpeed;
 		this.acceleration = 0.;
 		this.direction = new Vec2(0., 0.);
+		this.data_origin = data_origin;
 	}
 
 	// Get new server position OR interpolate
 	async UpdatePosition(delta_time)
 	{
-		if (await ServerAPI.NewBallStateAvailable()) {
-			let ball_state = await ServerAPI.GetBallState();
-			this._uEntityPosition = ball_state.position.Clone();
-			this.direction = ball_state.direction.Clone();
-			this.acceleration = ball_state.acceleration;
+		if (this.data_origin === DataOrigin.WebSocket 
+			&& await ServerAPI.NewBallStateAvailable()) {
+				let ball_state = await ServerAPI.GetBallState();
+				this._uEntityPosition = ball_state.position.Clone();
+				this.direction = ball_state.direction.Clone();
+				this.acceleration = ball_state.acceleration;
 		}
 		else {
 			const current_speed = this.speed + this.acceleration;

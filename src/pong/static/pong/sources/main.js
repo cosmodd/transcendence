@@ -1,5 +1,6 @@
 import { Vec3, Vec2 } from './utils/class_vec.js';
 import DataOrigin from './utils/data_origin.js';
+import GameType from './utils/game_type.js';
 import Game from './objects/class_game.js';
 
 let gl = null;
@@ -14,7 +15,7 @@ async function Init() {
     gl_canvas = document.getElementById("glcanvas");
     gl = gl_canvas.getContext("webgl");
 
-    game = new Game([1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(GameType.Online, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
@@ -31,23 +32,25 @@ function GameLoop() {
     game.ComputeDeltatime();
 
     // Send input to server
-    game.player.SendInputToServer();
+    if (game.game_type === GameType.Online)
+        game.player.SendInputToServer();
 
     // Get data from server or interpolate
     game.UpdatePositions();
 
     // Collisions check - for ia/local only
-    // Collision.PaddleWall(player);
-    // Collision.PaddleWall(opponent);
-    // Collision.BallPaddle(ball, player);
-    // Collision.BallPaddle(ball, opponent);
-    // Collision.BallWall(ball);
+    // if (game.game_type === GameType.Local)
+        // Collision.PaddleWall(player);
+        // Collision.PaddleWall(opponent);
+        // Collision.BallPaddle(ball, player);
+        // Collision.BallPaddle(ball, opponent);
+        // Collision.BallWall(ball);
 
     // Update uniforms (position in shader)
     game.UpdateUniforms();
 
     //Update score - online only ?
-    game.UpdateScore(DataOrigin.WebSocket);
+    game.UpdateScore();
 
     // Draw
     game.Draw();

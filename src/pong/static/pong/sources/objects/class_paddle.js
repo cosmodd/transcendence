@@ -4,10 +4,10 @@ import Vertex from './class_vertex.js';
 import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
 import DataOrigin from '../utils/data_origin.js';
 import ServerAPI from '../websocket/server_api.js';
-import { kPaddleHeight, kPaddleSpeed, kPaddleWidth } from './constants_objects.js';
+import { kPaddleHeight, kPaddleSpeed, kPaddleWidth, PLAYER, OPPONENT } from './constants_objects.js';
 
 class Paddle extends Mesh {
-	constructor(width = kPaddleWidth, height = kPaddleHeight, color = null, position = new Vec2(0., 0.), current_scale)
+	constructor(width = kPaddleWidth, height = kPaddleHeight, color = null, position = new Vec2(0., 0.), current_scale, data_origin, iam)
 	{
 		const shader_infos = [
 			{
@@ -39,6 +39,8 @@ class Paddle extends Mesh {
 		this.width_half = width_half;
 		this.height_half = height_half;
 		this.last_key = "None";
+		this.data_origin = data_origin;
+		this.iam = iam;
 	}
 
 	SendInputToServer() {
@@ -59,16 +61,18 @@ class Paddle extends Mesh {
 	}
 
     // Get new server position OR interpolate 
-	async UpdatePosition(data_origin, delta_time)
+	async UpdatePosition(delta_time)
 	{
 		let paddle_state = null;
-		switch (data_origin) {
+		switch (this.data_origin) {
 			case DataOrigin.Client:
-				if (await ServerAPI.NewPlayerStateAvailable())
-					paddle_state = await ServerAPI.GetPlayerState();
+				// Local game
+				// Get ia
 				break;
 			case DataOrigin.WebSocket:
-				if (await ServerAPI.NewOpponentStateAvailable())
+				if (this.iam === PLAYER && await ServerAPI.NewPlayerStateAvailable())
+					paddle_state = await ServerAPI.GetPlayerState();
+				if (this.iam === OPPONENT && await ServerAPI.NewOpponentStateAvailable())
 					paddle_state = await ServerAPI.GetOpponentState();
 				break ;
 		}
