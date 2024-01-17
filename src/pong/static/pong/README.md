@@ -20,7 +20,9 @@ Les clients:
 	- receive currentscale at room creation ?
 
 - Client
+  - Basic local game (logic)
   - IA + API
+  - Redondance GameType / DataOrigin ?
 
 #### General
 - Ball Reset - selon le gagnant + attente
