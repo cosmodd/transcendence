@@ -1,12 +1,12 @@
 import Mesh from './class_mesh.js'
 import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
-import { kBallSpeed, kBallRadius, kBallResolution } from './constants_objects.js';
+import * as k from '../utils/constants_objects.js';
 import ServerAPI from '../websocket/server_api.js';
 import DataOrigin from '../utils/data_origin.js';
 
 class Ball extends Mesh {
-	constructor (radius = kBallRadius, resolution = kBallResolution, color = null, current_scale, data_origin)
+	constructor (radius = k.BallRadius, resolution = k.BallResolution, color = null, current_scale, data_origin)
 	{
 		const shader_infos = [
 			{
@@ -42,7 +42,7 @@ class Ball extends Mesh {
 
 		this.radius = radius;
 		this._uEntityPosition = new Vec2(0., 0.);
-		this.speed = kBallSpeed;
+		this.speed = k.BallSpeed;
 		this.acceleration = 0.;
 		this.direction = new Vec2(0., 0.);
 		this.data_origin = data_origin;

@@ -1,31 +1,43 @@
-let up_key_pressed = false;
-let down_key_pressed = false;
-let left_key_pressed = false;
-let right_key_pressed = false;
+import * as D from "../utils/defines.js"
+
+let KeyListener = {}
+
+KeyListener.up_key_pressed = false;
+KeyListener.down_key_pressed = false;
+KeyListener.left_key_pressed = false;
+KeyListener.right_key_pressed = false;
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
-        up_key_pressed = true;
+        KeyListener.up_key_pressed = true;
     } else if (event.key === 'ArrowDown') {
-        down_key_pressed = true;
+        KeyListener.down_key_pressed = true;
     } else if (event.key === 'ArrowLeft') {
-        left_key_pressed = true;
+        KeyListener.left_key_pressed = true;
     } else if (event.key === 'ArrowRight') {
-        right_key_pressed = true;
+        KeyListener.right_key_pressed = true;
     }
-
 });
 
 document.addEventListener('keyup', (event) => {
     if (event.key === 'ArrowUp') {
-        up_key_pressed = false;
+        KeyListener.up_key_pressed = false;
     } else if (event.key === 'ArrowDown') {
-        down_key_pressed = false;
+        KeyListener.down_key_pressed = false;
     } else if (event.key === 'ArrowLeft') {
-        left_key_pressed = false;
+        KeyListener.left_key_pressed = false;
     } else if (event.key === 'ArrowRight') {
-        right_key_pressed = false;
+        KeyListener.right_key_pressed = false;
     }
 });
 
-export { up_key_pressed, down_key_pressed, left_key_pressed, right_key_pressed};
+KeyListener.LastKeyPressed = function()
+{
+    if (KeyListener.up_key_pressed)
+        return D.KEY_UP;
+    else if (KeyListener.down_key_pressed)
+        return D.KEY_DOWN;
+    return D.KEY_NONE;
+}
+
+export default KeyListener;

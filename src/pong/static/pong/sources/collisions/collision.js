@@ -1,7 +1,7 @@
 import { DoIntersect } from "./collision_utils.js";
-import { kBallAccelerationStep } from "../objects/constants_objects.js";
+import * as k from "../utils/constants_objects.js";
 import { Vec2 } from '../utils/class_vec.js'
-import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
+import KeyListener from '../events/key_listener.js';
 
 // Namespace equivalent
 let Collision = {};
@@ -97,10 +97,10 @@ Collision.BallPaddle = function(ball, paddle)
         else
             ball._uEntityPosition.x = paddle.boundingbox_left - ball.radius;
         ball.direction.x = -ball.direction.x;
-        ball.acceleration += kBallAccelerationStep;
-        if (up_key_pressed)
+        ball.acceleration += k.BallAccelerationStep;
+        if (KeyListener.LastKeyPressed() === D.KEY_UP)
             ball.direction.y = 1.;
-        if (down_key_pressed)
+        if (KeyListener.LastKeyPressed() === D.KEY_DOWN)
             ball.direction.y = -1.;
         last_ball_pos = null;
     }

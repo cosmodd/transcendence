@@ -1,13 +1,14 @@
 import Mesh from './class_mesh.js'
 import { Vec2 } from '../utils/class_vec.js';
 import Vertex from './class_vertex.js';
-import { up_key_pressed, down_key_pressed } from '../events/key_listener.js';
+import KeyListener from '../events/key_listener.js';
 import DataOrigin from '../utils/data_origin.js';
 import ServerAPI from '../websocket/server_api.js';
-import { kPaddleHeight, kPaddleSpeed, kPaddleWidth, PLAYER, OPPONENT } from './constants_objects.js';
+import * as k from '../utils/constants_objects.js';
+import * as D from '../utils/defines.js'
 
 class Paddle extends Mesh {
-	constructor(width = kPaddleWidth, height = kPaddleHeight, color = null, position = new Vec2(0., 0.), current_scale, data_origin, iam)
+	constructor(width = k.PaddleWidth, height = k.PaddleHeight, color = null, position = new Vec2(0., 0.), current_scale, data_origin, iam)
 	{
 		const shader_infos = [
 			{
@@ -33,28 +34,20 @@ class Paddle extends Mesh {
 		super(vertices, indices, (color == null), shader_infos, current_scale);
 
 		this._uEntityPosition = position;
-		this.speed = kPaddleSpeed;
+		this.speed = k.PaddleSpeed;
 		this.width = width;
 		this.height = height;
 		this.width_half = width_half;
 		this.height_half = height_half;
-		this.last_key = "None";
+		this.last_key = D.KEY_NONE;
 		this.data_origin = data_origin;
 		this.iam = iam;
 	}
 
 	SendInputToServer() {
-		let key_pressed = null;
-		
 		if (this.data_origin === DataOrigin.WebSocket) {
-			if (this.iam === PLAYER) {
-				if (up_key_pressed) {
-					key_pressed = ServerAPI.DATA_INPUT_KEY_UP;
-				} else if (down_key_pressed) {
-					key_pressed = ServerAPI.DATA_INPUT_KEY_DOWN;
-				} else {
-					key_pressed = ServerAPI.DATA_INPUT_KEY_NONE;
-				}
+			if (this.iam === D.PLAYER) {
+				let key_pressed = KeyListener.LastKeyPressed();
 			
 				if (key_pressed !== this.last_key) {
 					ServerAPI.SendDataKey(key_pressed);
@@ -70,17 +63,17 @@ class Paddle extends Mesh {
 		let paddle_state = null;
 		switch (this.data_origin) {
 			case DataOrigin.Client:
-				if (this.iam === PLAYER) {
+				if (this.iam === D.PLAYER) {
 					// Do something (update key from input)
 				}
-				else if (this.iam === OPPONENT) {
+				else if (this.iam === D.OPPONENT) {
 					// Do something (update key from IA API ?)
 				}
 				break;
 			case DataOrigin.WebSocket:
-				if (this.iam === PLAYER && await ServerAPI.NewPlayerStateAvailable())
+				if (this.iam === D.PLAYER && await ServerAPI.NewPlayerStateAvailable())
 					paddle_state = await ServerAPI.GetPlayerState();
-				if (this.iam === OPPONENT && await ServerAPI.NewOpponentStateAvailable())
+				if (this.iam === D.OPPONENT && await ServerAPI.NewOpponentStateAvailable())
 					paddle_state = await ServerAPI.GetOpponentState();
 				break ;
 		}
@@ -90,10 +83,10 @@ class Paddle extends Mesh {
 			this.last_key = paddle_state.key;
 		}
 		else { // Interpolate and/or local
-			if (this.last_key == "None")
+			if (this.last_key == D.KEY_NONE)
 				return ;
 			let move = this.speed * delta_time;
-			if (this.last_key == "KeyDown")
+			if (this.last_key == D.KEY_DOWN)
 				move *= -1.0;
 			this._uEntityPosition.y += move;
 		}

@@ -21,6 +21,7 @@ Les clients:
 
 - Client
   - Basic local game (logic)
+  - from constants import * as k
   - IA + API
   - Redondance GameType / DataOrigin ?
 

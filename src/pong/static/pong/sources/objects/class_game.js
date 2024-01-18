@@ -1,5 +1,6 @@
 import { Vec2 } from "../utils/class_vec.js";
-import * as k from "./constants_objects.js";
+import * as k from "../utils/constants_objects.js";
+import * as D from "../utils/defines.js"
 import { score_node } from '../ui/overlay.js';
 import Paddle from "./class_paddle.js";
 import Ball from "./class_ball.js"
@@ -27,21 +28,21 @@ class Game {
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
 	{
 		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
-		this.player = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale, data_origin, k.PLAYER);
+		this.player = new Paddle(k.PaddleWidth, k.PaddleHeight, color, position, this.current_scale, data_origin, D.PLAYER);
 		await this.player.Setup();
 	}
 
 	async SetupOpponent(color = null, position = new Vec2(0.0, 0.0))
 	{
 		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
-		this.opponent = new Paddle(k.kPaddleWidth, k.kPaddleHeight, color, position, this.current_scale, data_origin, k.OPPONENT);
+		this.opponent = new Paddle(k.PaddleWidth, k.PaddleHeight, color, position, this.current_scale, data_origin, D.OPPONENT);
 		await this.opponent.Setup();
 	}
 
 	async SetupBall(color = null)
 	{
 		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
-		this.ball = new Ball(k.kBallRadius, k.kBallResolution, color, this.current_scale, data_origin);
+		this.ball = new Ball(k.BallRadius, k.BallResolution, color, this.current_scale, data_origin);
 		await this.ball.Setup()
 	}
 
