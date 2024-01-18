@@ -64,7 +64,7 @@ class Paddle extends Mesh {
 		switch (this.data_origin) {
 			case DataOrigin.Client:
 				if (this.iam === D.PLAYER) {
-					// Do something (update key from input)
+					this.last_key = KeyListener.LastKeyPressed();
 				}
 				else if (this.iam === D.OPPONENT) {
 					// Do something (update key from IA API ?)

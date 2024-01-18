@@ -44,6 +44,9 @@ class Game {
 		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
 		this.ball = new Ball(k.BallRadius, k.BallResolution, color, this.current_scale, data_origin);
 		await this.ball.Setup()
+
+	    if (this.game_type === GameType.Local)
+			this.ball.Reset();
 	}
 
 	ComputeDeltatime()

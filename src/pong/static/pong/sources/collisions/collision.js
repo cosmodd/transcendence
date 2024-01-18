@@ -1,5 +1,6 @@
 import { DoIntersect } from "./collision_utils.js";
 import * as k from "../utils/constants_objects.js";
+import * as D from "../utils/defines.js"
 import { Vec2 } from '../utils/class_vec.js'
 import KeyListener from '../events/key_listener.js';
 
@@ -110,18 +111,18 @@ Collision.BallPaddle = function(ball, paddle)
     }
 }
 
-Collision.BallWall = function(ball) {
+Collision.BallWall = function(game, ball) {
     ball.ComputeBoundingbox();
 
     if (ball.boundingbox_left <= -1) {
         ball.direction.x = Math.abs(ball.direction.x);
-        ball.reset();
-        score[1] += 1;
+        ball.Reset();
+        game.score[1] += 1;
     }
     else if (ball.boundingbox_right >= 1.) {
         ball.direction.x = -Math.abs(ball.direction.x);
-        ball.reset();
-        score[0] += 1;
+        ball.Reset();
+        game.score[0] += 1;
     }
     else if (ball.boundingbox_top >= 1.) {
         ball.direction.y = -Math.abs(ball.direction.y);

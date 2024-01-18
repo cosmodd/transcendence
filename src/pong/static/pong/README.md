@@ -20,8 +20,6 @@ Les clients:
 	- receive currentscale at room creation ?
 
 - Client
-  - Basic local game (logic)
-  - from constants import * as k
   - IA + API
   - Redondance GameType / DataOrigin ?
 
@@ -31,6 +29,7 @@ Les clients:
   - ball.direction.y selon endroit de la collision ?
 - Reconnexion
 - Server optimisation
+- Local coop ?
 
 #### Guidelines
 - ES.22
