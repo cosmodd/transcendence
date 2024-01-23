@@ -7,6 +7,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Transcendence</title>
 
+		<link rel="stylesheet" href="{% static "style.css" %}">
+
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -15,9 +17,98 @@
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
 		/>
+
+		{% block extrastyle %}{% endblock extrastyle %}
 	</head>
 	<body>
-		{% block content %}{% endblock content %}
+		<nav class="navbar navbar-expand px-3 py-2 gap-3">
+			<a href="/" class="navbar-brand me">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="32"
+					height="32"
+					fill="currentColor"
+					viewBox="0 0 512 512"
+					class="me-2 align-text-top"
+				>
+					<path
+						d="M496.2 296.5C527.7 218.7 512 126.2 449 63.1 365.1-21 229-21 145.1 63.1l-56 56.1 211.5 211.5c46.1-62.1 131.5-77.4 195.6-34.2zm-217.9 79.7L57.9 155.9c-27.3 45.3-21.7 105 17.3 144.1l34.5 34.6L6.7 424c-8.6 7.5-9.1 20.7-1 28.8l53.4 53.5c8 8.1 21.2 7.6 28.7-1L177.1 402l35.7 35.7c19.7 19.7 44.6 30.5 70.3 33.3-7.1-17-11-35.6-11-55.1-.1-13.8 2.5-27 6.2-39.7zM416 320c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96z"
+					/>
+				</svg>
+				<span class="fw-bold">Transcendence</span>
+			</a>
+			<div class="collapse navbar-collapse">
+				<ul class="navbar-nav gap-2">
+					<li class="nav-item">
+						<a href="/play" class="nav-link active">Play</a>
+					</li>
+					<li class="nav-item">
+						<a href="/leaderboard" class="nav-link">Leaderboard</a>
+					</li>
+				</ul>
+			</div>
+			<form class="d-flex gap" role="search">
+				<input
+					class="form-control"
+					type="search"
+					placeholder="Search"
+					aria-label="Search"
+				/>
+				<button class="btn btn-outline-success" type="submit">
+					<i class="bi bi-search"></i>
+				</button>
+			</form>
+			<div class="dropdown profile">
+				<a
+					href="#"
+					class="text-decoration-none"
+					role="button"
+					data-bs-toggle="dropdown"
+				>
+					<img
+						src="https://cdn.intra.42.fr/users/b6543e8a15a749c7d7d29a53f12714a0/mrattez.jpg"
+						alt="Profile"
+						class="rounded-circle object-fit-cover"
+						width="32"
+						height="32"
+					/>
+					<!-- Displays the username in white -->
+					<span class="text-white ms-1">mrattez</span>
+				</a>
+				<ul class="dropdown-menu dropdown-menu-end">
+					<li>
+						<a href="/profile" class="dropdown-item">Profile</a>
+					</li>
+					<li>
+						<a href="/settings" class="dropdown-item">Settings</a>
+					</li>
+					<li>
+						<a href="/logout" class="dropdown-item">Logout</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div id="content">{% block content %}{% endblock content %}</div>
+
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+		{% block extrascript %}{% endblock extrascript %}
+		<script>
+			// Handle navbar active link
+			document.addEventListener('DOMContentLoaded', () => {
+				document.querySelectorAll('.nav-link.active').forEach((el) => {
+					el.classList.remove('active');
+					el.attributes.removeNamedItem('aria-current');
+				});
+
+				document
+					.querySelectorAll(`.nav-link[href="${location.pathname}"]`)
+					.forEach((el) => {
+						el.classList.add('active');
+						el.setAttribute('aria-current', 'page');
+					});
+			});
+		</script>
 	</body>
 </html>
