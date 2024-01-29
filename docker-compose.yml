@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   database:
@@ -12,20 +12,20 @@ services:
       - transcendence
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 5s
       timeout: 5s
       retries: 5
 
-  app:
-    container_name: app
-    hostname: app
+  django:
+    container_name: django
+    hostname: django
     build:
-      context: ./src
+      context: ./backend
       dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - ./src:/app
+      - ./backend:/app
     networks:
       - transcendence
     ports:
@@ -33,11 +33,25 @@ services:
       - 8888:8888 # Websockets
     restart: unless-stopped
     depends_on:
-      - database 
+      # - database
       # ! ces deux lignes empechent le lancement de la commande suivant sur linux:
       # docker compose run app /bin/zsh
-        # database:
-        #   condition: service_healthy # wait for database to be ready
+      database:
+        condition: service_healthy # wait for database to be ready
+
+  frontend:
+    container_name: frontend
+    hostname: frontend
+    image: nginx:stable-alpine
+    env_file: .env
+    volumes:
+      - ./frontend:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      - django
 
 networks:
   transcendence:

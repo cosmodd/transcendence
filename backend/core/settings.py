@@ -35,6 +35,8 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'pong',
     'core',
+	'rest_framework',
+	'example_api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
