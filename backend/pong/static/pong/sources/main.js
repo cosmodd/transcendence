@@ -15,7 +15,7 @@ async function Init() {
     gl_canvas = document.getElementById("glcanvas");
     gl = gl_canvas.getContext("webgl");
 
-    game = new Game(GameType.Local, [1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(GameType.Online, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
