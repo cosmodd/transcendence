@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 	# path('api/', include('example_api.urls')),
 	path('api/', include('users.urls')),
+    path('pong/', include('pong.urls')),
 ]
