@@ -1,3 +1,5 @@
+import { Vec2 } from '../utils/class_vec.js'
+
  // Given three collinear points p, q, r, the function checks if 
 // point q lies on line segment 'pr' 
 function OnSegment(p, q, r) 
@@ -49,4 +51,21 @@ export function DoIntersect(p1, q1, p2, q2)
 	if (o4 == 0 && OnSegment(p2, q1, q2)) return true; 
 	
 	return false; // Doesn't fall in any cases 
+}
+
+export function PaddleInterceptionYGap(ball, paddle, last_ball_pos)
+{
+	let i = new Vec2(paddle._uEntityPosition.x, 0.0);
+	let t = Math.abs((i.x - last_ball_pos.x) / (ball._uEntityPosition.x - last_ball_pos.x ));
+	i.y = last_ball_pos.y * (1.0 - t) + ball._uEntityPosition.y * t;
+	return i; // local gap
+}
+
+export function PaddleInterceptionXGap(ball, paddle, last_ball_pos)
+{
+	let i = new Vec2(paddle._uEntityPosition.x, 0.0);
+	let t = Math.abs((i.x - last_ball_pos.x) / (ball._uEntityPosition.x - last_ball_pos.x ));
+	i.y = last_ball_pos.y * (1.0 - t) + ball._uEntityPosition.y * t;
+	// return i.y - paddle._uEntityPosition.y; // local gap
+	return i; // local gap
 }

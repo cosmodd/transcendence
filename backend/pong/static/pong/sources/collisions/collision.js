@@ -1,4 +1,4 @@
-import { DoIntersect } from "./collision_utils.js";
+import { DoIntersect, PaddleInterceptionYGap } from "./collision_utils.js";
 import * as k from "../utils/constants_objects.js";
 import * as D from "../utils/defines.js"
 import { Vec2 } from '../utils/class_vec.js'
@@ -21,88 +21,75 @@ Collision.BallPaddle = function(ball, paddle)
     }
 
     let does_intersect = false;
+    let intersect_type = "none";
 
-    if (ball.direction.x < 0.) {
-        if (ball.direction.y < 0.) { // ball y negatif
-            // bottom current ball
+    if (ball.direction.x <= 0.) {
+        // Paddle right side
+        does_intersect = DoIntersect(
+        new Vec2(last_ball_pos.x - ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+        new Vec2(ball.boundingbox_left, ball._uEntityPosition.y),
+        new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+        new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
+        if (does_intersect)
+            intersect_type = "longitudinal";
+        // Paddle top
+        if (does_intersect === false) {
             does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
-            if (does_intersect === false) {
-                // top current ball
-                does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-                new Vec2(ball.boundingbox_left, ball.boundingbox_top),
-                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
-            }
+        if (does_intersect)
+            intersect_type = "transversal";
         }
-        else {// Balle y positif
-            // top current ball
+        // Paddle bottom
+        if (does_intersect === false) {
             does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_left, ball.boundingbox_top),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
-            // bottom current ball
-            if (does_intersect === false) {
-                does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x + ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-                new Vec2(ball.boundingbox_left, ball.boundingbox_bottom),
-                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom),
-                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
-            }
+                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+        if (does_intersect)
+            intersect_type = "transversal";
         }
     }
 
     if (ball.direction.x >= 0.) {
-        if (ball.direction.y < 0.) { // ball y negatif
-            // bottom current ball
+            // Paddle left side
             does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
-            if (does_intersect === false) {
-                // top current ball
-                does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y + ball.radius) * ball.scaling_factor[1]),
-                new Vec2(ball.boundingbox_right, ball.boundingbox_top),
-                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
-                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
-            }
-        }
-        else {// Balle y positif
-            // top current ball
-            does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_right, ball.boundingbox_top),
+            new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+            new Vec2(ball.boundingbox_right, ball._uEntityPosition.y),
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
-            new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
-            if (does_intersect === false) {
-                // bottom current ball
-                does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x - ball.radius, (last_ball_pos.y - ball.radius) * ball.scaling_factor[1]),
-                new Vec2(ball.boundingbox_right, ball.boundingbox_bottom),
-                new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
-                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom));
-            }
-        }
+            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+            if (does_intersect)
+                intersect_type = "longitudinal";
     }
 
     if (does_intersect) {
-        if (ball.direction.x < 0.)
-            ball._uEntityPosition.x = paddle.boundingbox_right + ball.radius;
-        else
-            ball._uEntityPosition.x = paddle.boundingbox_left - ball.radius;
-        ball.direction.x = -ball.direction.x;
+        // BALL NEW PLACEMENT
+        if (intersect_type == "longitudinal") {
+            let intersect = PaddleInterceptionYGap(ball, paddle, last_ball_pos); 
+            let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
+            console.log(local_gap);
+            if (ball.direction.x < 0.)
+                ball._uEntityPosition.x = intersect.x + ball.radius;
+            else
+                ball._uEntityPosition.x = intersect.x - ball.radius;
+            ball._uEntityPosition.y = intersect.y;
+            ball.direction.x = -ball.direction.x;
+        }
+        else if (intersect_type == "transversal") {
+            // NEED TO DO
+            // if (ball.direction.y < 0.)
+            //     ball._uEntityPosition.y = intersect.y + ball.radius;
+            // else
+            //     ball._uEntityPosition.y = intersect.y - ball.radius;
+            // ball._uEntityPosition.x = intersect.x
+            // ball.direction.x = -ball.direction.x;
+        }
         ball.acceleration += k.BallAccelerationStep;
-        if (KeyListener.LastKeyPressed() === D.KEY_UP)
-            ball.direction.y = 1.;
-        if (KeyListener.LastKeyPressed() === D.KEY_DOWN)
-            ball.direction.y = -1.;
+        // BALL NEW Y 
+        // let y_dir_diff = max(1.0, y_gap / paddle.height_half);
         last_ball_pos = null;
     }
     else {

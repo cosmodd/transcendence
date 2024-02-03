@@ -27,6 +27,7 @@ Les clients:
 - Ball Reset - selon le gagnant + attente
 - Collision - meilleur collision paddle/ball
   - ball.direction.y selon endroit de la collision ?
+  - top et bottom collision
 - Reconnexion
 - Server optimisation
 - Local coop ?
