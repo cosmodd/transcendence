@@ -30,8 +30,8 @@ Collision.BallPaddle = function(ball, paddle)
         new Vec2(ball.boundingbox_left, ball._uEntityPosition.y),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
-        if (does_intersect)
-            intersect_type = "longitudinal";
+            if (does_intersect)
+                intersect_type = "side";
         // Paddle top
         if (does_intersect === false) {
             does_intersect = DoIntersect(
@@ -39,8 +39,8 @@ Collision.BallPaddle = function(ball, paddle)
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
-        if (does_intersect)
-            intersect_type = "transversal";
+            if (does_intersect)
+                intersect_type = "top";
         }
         // Paddle bottom
         if (does_intersect === false) {
@@ -49,12 +49,12 @@ Collision.BallPaddle = function(ball, paddle)
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
-        if (does_intersect)
-            intersect_type = "transversal";
+            if (does_intersect)
+                intersect_type = "bottom";
         }
     }
 
-    if (ball.direction.x >= 0.) {
+    else if (ball._uEntityPosition.x > 0.) {
             // Paddle left side
             does_intersect = DoIntersect(
             new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
@@ -62,34 +62,33 @@ Collision.BallPaddle = function(ball, paddle)
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
             new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
             if (does_intersect)
-                intersect_type = "longitudinal";
+                intersect_type = "side";
     }
 
     if (does_intersect) {
-        // BALL NEW PLACEMENT
-        if (intersect_type == "longitudinal") {
+        if (intersect_type == "side") {
             let intersect = PaddleInterceptionYGap(ball, paddle, last_ball_pos); 
             let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
-            console.log(local_gap);
-            if (ball.direction.x < 0.)
-                ball._uEntityPosition.x = intersect.x + ball.radius;
-            else
-                ball._uEntityPosition.x = intersect.x - ball.radius;
-            ball._uEntityPosition.y = intersect.y;
-            ball.direction.x = -ball.direction.x;
-        }
-        else if (intersect_type == "transversal") {
-            // NEED TO DO
-            // if (ball.direction.y < 0.)
-            //     ball._uEntityPosition.y = intersect.y + ball.radius;
+            // NO BALL NEW PLACEMENT
+            // if (ball.direction.x < 0.)
+            //     ball._uEntityPosition.x = intersect.x + ball.radius;
             // else
-            //     ball._uEntityPosition.y = intersect.y - ball.radius;
-            // ball._uEntityPosition.x = intersect.x
-            // ball.direction.x = -ball.direction.x;
+            //     ball._uEntityPosition.x = intersect.x - ball.radius;
+            // ball._uEntityPosition.y = intersect.y;
+            ball.direction.x = -(ball.direction.x - Number.MIN_VALUE);
+            ball.direction.y += local_gap / paddle.height_half;
+        }
+        else {
+            // if (ball.direction.y < 0.)
+            //     ball._uEntityPosition.x = intersect.x + ball.radius;
+            // else
+            //     ball._uEntityPosition.x = intersect.x - ball.radius;
+            // ball._uEntityPosition.y = intersect.y;
+            ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
+            ball.direction.y = -(ball.direction.y + Number.MIN_VALUE);
         }
         ball.acceleration += k.BallAccelerationStep;
-        // BALL NEW Y 
-        // let y_dir_diff = max(1.0, y_gap / paddle.height_half);
+        ball.direction.normalize();
         last_ball_pos = null;
     }
     else {
@@ -108,14 +107,16 @@ Collision.BallWall = function(game, ball) {
     }
     else if (ball.boundingbox_right >= 1.) {
         ball.direction.x = -Math.abs(ball.direction.x);
-        ball.Reset();
-        game.score[0] += 1;
+        // ball.Reset();
+        // game.score[0] += 1;
     }
     else if (ball.boundingbox_top >= 1.) {
         ball.direction.y = -Math.abs(ball.direction.y);
+        ball.acceleration += k.BallAccelerationStep;
     }
     else if (ball.boundingbox_bottom <= -1.) {
         ball.direction.y = Math.abs(ball.direction.y);
+        ball.acceleration += k.BallAccelerationStep;
     }
 }
 

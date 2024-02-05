@@ -58,14 +58,5 @@ export function PaddleInterceptionYGap(ball, paddle, last_ball_pos)
 	let i = new Vec2(paddle._uEntityPosition.x, 0.0);
 	let t = Math.abs((i.x - last_ball_pos.x) / (ball._uEntityPosition.x - last_ball_pos.x ));
 	i.y = last_ball_pos.y * (1.0 - t) + ball._uEntityPosition.y * t;
-	return i; // local gap
-}
-
-export function PaddleInterceptionXGap(ball, paddle, last_ball_pos)
-{
-	let i = new Vec2(paddle._uEntityPosition.x, 0.0);
-	let t = Math.abs((i.x - last_ball_pos.x) / (ball._uEntityPosition.x - last_ball_pos.x ));
-	i.y = last_ball_pos.y * (1.0 - t) + ball._uEntityPosition.y * t;
-	// return i.y - paddle._uEntityPosition.y; // local gap
-	return i; // local gap
+	return i;
 }
