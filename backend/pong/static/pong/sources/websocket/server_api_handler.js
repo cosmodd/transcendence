@@ -5,7 +5,7 @@ import { PrintInfo, PrintError } from '../ui/info.js';
 
 ServerAPI.InitConnection = function()
 {
-	ServerAPI.websocket = new WebSocket("ws://localhost:8888");
+	ServerAPI.websocket = new WebSocket("ws://" + window.location.hostname + ":8888");
 
 	// Events
 	ServerAPI._InitGame();

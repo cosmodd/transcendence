@@ -23,6 +23,8 @@ Les clients:
   - Redondance GameType / DataOrigin ?
 
 #### General
+- Controles souris
+- Resize telephone
 - Ball Reset - selon le gagnant + attente
 - Collision - bugs
 - Reconnexion

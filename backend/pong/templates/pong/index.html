@@ -23,7 +23,8 @@
 		function RedirectToURL()
 		{
 			let token = document.getElementById('token').value;
-			window.location.href = "http://localhost/pong/?join=" + token;
+			var host = window.location.protocol + "//" + window.location.hostname;
+			window.location.href = host + "/pong/?join=" + token;
 		}
 	</script>
 
