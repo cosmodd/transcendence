@@ -49,7 +49,7 @@ class Collision:
         if ball.direction.x <= 0.:
             # Paddle right side
             does_intersect = DoIntersect(
-                Vec2(ball.previous_position.x - ball.radius, ball.previous_position.y * kScalingFactor[1]),
+                Vec2(ball.previous_position.x + ball.radius, ball.previous_position.y * kScalingFactor[1]),
                 Vec2(ball.boundingbox_left, ball.position.y),
                 Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                 Vec2(paddle.boundingbox_right, paddle.boundingbox_top))
@@ -108,11 +108,16 @@ class Collision:
             if (intersect_type == "side"):
                 intersect = PaddleInterceptionPoint(ball, paddle, ball.previous_position)
                 local_gap = intersect.y - paddle.position.y
+                ball.position.x = paddle.boundingbox_right + ball.radius if ball.direction.x <= 0.0 else paddle.boundingbox_left - ball.radius;
+                #ball.position.y = intersect.y
                 ball.direction.x = -(ball.direction.x - sys.float_info.min)
                 ball.direction.y += local_gap / paddle.height_half
             elif (intersect_type == "top" or intersect_type == "bottom"):
+                ball.position.y = paddle.boundingbox_top + ball.radius if intersect_type == "top" else paddle.boundingbox_bottom - ball.radius;
                 ball.direction.x = -(ball.direction.x + sys.float_info.min)
-                ball.direction.y = -(ball.direction.t + sys.float_info.min)
+                ball.direction.y = -(ball.direction.y + sys.float_info.min)
+            if (abs(ball.direction.y) > abs(ball.direction.x)): # TEMP
+                ball.direction.x, ball.direction.y = ball.direction.y, ball.direction.x
             ball.acceleration += kBallAccelerationStep
             ball.direction = ball.direction.Normalize()
             ball.previous_position = Vec2(0., 0.)

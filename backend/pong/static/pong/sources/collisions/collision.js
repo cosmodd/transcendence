@@ -89,24 +89,18 @@ Collision.BallPaddle = function(ball, paddle)
         if (intersect_type == "side") {
             let intersect = PaddleInterceptionPoint(ball, paddle, last_ball_pos); 
             let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
-            // NO BALL NEW PLACEMENT
-            // if (ball.direction.x < 0.)
-            //     ball._uEntityPosition.x = intersect.x + ball.radius;
-            // else
-            //     ball._uEntityPosition.x = intersect.x - ball.radius;
-            // ball._uEntityPosition.y = intersect.y;
+            ball._uEntityPosition.x = (ball.direction <= 0.0) ? paddle.boundingbox_right + ball.radius : paddle.boundingbox_left - ball.radius;
+            //ball._uEntityPosition.y = intersect.y;
             ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y += local_gap / paddle.height_half;
         }
         else if (intersect_type === "top" || intersect_type == "bottom") {
-            // if (ball.direction.y < 0.)
-            //     ball._uEntityPosition.x = intersect.x + ball.radius;
-            // else
-            //     ball._uEntityPosition.x = intersect.x - ball.radius;
-            // ball._uEntityPosition.y = intersect.y;
+            ball._uEntityPosition.y = (intersect_type === "top") ? paddle.boundingbox_top + ball.radius : paddle.boundingbox_bottom - ball.radius;
             ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y = -(ball.direction.y + Number.MIN_VALUE);
         }
+        if (Math.abs(ball.direction.y) > Math.abs(ball.direction.x)) // TEMP
+            [ball.direction.x, ball.direction.y] = [ball.direction.y, ball.direction.x];
         ball.acceleration += k.BallAccelerationStep;
         ball.direction.normalize();
         last_ball_pos = null;

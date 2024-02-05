@@ -51,7 +51,7 @@ async def create(websocket):
     connected = {websocket}
     game = Game()
     # Init secret token.
-    join_key = secrets.token_urlsafe(12)
+    join_key = secrets.token_urlsafe(3)
     JOIN[join_key] = game, connected
 
     try:

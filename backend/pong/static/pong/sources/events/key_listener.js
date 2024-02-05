@@ -1,4 +1,5 @@
 import * as D from "../utils/defines.js"
+import { Vec2 } from "../utils/class_vec.js";
 
 let KeyListener = {}
 
@@ -6,6 +7,7 @@ KeyListener.up_key_pressed = false;
 KeyListener.down_key_pressed = false;
 KeyListener.left_key_pressed = false;
 KeyListener.right_key_pressed = false;
+// KetListener.touches = Vec2(0.0, 0.0);
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
@@ -29,6 +31,10 @@ document.addEventListener('keyup', (event) => {
     } else if (event.key === 'ArrowRight') {
         KeyListener.right_key_pressed = false;
     }
+});
+
+document.addEventListener('touchstart', (event) => {
+    //event.touches[0].clientX, event.touches[0].clientY"
 });
 
 KeyListener.LastKeyPressed = function()

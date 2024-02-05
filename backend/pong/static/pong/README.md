@@ -21,16 +21,15 @@ Les clients:
 
 - Client
   - Redondance GameType / DataOrigin ?
+  - Ball Reset - selon le gagnant
 
 #### General
-- Controles souris
+- Controles tactiles (souris)
 - Resize telephone
-- Ball Reset - selon le gagnant + attente
 - Collision - bugs
 - Reconnexion
 - Server optimisation
-- Local coop ?
-- IA + API ?
+- Local coop ? IA + API ?
 
 #### Guidelines
 - ES.22

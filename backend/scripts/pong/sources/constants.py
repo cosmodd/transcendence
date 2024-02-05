@@ -67,10 +67,10 @@ DATA_INFO_TYPE_ERROR = "Error"
 DATA_INFO_TYPE_MESSAGE = "Message"
 
 
-kBallSpeed = 0.5
+kBallSpeed = 1.0 
 kBallAccelerationStep = 0.1 
 kBallRadius = 0.02
-kPaddleSpeed = 2.0
+kPaddleSpeed = 1.5
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2
 kScalingFactor = [1.0, 1.25] # temporary
