@@ -1,4 +1,4 @@
-import { DoIntersect, PaddleInterceptionYGap } from "./collision_utils.js";
+import { DoIntersect, PaddleInterceptionPoint } from "./collision_utils.js";
 import * as k from "../utils/constants_objects.js";
 import * as D from "../utils/defines.js"
 import { Vec2 } from '../utils/class_vec.js'
@@ -26,12 +26,12 @@ Collision.BallPaddle = function(ball, paddle)
     if (ball.direction.x <= 0.) {
         // Paddle right side
         does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x - ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+        new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
         new Vec2(ball.boundingbox_left, ball._uEntityPosition.y),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
-            if (does_intersect)
-                intersect_type = "side";
+        if (does_intersect)
+            intersect_type = "side";
         // Paddle top
         if (does_intersect === false) {
             does_intersect = DoIntersect(
@@ -54,20 +54,40 @@ Collision.BallPaddle = function(ball, paddle)
         }
     }
 
-    else if (ball._uEntityPosition.x > 0.) {
-            // Paddle left side
+    else if (ball.direction.x > 0.) {
+        // Paddle left side
+        does_intersect = DoIntersect(
+        new Vec2(last_ball_pos.x - ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+        new Vec2(ball.boundingbox_right, ball._uEntityPosition.y),
+        new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
+        new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+        if (does_intersect)
+            intersect_type = "side";
+        // Paddle top
+        if (does_intersect === false) {
             does_intersect = DoIntersect(
-            new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
-            new Vec2(ball.boundingbox_right, ball._uEntityPosition.y),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
-            new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
             if (does_intersect)
-                intersect_type = "side";
+                intersect_type = "top";
+        }
+        // Paddle bottom
+        if (does_intersect === false) {
+            does_intersect = DoIntersect(
+                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
+                new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
+                new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
+            if (does_intersect)
+                intersect_type = "bottom";
+        }
     }
 
     if (does_intersect) {
         if (intersect_type == "side") {
-            let intersect = PaddleInterceptionYGap(ball, paddle, last_ball_pos); 
+            let intersect = PaddleInterceptionPoint(ball, paddle, last_ball_pos); 
             let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
             // NO BALL NEW PLACEMENT
             // if (ball.direction.x < 0.)
@@ -75,10 +95,10 @@ Collision.BallPaddle = function(ball, paddle)
             // else
             //     ball._uEntityPosition.x = intersect.x - ball.radius;
             // ball._uEntityPosition.y = intersect.y;
-            ball.direction.x = -(ball.direction.x - Number.MIN_VALUE);
+            ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y += local_gap / paddle.height_half;
         }
-        else {
+        else if (intersect_type === "top" || intersect_type == "bottom") {
             // if (ball.direction.y < 0.)
             //     ball._uEntityPosition.x = intersect.x + ball.radius;
             // else

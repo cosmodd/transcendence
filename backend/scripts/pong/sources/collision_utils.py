@@ -34,3 +34,9 @@ def DoIntersect(p1, q1, p2, q2):
         return True
 
     return False  # Doesn't fall in any cases
+
+def PaddleInterceptionPoint(ball, paddle, last_ball_pos):
+    i = Vec2(paddle.position.x, 0.0)
+    t = abs((i.x - last_ball_pos.x) / (ball.position.x - last_ball_pos.x))
+    i.y = last_ball_pos.y * (1.0 - t) + ball.position.y * t
+    return i

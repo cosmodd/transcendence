@@ -24,7 +24,7 @@ class Vec2:
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def Normalize(self):
-        mag = self.magnitude()
+        mag = self.Magnitude()
         if mag != 0:
             return self / mag
         else:

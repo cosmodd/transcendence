@@ -20,17 +20,15 @@ Les clients:
 	- receive currentscale at room creation ?
 
 - Client
-  - IA + API
   - Redondance GameType / DataOrigin ?
 
 #### General
 - Ball Reset - selon le gagnant + attente
-- Collision - meilleur collision paddle/ball
-  - ball.direction.y selon endroit de la collision ?
-  - top et bottom collision
+- Collision - bugs
 - Reconnexion
 - Server optimisation
 - Local coop ?
+- IA + API ?
 
 #### Guidelines
 - ES.22

@@ -53,7 +53,7 @@ export function DoIntersect(p1, q1, p2, q2)
 	return false; // Doesn't fall in any cases 
 }
 
-export function PaddleInterceptionYGap(ball, paddle, last_ball_pos)
+export function PaddleInterceptionPoint(ball, paddle, last_ball_pos)
 {
 	let i = new Vec2(paddle._uEntityPosition.x, 0.0);
 	let t = Math.abs((i.x - last_ball_pos.x) / (ball._uEntityPosition.x - last_ball_pos.x ));
