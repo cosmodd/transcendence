@@ -9,7 +9,7 @@
 </head>
 <body>
 	<div style="position:relative;">
-		<canvas id="glcanvas" width="600" height="480"></canvas>
+		<canvas id="glcanvas"></canvas>
 		<div id="overlay">
 			<div><span id="score"></span></div>
 		</div>
@@ -41,6 +41,7 @@
 	<script src="{% static 'pong/sources/ui/overlay.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/ui/info.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/events/key_listener.js' %}" type="module"></script>
+    <script src="{% static 'pong/sources/events/resize.js' %}" type="module"></script>
     <script src="{% static 'pong/sources/utils/class_vec.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/utils/data_origin.js' %}" type="module"></script>
 	<script src="{% static 'pong/sources/utils/game_type.js' %}" type="module"></script>

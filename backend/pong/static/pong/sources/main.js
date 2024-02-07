@@ -2,11 +2,11 @@ import { Vec3, Vec2 } from './utils/class_vec.js';
 import GameType from './utils/game_type.js';
 import Game from './objects/class_game.js';
 import Collision from './collisions/collision.js'
+import { ResizeCanvas } from './events/resize.js';
 
 let gl = null;
 let gl_canvas = null;
 
-// Game related
 let game;
 
 window.addEventListener("load", Init, false);
@@ -14,6 +14,8 @@ window.addEventListener("load", Init, false);
 async function Init() {
     gl_canvas = document.getElementById("glcanvas");
     gl = gl_canvas.getContext("webgl");
+
+    ResizeCanvas();
 
     game = new Game(GameType.Online, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));

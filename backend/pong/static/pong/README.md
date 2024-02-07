@@ -17,15 +17,13 @@ Les clients:
 
 #### Specific
 - Server
-	- receive currentscale at room creation ?
 
 - Client
-  - Redondance GameType / DataOrigin ?
+  - Resize - current_scale.x ...?
   - Ball Reset - selon le gagnant
 
 #### General
-- Controles tactiles (souris)
-- Resize telephone
+- Controles tactiles - a tester
 - Collision - bugs
 - Reconnexion
 - Server optimisation
