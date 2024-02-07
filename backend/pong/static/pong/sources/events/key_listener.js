@@ -7,7 +7,6 @@ KeyListener.up_key_pressed = false;
 KeyListener.down_key_pressed = false;
 KeyListener.left_key_pressed = false;
 KeyListener.right_key_pressed = false;
-// KetListener.touches = Vec2(0.0, 0.0);
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
@@ -34,7 +33,17 @@ document.addEventListener('keyup', (event) => {
 });
 
 document.addEventListener('touchstart', (event) => {
-    //event.touches[0].clientX, event.touches[0].clientY"
+    let y = event.touches[0].clientY;
+
+    if (y <= window.innerHeight / 2)
+        KeyListener.up_key_pressed = true;
+    else
+        KeyListener.down_key_pressed = true;
+});
+
+document.addEventListener('touchend', (event) => {
+    KeyListener.up_key_pressed = false;
+    KeyListener.down_key_pressed = false;
 });
 
 KeyListener.LastKeyPressed = function()
