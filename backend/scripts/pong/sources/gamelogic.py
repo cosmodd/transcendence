@@ -58,7 +58,7 @@ async def ServerSendLoop(game: Game, connected):
             await sender.ToAll(score_message, connected)
             game.someone_scored = False
 
-        await asyncio.sleep(0.001) 
+        await asyncio.sleep(1 / 60) 
 
 
 async def ClientRecvLoop(websocket, game: Game, current_player, connected):

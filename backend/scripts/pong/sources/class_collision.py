@@ -112,12 +112,12 @@ class Collision:
                 #ball.position.y = intersect.y
                 ball.direction.x = -(ball.direction.x - sys.float_info.min)
                 ball.direction.y += local_gap / paddle.height_half
+                ball.direction.y = min(1.0, ball.direction.y)
+                ball.direction.y = max(-1.0, ball.direction.y)
             elif (intersect_type == "top" or intersect_type == "bottom"):
                 ball.position.y = paddle.boundingbox_top + ball.radius if intersect_type == "top" else paddle.boundingbox_bottom - ball.radius;
                 ball.direction.x = -(ball.direction.x + sys.float_info.min)
                 ball.direction.y = -(ball.direction.y + sys.float_info.min)
-            if (abs(ball.direction.y) > abs(ball.direction.x)): # TEMP
-                ball.direction.x, ball.direction.y = ball.direction.y, ball.direction.x
             ball.acceleration += kBallAccelerationStep
             ball.direction = ball.direction.Normalize()
             ball.previous_position = Vec2(0., 0.)

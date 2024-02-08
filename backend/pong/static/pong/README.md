@@ -19,7 +19,6 @@ Les clients:
 - Server
 
 - Client
-  - Resize - current_scale.x ...?
   - Ball Reset - selon le gagnant
 
 #### General

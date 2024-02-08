@@ -3,6 +3,7 @@ import GameType from './utils/game_type.js';
 import Game from './objects/class_game.js';
 import Collision from './collisions/collision.js'
 import { ResizeCanvas } from './events/resize.js';
+import { DebugDraw, DebugSetup } from './utils/debug.js';
 
 let gl = null;
 let gl_canvas = null;
@@ -17,11 +18,13 @@ async function Init() {
 
     ResizeCanvas();
 
-    game = new Game(GameType.Online, [1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(GameType.Local, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
-    
+
+    // await DebugSetup();
+
     GameLoop();
 }
 
@@ -40,10 +43,10 @@ function GameLoop() {
     // Get data from server or interpolate with known keys
     game.UpdatePositions();
 
-    // Collisions - local only
+    // Collisions
+    Collision.PaddleWall(game.player);
+    Collision.PaddleWall(game.opponent);
     if (game.game_type === GameType.Local) {
-        Collision.PaddleWall(game.player);
-        Collision.PaddleWall(game.opponent);
         Collision.BallPaddle(game.ball, game.player);
         Collision.BallPaddle(game.ball, game.opponent);
         Collision.BallWall(game, game.ball);
@@ -58,6 +61,8 @@ function GameLoop() {
 
     // Draw
     game.Draw();
+
+    // DebugDraw(game.player._uEntityPosition);
 
     requestAnimationFrame(GameLoop);
 }

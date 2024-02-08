@@ -1,8 +1,7 @@
 import { DoIntersect, PaddleInterceptionPoint } from "./collision_utils.js";
 import * as k from "../utils/constants_objects.js";
-import * as D from "../utils/defines.js"
 import { Vec2 } from '../utils/class_vec.js'
-import KeyListener from '../events/key_listener.js';
+import { SetDebugXandGap, debug_1_local_gap } from "../utils/debug.js";
 
 // Namespace equivalent
 let Collision = {};
@@ -89,18 +88,21 @@ Collision.BallPaddle = function(ball, paddle)
         if (intersect_type == "side") {
             let intersect = PaddleInterceptionPoint(ball, paddle, last_ball_pos); 
             let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
-            ball._uEntityPosition.x = (ball.direction <= 0.0) ? paddle.boundingbox_right + ball.radius : paddle.boundingbox_left - ball.radius;
+            ball._uEntityPosition.x = (ball.direction.x <= 0.0) ? paddle.boundingbox_right + ball.radius : paddle.boundingbox_left - ball.radius;
             //ball._uEntityPosition.y = intersect.y;
             ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y += local_gap / paddle.height_half;
+            ball.direction.y = Math.min(1.0, ball.direction.y);
+            ball.direction.y = Math.max(-1.0, ball.direction.y);
+
+            // debug
+            // SetDebugXandGap(local_gap); 
         }
         else if (intersect_type === "top" || intersect_type == "bottom") {
             ball._uEntityPosition.y = (intersect_type === "top") ? paddle.boundingbox_top + ball.radius : paddle.boundingbox_bottom - ball.radius;
             ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y = -(ball.direction.y + Number.MIN_VALUE);
         }
-        if (Math.abs(ball.direction.y) > Math.abs(ball.direction.x)) // TEMP
-            [ball.direction.x, ball.direction.y] = [ball.direction.y, ball.direction.x];
         ball.acceleration += k.BallAccelerationStep;
         ball.direction.normalize();
         last_ball_pos = null;

@@ -73,4 +73,4 @@ kBallRadius = 0.02
 kPaddleSpeed = 1.5
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2
-kScalingFactor = [1.0, 1.25] # temporary
+kScalingFactor = [1.0, 1.25] # temporary ?
