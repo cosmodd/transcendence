@@ -13,14 +13,15 @@ export async function DebugSetup()
 
 export function DebugDraw(paddle_position)
 {
-    debug_1._uEntityPosition = new Vec2(-0.9 + 0.01, paddle_position.y + debug_1_local_gap);
+    // debug_1._uEntityPosition = new Vec2(-0.9 + 0.01, paddle_position.y + debug_1_local_gap);
+    debug_1._uEntityPosition = new Vec2(-0.9, debug_1_local_gap);
     debug_1.UpdateUniform();
     debug_1.Draw();
 }
 
-export function SetDebugXandGap(local_gap)
+export function SetDebug(foo)
 {
-	debug_1_local_gap = local_gap;
+	debug_1_local_gap = foo;
 }
 
 

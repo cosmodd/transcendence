@@ -19,6 +19,7 @@ Les clients:
 - Server
 
 - Client
+  - BallPaddle collision wrong top la haut
   - Ball Reset - selon le gagnant
 
 #### General

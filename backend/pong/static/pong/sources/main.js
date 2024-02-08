@@ -23,7 +23,7 @@ async function Init() {
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
 
-    // await DebugSetup();
+    await DebugSetup();
 
     GameLoop();
 }
@@ -62,7 +62,7 @@ function GameLoop() {
     // Draw
     game.Draw();
 
-    // DebugDraw(game.player._uEntityPosition);
+    DebugDraw(game.player._uEntityPosition);
 
     requestAnimationFrame(GameLoop);
 }
