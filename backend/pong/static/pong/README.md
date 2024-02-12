@@ -17,13 +17,11 @@ Les clients:
 
 #### Specific
 - Server
-  - Memory Usage
 
 - Client
   - Ball Reset - selon le gagnant
 
 #### General
-- Controles tactiles - a tester
 - Collision - bugs
 - Reconnexion
 - Server optimisation
