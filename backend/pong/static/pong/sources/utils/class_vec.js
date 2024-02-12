@@ -72,4 +72,14 @@ export class Vec2 {
         this.y += v.y;
         return this;
     }
+
+    Set(v) {
+        this.x = v.x;
+        this.x = v.y;
+    }
+
+    SetXY(x, y) {
+        this.x = x;
+        this.y = y;
+    }
 }

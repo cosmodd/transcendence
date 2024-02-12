@@ -17,9 +17,9 @@ Les clients:
 
 #### Specific
 - Server
+  - Memory Usage
 
 - Client
-  - BallPaddle collision wrong top la haut
   - Ball Reset - selon le gagnant
 
 #### General

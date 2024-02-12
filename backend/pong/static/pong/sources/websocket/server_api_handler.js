@@ -93,7 +93,7 @@ ServerAPI.UpdatePaddleData = function(event)
 			ServerAPI.opponent_state;
 
 		paddle_state.promise = paddle_state.promise.then(async () => {
-			paddle_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
+			paddle_state.position.SetXY(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
 			paddle_state.key = event[ServerAPI.DATA_INPUT];
 			paddle_state.new_data_available = true;
 		});
@@ -102,8 +102,8 @@ ServerAPI.UpdatePaddleData = function(event)
 ServerAPI.UpdateBallData = function(event)
 {
 	ServerAPI.ball_state.promise = ServerAPI.ball_state.promise.then(async () => {
-		ServerAPI.ball_state.position = new Vec2(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
-		ServerAPI.ball_state.direction = new Vec2(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
+		ServerAPI.ball_state.position.SetXY(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
+		ServerAPI.ball_state.direction.SetXY(event[ServerAPI.DATA_DIRECTION][0], event[ServerAPI.DATA_DIRECTION][1]);
 		ServerAPI.ball_state.acceleration = event[ServerAPI.DATA_ACCELERATION];
 		ServerAPI.ball_state.new_data_available = true;
 	});
