@@ -13,10 +13,10 @@ class Collision:
     def PaddleWall(self, player: Paddle):
         player.ComputeBoundingbox()
 
-        if (player.boundingbox_top > 1.):
-            player.position.y -= player.boundingbox_top - 1.
-        elif (player.boundingbox_bottom < -1.):
-            player.position.y += -(player.boundingbox_bottom + 1.)
+        if (player.boundingbox_top * kScalingFactor[1] > 1.):
+            player.position.y -= (player.boundingbox_top * kScalingFactor[1]) - 1.
+        elif (player.boundingbox_bottom * kScalingFactor[1] < -1.):
+            player.position.y += -(player.boundingbox_bottom * kScalingFactor[1] + 1.)
 
     def BallWall(self, ball: Ball):
         ball.ComputeBoundingbox()
@@ -49,7 +49,7 @@ class Collision:
         if ball.direction.x <= 0.:
             # Paddle right side
             does_intersect = DoIntersect(
-                Vec2(ball.previous_position.x + ball.radius, ball.previous_position.y * kScalingFactor[1]),
+                Vec2(ball.previous_position.x + ball.radius, ball.previous_position.y),
                 Vec2(ball.boundingbox_left, ball.position.y),
                 Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                 Vec2(paddle.boundingbox_right, paddle.boundingbox_top))
@@ -58,7 +58,7 @@ class Collision:
             # Paddle top
             if (does_intersect == False):
                 does_intersect = DoIntersect(
-                    Vec2(ball.previous_position.x, ball.previous_position.y * kScalingFactor[1]),
+                    Vec2(ball.previous_position.x, ball.previous_position.y),
                     Vec2(ball.position.x, ball.position.y),
                     Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                     Vec2(paddle.boundingbox_left, paddle.boundingbox_top))
@@ -67,7 +67,7 @@ class Collision:
             # Paddle bottom
             if (does_intersect == False):
                 does_intersect = DoIntersect(
-                    Vec2(ball.previous_position.x, ball.previous_position.y * kScalingFactor[1]),
+                    Vec2(ball.previous_position.x, ball.previous_position.y),
                     Vec2(ball.position.x, ball.position.y),
                     Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                     Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom))
@@ -78,7 +78,7 @@ class Collision:
         if ball.direction.x > 0.:
             # bottom current ball
             does_intersect = DoIntersect(
-                Vec2(ball.previous_position.x - ball.radius, ball.previous_position.y * kScalingFactor[1]),
+                Vec2(ball.previous_position.x - ball.radius, ball.previous_position.y),
                 Vec2(ball.boundingbox_right, ball.position.y),
                 Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
                 Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom))
@@ -87,7 +87,7 @@ class Collision:
             # Paddle top
             if (does_intersect == False):
                 does_intersect = DoIntersect(
-                    Vec2(ball.previous_position.x, ball.previous_position.y * kScalingFactor[1]),
+                    Vec2(ball.previous_position.x, ball.previous_position.y),
                     Vec2(ball.position.x, ball.position.y),
                     Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                     Vec2(paddle.boundingbox_left, paddle.boundingbox_top))
@@ -96,7 +96,7 @@ class Collision:
             # Paddle bottom
             if (does_intersect == False):
                 does_intersect = DoIntersect(
-                    Vec2(ball.previous_position.x, ball.previous_position.y * kScalingFactor[1]),
+                    Vec2(ball.previous_position.x, ball.previous_position.y),
                     Vec2(ball.position.x, ball.position.y),
                     Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                     Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom))
@@ -109,7 +109,7 @@ class Collision:
                 intersect = PaddleInterceptionPoint(ball, paddle, ball.previous_position)
                 local_gap = intersect.y - paddle.position.y
                 ball.position.x = paddle.boundingbox_right + ball.radius if ball.direction.x <= 0.0 else paddle.boundingbox_left - ball.radius;
-                #ball.position.y = intersect.y
+                # ball.position.y = intersect.y
                 ball.direction.x = -(ball.direction.x - sys.float_info.min)
                 ball.direction.y += local_gap / paddle.height_half
                 ball.direction.y = min(1.0, ball.direction.y)

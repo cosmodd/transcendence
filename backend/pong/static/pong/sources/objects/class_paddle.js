@@ -108,10 +108,10 @@ class Paddle extends Mesh {
 		this.boundingbox_right = this._uEntityPosition.x + this.width_half;
 		this.boundingbox_top = this._uEntityPosition.y + this.height_half;
 		this.boundingbox_bottom = this._uEntityPosition.y - this.height_half;
-		this.boundingbox_left *= this.scaling_factor[0];
-		this.boundingbox_right *= this.scaling_factor[0];
-		this.boundingbox_top *= this.scaling_factor[1];
-		this.boundingbox_bottom *= this.scaling_factor[1];
+		// this.boundingbox_left *= this.scaling_factor[0];
+		// this.boundingbox_right *= this.scaling_factor[0];
+		// this.boundingbox_top *= this.scaling_factor[1];
+		// this.boundingbox_bottom *= this.scaling_factor[1];
 	}
 }
 

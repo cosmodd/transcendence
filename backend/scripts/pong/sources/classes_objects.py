@@ -41,8 +41,8 @@ class Paddle:
         self.boundingbox_right = self.position.x + self.width_half;
         self.boundingbox_top = self.position.y + self.height_half;
         self.boundingbox_bottom = self.position.y - self.height_half;
-        self.boundingbox_left *= kScalingFactor[0]
-        self.boundingbox_right *= kScalingFactor[0];
-        self.boundingbox_top *= kScalingFactor[1];
-        self.boundingbox_bottom *= kScalingFactor[1];
+        # self.boundingbox_left *= kScalingFactor[0]
+        # self.boundingbox_right *= kScalingFactor[0];
+        # self.boundingbox_top *= kScalingFactor[1];
+        # self.boundingbox_bottom *= kScalingFactor[1];
 

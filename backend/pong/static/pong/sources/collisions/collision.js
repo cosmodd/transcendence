@@ -25,7 +25,7 @@ Collision.BallPaddle = function(ball, paddle)
     if (ball.direction.x <= 0.) {
         // Paddle right side
         does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+        new Vec2(last_ball_pos.x + ball.radius, last_ball_pos.y),
         new Vec2(ball.boundingbox_left, ball._uEntityPosition.y),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
         new Vec2(paddle.boundingbox_right, paddle.boundingbox_top));
@@ -34,7 +34,7 @@ Collision.BallPaddle = function(ball, paddle)
         // Paddle top
         if (does_intersect === false) {
             does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(last_ball_pos.x, last_ball_pos.y),
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
@@ -44,7 +44,7 @@ Collision.BallPaddle = function(ball, paddle)
         // Paddle bottom
         if (does_intersect === false) {
             does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(last_ball_pos.x, last_ball_pos.y),
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
@@ -56,7 +56,7 @@ Collision.BallPaddle = function(ball, paddle)
     else if (ball.direction.x > 0.) {
         // Paddle left side
         does_intersect = DoIntersect(
-        new Vec2(last_ball_pos.x - ball.radius, last_ball_pos.y * ball.scaling_factor[1]),
+        new Vec2(last_ball_pos.x - ball.radius, last_ball_pos.y),
         new Vec2(ball.boundingbox_right, ball._uEntityPosition.y),
         new Vec2(paddle.boundingbox_left, paddle.boundingbox_top),
         new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
@@ -65,7 +65,7 @@ Collision.BallPaddle = function(ball, paddle)
         // Paddle top
         if (does_intersect === false) {
             does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(last_ball_pos.x, last_ball_pos.y),
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_top),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_top));
@@ -75,7 +75,7 @@ Collision.BallPaddle = function(ball, paddle)
         // Paddle bottom
         if (does_intersect === false) {
             does_intersect = DoIntersect(
-                new Vec2(last_ball_pos.x, last_ball_pos.y * ball.scaling_factor[1]),
+                new Vec2(last_ball_pos.x, last_ball_pos.y),
                 new Vec2(ball._uEntityPosition.x, ball._uEntityPosition.y),
                 new Vec2(paddle.boundingbox_right, paddle.boundingbox_bottom),
                 new Vec2(paddle.boundingbox_left, paddle.boundingbox_bottom));
@@ -89,15 +89,15 @@ Collision.BallPaddle = function(ball, paddle)
             let intersect = PaddleInterceptionPoint(ball, paddle, last_ball_pos); 
             let local_gap = intersect.y - paddle._uEntityPosition.y; // local gap
             ball._uEntityPosition.x = (ball.direction.x <= 0.0) ? paddle.boundingbox_right + ball.radius : paddle.boundingbox_left - ball.radius;
-            //ball._uEntityPosition.y = intersect.y;
+            // ball._uEntityPosition.y = intersect.y;
             ball.direction.x = -(ball.direction.x + Number.MIN_VALUE);
             ball.direction.y += local_gap / paddle.height_half;
             ball.direction.y = Math.min(1.0, ball.direction.y);
             ball.direction.y = Math.max(-1.0, ball.direction.y);
 
-            // // debug
+            // debug
             // console.log("SIDE");
-            // SetDebug(local_gap); 
+            // SetDebug(intersect.y); 
         }
         else if (intersect_type === "top" || intersect_type == "bottom") {
             ball._uEntityPosition.y = (intersect_type === "top") ? paddle.boundingbox_top + ball.radius : paddle.boundingbox_bottom - ball.radius;
@@ -105,8 +105,11 @@ Collision.BallPaddle = function(ball, paddle)
             ball.direction.y = -(ball.direction.y + Number.MIN_VALUE);
 
             //debug
-            console.log("TOP");
-            SetDebug(paddle.boundingbox_top); 
+            // console.log(intersect_type);
+            // if (intersect_type === "top")
+            //     SetDebug(paddle._uEntityPosition.y + paddle.height_half); 
+            // else
+            //     SetDebug(paddle._uEntityPosition.y - paddle.height_half); 
         }
         ball.acceleration += k.BallAccelerationStep;
         ball.direction.normalize();
@@ -128,8 +131,8 @@ Collision.BallWall = function(game, ball) {
     }
     else if (ball.boundingbox_right >= 1.) {
         ball.direction.x = -Math.abs(ball.direction.x);
-        // ball.Reset();
-        // game.score[0] += 1;
+        ball.Reset();
+        game.score[0] += 1;
     }
     else if (ball.boundingbox_top >= 1.) {
         ball.direction.y = -Math.abs(ball.direction.y);
@@ -144,10 +147,10 @@ Collision.BallWall = function(game, ball) {
 Collision.PaddleWall = function(paddle) {
     paddle.ComputeBoundingbox();
 
-    if (paddle.boundingbox_top > 1.)
-        paddle._uEntityPosition.y -= paddle.boundingbox_top - 1.;
-    else if (paddle.boundingbox_bottom < -1.)
-        paddle._uEntityPosition.y += -(paddle.boundingbox_bottom + 1.);
+    if (paddle.boundingbox_top * paddle.scaling_factor[1] > 1.)
+        paddle._uEntityPosition.y -= (paddle.boundingbox_top * paddle.scaling_factor[1]) - 1.;
+    else if (paddle.boundingbox_bottom * paddle.scaling_factor[1] < -1.)
+        paddle._uEntityPosition.y += -(paddle.boundingbox_bottom * paddle.scaling_factor[1] + 1.);
 }
 
 export default Collision;
