@@ -15,6 +15,10 @@ Les clients:
 * 2 players via local/ia
 * UX 
 
+
+#### Reconnexion
+- Systeme de pause
+
 #### Specific
 - Server
 
@@ -23,7 +27,6 @@ Les clients:
 
 #### General
 - Collision - bugs
-- Reconnexion
 - Server optimisation
 - Local coop ? IA + API ?
 
