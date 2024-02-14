@@ -14,7 +14,7 @@ export function PrintInfo(event)
 	}
 }
 
-function PrintInfoMessage(message) 
+export function PrintInfoMessage(message) 
 {
 	console.log(message);
 

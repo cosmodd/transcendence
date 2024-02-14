@@ -1,28 +1,24 @@
 #!/usr/bin/env python
-
 #debug
 import logging
-logger = logging.getLogger('websockets')
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
-
-import asyncio
-import django
-import websockets
+# logger = logging.getLogger('websockets')
+# logger.setLevel(logging.DEBUG)
+# logger.addHandler(logging.StreamHandler())
 import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
+django.setup()
+import asyncio
+import websockets
 import secrets
 import json
-
 import sender
 from gamelogic import ClientRecvLoop, ServerSendLoop
 from class_game import *
 from constants import *
-#from sesame.utils import get_user
+from pong.models import Game as GameModel
+from asgiref.sync import sync_to_async
 #from websockets.frames import CloseCode
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
-django.setup()
-
 #from django.core.management import call_command
 
 ROOM = {}
@@ -61,8 +57,10 @@ async def new_room():
     client1 = await connected_clients.get()
     client2 = await connected_clients.get()
 
-    game = Game()
     room_id = secrets.token_urlsafe(3)
+    game = Game()
+    game.model = await GameModel.objects.acreate(room_id=room_id)
+    await game.model.asave()
     ROOM[room_id] = game, [client1, client2]
 
     event = {

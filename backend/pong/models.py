@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import Account
+# from users.models import Account
 
 class Game(models.Model):
 	STATUS_CHOICES = (
@@ -9,21 +9,22 @@ class Game(models.Model):
 			('annulee', 'Annulée'),
 		)
 
-	players = models.ManyToManyField(Account, related_name='games')
+	# players = models.ManyToManyField(Account, related_name='games')
 	date_begin = models.DateTimeField(auto_now_add=True)
 	duration = models.DurationField(null=True, blank=True)
-	statut = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
-	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
+	# winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
+	room_id = models.CharField(max_length=5, null=True)
 
 	def __str__(self):
-		return f"Partie ({self.id}) - Début: {self.date_begin}, Statut: {self.statut}, Gagnant: {self.winner}"
+		return f"Partie ({self.id}) - Début: {self.date_begin}, Statut: {self.status}, Room_ID: {self.room_id}"
 
 	class Meta:
 		verbose_name = "Game"
 		verbose_name_plural = "Games"
 
 class Score(models.Model):
-	player = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="scores")
+	# player = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="scores")
 	game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="scores")
 	score = models.IntegerField()
 

@@ -10,6 +10,7 @@ __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
 PLAYER1, PLAYER2 = DATA_PLAYER_PLAYER1, DATA_PLAYER_PLAYER2
 
+
 class Game:
 	def __init__(self):
 		self.MessageBuilder = MessageBuilder(self)
@@ -22,6 +23,7 @@ class Game:
 		self.score[PLAYER1] = 0
 		self.score[PLAYER2] = 0
 		self.someone_scored = False
+		self.model = {}
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -54,3 +56,4 @@ class Game:
 	def UpdateScore(self, player: str):
 		self.score[player] += 1
 		self.someone_scored = True
+
