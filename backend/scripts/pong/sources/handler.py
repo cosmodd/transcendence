@@ -47,14 +47,13 @@ async def handler(websocket):
     assert event[METHOD] == FROM_CLIENT
     await connected_clients.put(websocket)
 
-    # TODO try disconnection
-    event = {}
+    # Wait for room creation
     async for message in websocket:
         event = json.loads(message)
         if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
             break 
     
-    game, connected = ROOM[event["Room_ID"]]
+    game, connected = ROOM[event[DATA_LOBBY_ROOM_ID]]
     await ClientRecvLoop(websocket, game, event[DATA_PLAYER], connected, event["Room_ID"])
     
     
@@ -72,73 +71,14 @@ async def new_room():
         DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
         DATA_PLAYER: PLAYER1,
         DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-        DATA_INFO_TYPE_MESSAGE: "Room created",
-        "Room_ID": room_id
+        DATA_INFO_TYPE_MESSAGE: "Room found: " + str(room_id),
+        DATA_LOBBY_ROOM_ID: room_id
     }
     await client1.send(json.dumps(event))
-    event = {
-        METHOD: FROM_SERVER,
-        OBJECT: OBJECT_LOBBY,
-        DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
-        DATA_PLAYER: PLAYER2,
-        DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-        DATA_INFO_TYPE_MESSAGE: "Room created",
-        "Room_ID": room_id
-    }
+    event[DATA_PLAYER] = PLAYER2
     await client2.send(json.dumps(event))
 
-    
-# async def create(websocket):
-#     # Init set of WebSocket connections receiving moves
-#     connected = {websocket}
-#     game = Game()
-#     # Init secret token.
-#     join_key = secrets.token_urlsafe(3)
-#     JOIN[join_key] = game, connected
-
-#     try:
-#         event = {
-#             METHOD: FROM_SERVER,
-#             OBJECT: OBJECT_INFO,
-#             DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-#             DATA_INFO_TYPE_MESSAGE: join_key
-#         }
-#         await websocket.send(json.dumps(event))
-        
-#         # Game loop
-#         await ClientRecvLoop(websocket, game, PLAYER1, connected)
-
-#     finally:
-#         del JOIN[join_key]
-
-
-# async def join(websocket, join_key):
-#     try:
-#         game, connected = JOIN[join_key]
-#     except KeyError:
-#         await sender.Error(websocket, "Game not found.")
-#         return
-
-#     connected.add(websocket);
-
-#     for ws in connected:
-#         response = {
-#             METHOD: FROM_SERVER,
-#             OBJECT: OBJECT_INFO, 
-#             DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-#             DATA_INFO_TYPE_MESSAGE: "Both clients are connected!"
-#         }
-#         await ws.send(json.dumps(response))
-
-#     #Game loop
-#     try:
-#         asyncio.ensure_future(ServerSendLoop(game, connected))
-#         await ClientRecvLoop(websocket, game, PLAYER2, connected)
-#     finally:
-#         connected.remove(websocket)
-
-
-
+    asyncio.ensure_future(ServerSendLoop(game, [client1, client2]))
 
 if __name__ == "__main__":
     asyncio.run(main())

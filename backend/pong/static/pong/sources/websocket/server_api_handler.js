@@ -23,6 +23,7 @@ ServerAPI._InitGame = function()
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 	});
+	PrintInfo
 }
 
 ServerAPI._Recv = function() {
@@ -97,16 +98,15 @@ ServerAPI.UpdateLobby = function(event)
 			ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
-			PrintInfo(event);
-			console.log("im in")
 			let response = {
 				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
 				[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
-				["Room_ID"]: event["Room_ID"]
+				[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
 			}
 			ServerAPI.websocket.send(JSON.stringify(response));
+			PrintInfo(event);
 		}
 	}
 
