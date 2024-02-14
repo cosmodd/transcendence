@@ -34,28 +34,22 @@ services:
       - 8888:8888 # Websockets
     restart: unless-stopped
     depends_on:
-      # - database
-      # ! ces deux lignes empechent le lancement de la commande suivant sur linux:
-      # docker compose run app /bin/zsh
       database:
         condition: service_healthy # wait for database to be ready
 
   frontend:
     container_name: frontend
     hostname: frontend
-    image: nginx:stable-alpine
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - ./frontend:/var/www/html
-      - ./nginx:/etc/nginx/conf.d
-    ports:
-      - 80:80
-      - 443:443 # HTTPS
-    restart: unless-stopped
+      - ./frontend:/app
     networks:
       - transcendence
-    depends_on:
-      - django
+    ports:
+      - 8080:5173
 
 networks:
   transcendence:
