@@ -61,7 +61,7 @@ async def ServerSendLoop(game: Game, connected):
         await asyncio.sleep(1 / 60) 
 
 
-async def ClientRecvLoop(websocket, game: Game, current_player, connected):
+async def ClientRecvLoop(websocket, game: Game, current_player, connected, room_id):
     async for message in websocket:
         try:
             event = json.loads(message)

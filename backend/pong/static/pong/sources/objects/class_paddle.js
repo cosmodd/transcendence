@@ -71,10 +71,12 @@ class Paddle extends Mesh {
 				}
 				break;
 			case DataOrigin.WebSocket:
-				if (this.iam === D.PLAYER && await ServerAPI.NewPlayerStateAvailable())
-					paddle_state = await ServerAPI.GetPlayerState();
-				if (this.iam === D.OPPONENT && await ServerAPI.NewOpponentStateAvailable())
-					paddle_state = await ServerAPI.GetOpponentState();
+				try {
+					if (this.iam === D.PLAYER && await ServerAPI.NewPlayerStateAvailable())
+						paddle_state = await ServerAPI.GetPlayerState();
+					if (this.iam === D.OPPONENT && await ServerAPI.NewOpponentStateAvailable())
+						paddle_state = await ServerAPI.GetOpponentState();
+				} catch (e) {}
 				break ;
 		}
 

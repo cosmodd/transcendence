@@ -51,18 +51,20 @@ class Ball extends Mesh {
 	// Get new server position OR interpolate
 	async UpdatePosition(delta_time)
 	{
-		if (this.data_origin === DataOrigin.WebSocket 
-			&& await ServerAPI.NewBallStateAvailable()) {
-				let ball_state = await ServerAPI.GetBallState();
-				this._uEntityPosition = ball_state.position.Clone();
-				this.direction = ball_state.direction.Clone();
-				this.acceleration = ball_state.acceleration;
-		}
-		else {
-			const current_speed = this.speed + this.acceleration;
-			const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
-			this._uEntityPosition.Add(delta_position);
-		}
+		try {
+			if (this.data_origin === DataOrigin.WebSocket 
+				&& await ServerAPI.NewBallStateAvailable()) {
+					let ball_state = await ServerAPI.GetBallState();
+					this._uEntityPosition = ball_state.position.Clone();
+					this.direction = ball_state.direction.Clone();
+					this.acceleration = ball_state.acceleration;
+			}
+			else {
+				const current_speed = this.speed + this.acceleration;
+				const delta_position = this.direction.Clone().MultiplyScalar(current_speed * delta_time);
+				this._uEntityPosition.Add(delta_position);
+			}
+		} catch(e) {}
 	}
 
 	Reset()

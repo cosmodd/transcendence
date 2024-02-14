@@ -16,29 +16,10 @@ ServerAPI.InitConnection = function()
 ServerAPI._InitGame = function()
 {
 	ServerAPI.websocket.addEventListener("open", () => {
-		const params = new URLSearchParams(window.location.search);
-		let event = {}
-		// Joining 
-		if (params.has("join")) {
-			event = {	[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-						[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
-						[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_JOIN,
-						[ServerAPI.DATA_LOBBY_JOINKEY]: params.get("join")
-			}
-			ServerAPI.iam = ServerAPI.DATA_PLAYER_PLAYER2;
-			ServerAPI.player_state = NewPaddleState(new Vec2(0.9, 0.));
-			ServerAPI.opponent_state = NewPaddleState(new Vec2(-0.9, 0.));
-
-		} 
-		// Creating
-		else {
-			event = {	[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-						[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
-						[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_CREATE
-			}
-			ServerAPI.iam = ServerAPI.DATA_PLAYER_PLAYER1;
-			ServerAPI.player_state = NewPaddleState(new Vec2(-0.9, 0.));
-			ServerAPI.opponent_state = NewPaddleState(new Vec2(0.9, 0.));
+		let event = {
+			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 	});
@@ -111,10 +92,30 @@ ServerAPI.UpdateBallData = function(event)
 
 ServerAPI.UpdateLobby = function(event)
 {
-	let score = event[ServerAPI.DATA_LOBBY_SCORE];
-	ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
-		ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER1] = score[0];
-		ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
-		ServerAPI.ball_state.new_data_available = true;
-	});
+	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_STATE)) {
+		if (event[ServerAPI.DATA_LOBBY_STATE] === ServerAPI.DATA_LOBBY_ROOM_CREATED) {
+			ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
+			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+			PrintInfo(event);
+			console.log("im in")
+			let response = {
+				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
+				[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
+				["Room_ID"]: event["Room_ID"]
+			}
+			ServerAPI.websocket.send(JSON.stringify(response));
+		}
+	}
+
+	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_SCORE)) {
+		let score = event[ServerAPI.DATA_LOBBY_SCORE];
+		ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
+			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER1] = score[0];
+			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
+			ServerAPI.ball_state.new_data_available = true;
+		});
+	}
 }
