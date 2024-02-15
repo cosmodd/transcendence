@@ -4,7 +4,7 @@ import logging
 # logger = logging.getLogger('websockets')
 # logger = logging.getLogger()
 # logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
+# logger.addHandler(logging.StreamHandler())
 import os
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
