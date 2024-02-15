@@ -24,7 +24,6 @@ Les clients:
 
 - Client
   - Ball Reset - selon le gagnant
-  - Positions catch explicite
 
 #### General
 - Collision - bugs

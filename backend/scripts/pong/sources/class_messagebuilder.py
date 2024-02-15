@@ -35,7 +35,7 @@ class MessageBuilder:
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_SCORE: [
-				self.attached_game.score[DATA_PLAYER_PLAYER1],
-				self.attached_game.score[DATA_PLAYER_PLAYER2]
+				self.attached_game.score[DATA_PLAYER_PLAYER1].score,
+				self.attached_game.score[DATA_PLAYER_PLAYER2].score
 			] 
 		})

@@ -1,7 +1,7 @@
 import ServerAPI from "./server_api.js";
 import { Vec2 } from '../utils/class_vec.js';
-import { NewPaddleState, NewBallState } from './objects_state.js'
-import { PrintInfo, PrintError } from '../ui/info.js';
+import { NewPaddleState } from './objects_state.js'
+import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 
 ServerAPI.InitConnection = function()
 {
@@ -22,8 +22,8 @@ ServerAPI._InitGame = function()
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
+		PrintInfoMessage("Searching for players...")
 	});
-	PrintInfo
 }
 
 ServerAPI._Recv = function() {
@@ -93,8 +93,23 @@ ServerAPI.UpdateBallData = function(event)
 
 ServerAPI.UpdateLobby = function(event)
 {
-	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_STATE)) {
-		if (event[ServerAPI.DATA_LOBBY_STATE] === ServerAPI.DATA_LOBBY_ROOM_CREATED) {
+	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_STATE))
+		ServerAPI.UpdateLobbyState(event)
+
+	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_SCORE)) {
+		let score = event[ServerAPI.DATA_LOBBY_SCORE];
+		ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
+			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER1] = score[0];
+			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
+			ServerAPI.ball_state.new_data_available = true;
+		});
+	}
+}
+
+ServerAPI.UpdateLobbyState = function(event)
+{
+	switch (event[ServerAPI.DATA_LOBBY_STATE]) {
+		case ServerAPI.DATA_LOBBY_ROOM_CREATED:
 			ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
@@ -107,15 +122,5 @@ ServerAPI.UpdateLobby = function(event)
 			}
 			ServerAPI.websocket.send(JSON.stringify(response));
 			PrintInfo(event);
-		}
-	}
-
-	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_SCORE)) {
-		let score = event[ServerAPI.DATA_LOBBY_SCORE];
-		ServerAPI.score_state.promise = ServerAPI.score_state.promise.then(async () => {
-			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER1] = score[0];
-			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
-			ServerAPI.ball_state.new_data_available = true;
-		});
 	}
 }

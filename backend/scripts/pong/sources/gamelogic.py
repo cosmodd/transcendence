@@ -7,14 +7,14 @@ from constants import *
 from datetime import datetime
 import asyncio
 
+
 async def ServerSendLoop(game: Game, connected):
     last_update_time = datetime.now()
-    # temporary
     game.ball.Reset()
     game.ball.collided = True
-    while (True):
+    while (game.IsMatchRunning()):
         # Check disconnection
-        await CaDecoOuuu(connected);
+        await CaDecoOuuu(connected, game);
 
         # Delta time
         current_time = datetime.now()
@@ -32,12 +32,9 @@ async def ServerSendLoop(game: Game, connected):
         game.Collision.BallPaddle(game.ball, game.players[PLAYER1])
         game.Collision.BallPaddle(game.ball, game.players[PLAYER2])
         if game.ball.collided == False:
-            game.Collision.BallWall(game.ball)
+            await game.Collision.BallWall(game.ball)
 
         # Send game state to clients [only if:]
-            # Client changed key
-            # Ball collided
-            # Score
         if  (game.players[PLAYER1].key_has_changed):
             player1_message = game.MessageBuilder.Paddle(PLAYER1)
             await sender.ToAll(player1_message, connected)
@@ -59,9 +56,10 @@ async def ServerSendLoop(game: Game, connected):
             game.someone_scored = False
 
         await asyncio.sleep(1 / 60) 
+    await game.TerminateModel()
 
 
-async def ClientRecvLoop(websocket, game: Game, current_player, connected, room_id):
+async def ClientRecvLoop(websocket, game: Game, current_player):
     async for message in websocket:
         try:
             event = json.loads(message)
@@ -78,7 +76,7 @@ async def ClientRecvLoop(websocket, game: Game, current_player, connected, room_
         except Exception as e:
             print(f"An unexpected Error occurred: {e}")
  
-async def CaDecoOuuu(connected):
+async def CaDecoOuuu(connected, game: Game):
     # Check if any client has disconnected
     disconnected_clients = []
     for ws in connected:
@@ -87,7 +85,9 @@ async def CaDecoOuuu(connected):
     # Remove disconnected clients from the connected list
     for ws in disconnected_clients:
         connected.remove(ws)
-    
+    # Is everybody out ?
+    if (len(connected) != 2):
+        game.match_is_running = False
     # Send disconnection message
     for ws in disconnected_clients:
         for wsc in connected:

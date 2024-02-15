@@ -1,32 +1,33 @@
 from django.db import models
-from users.models import Account
+# from users.models import Account
 
 class Game(models.Model):
 	STATUS_CHOICES = (
-			('en_attente', 'En attente'),
 			('en_cours', 'En cours'),
 			('terminee', 'Terminée'),
 			('annulee', 'Annulée'),
-		)
+	)
 
-	players = models.ManyToManyField(Account, related_name='games')
+	# players = models.ManyToManyField(Account, related_name='games')
 	date_begin = models.DateTimeField(auto_now_add=True)
-	duration = models.DurationField(null=True, blank=True)
-	statut = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
-	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_cours')
+	# winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
+	room_id = models.CharField(max_length=5, null=True)
 
 	def __str__(self):
-		return f"Partie ({self.id}) - Début: {self.date_begin}, Statut: {self.statut}, Gagnant: {self.winner}"
+		scores = self.scores.all()
+		scores_str = ' - '.join([f"{score.score}" for score in scores])
+		return f"Partie ({self.id}), {self.status}, Room_ID: {self.room_id}, {scores_str}"
 
 	class Meta:
 		verbose_name = "Game"
 		verbose_name_plural = "Games"
 
 class Score(models.Model):
-	player = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="scores")
-	game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="scores")
-	score = models.IntegerField()
+	# player = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="scores")
+	game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="scores", null=False)
+	score = models.IntegerField(null=False)
 
 	def __str__(self):
-		return f"Score de {self.player.username} dans la partie ({self.game.id}): {self.score}"
+		return f"{self.score}"
 
