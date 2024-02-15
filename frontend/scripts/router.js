@@ -17,8 +17,8 @@ const unauthedRoutes = [
 
 const authedRoutes = [
 	{
-		path: /^\/$/,
-		viewPath: '../views/authed/Home.js'
+		path: /^\/play$/,
+		viewPath: '../views/authed/Play.js'
 	},
 	{
 		path: /^\/test$/,

@@ -5,8 +5,8 @@ export default (container) => {
 		const userInformations = JSON.parse(localStorage.getItem('user'));
 
 		container.innerHTML = /*html*/ `
-			<nav class="navbar navbar-expand">
-				<div class="container-fluid">
+			<nav class="navbar navbar-expand mb-2">
+				<div class="container">
 					<a href="/" class="navbar-brand col-2 fw-bold">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -23,15 +23,9 @@ export default (container) => {
 						Transcendence
 					</a>
 					<ul class="navbar-nav justify-content-center update-active">
-						<li class="nav-item">
-							<a href="/" class="nav-link">Home</a>
-						</li>
-						<li class="nav-item">
-							<a href="/about" class="nav-link">About</a>
-						</li>
-						<li class="nav-item">
-							<a href="/contact" class="nav-link">Contact</a>
-						</li>
+						<li class="nav-item"><a href="/play" class="nav-link">Play</a></li>
+						<li class="nav-item"><a href="/leaderboard" class="nav-link">Leaderboard</a></li>
+						<li class="nav-item"><a href="/chat" class="nav-link">Chat</a></li>
 					</ul>
 					<div class="d-flex justify-content-end col-2">
 						<!-- TODO: Implement a search feature to find people's profile -->

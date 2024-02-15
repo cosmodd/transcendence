@@ -35,7 +35,7 @@ export default (container) => {
 		const password = document.querySelector('#password').value;
 
 		localStorage.setItem('user', JSON.stringify({ username, email, password }));
-		navigateTo('/');
+		navigateTo('/play');
 	};
 
 	render();
