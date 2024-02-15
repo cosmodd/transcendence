@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   database:
@@ -40,16 +40,18 @@ services:
   frontend:
     container_name: frontend
     hostname: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    env_file: .env
+    image: nginx:stable-alpine
     volumes:
-      - ./frontend:/app
+      - ./frontend:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80 # HTTP
+      - 443:443 # HTTPS
     networks:
       - transcendence
-    ports:
-      - 8080:5173
+    restart: unless-stopped
+    depends_on:
+      - django
 
 networks:
   transcendence:
