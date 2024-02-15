@@ -29,5 +29,5 @@ class Score(models.Model):
 	score = models.IntegerField(null=False)
 
 	def __str__(self):
-		return f"Score de {self.player.username} dans la partie ({self.game.id}): {self.score}"
+		return f"{self.score}"
 
