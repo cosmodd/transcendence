@@ -1,10 +1,11 @@
-import json
 from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
 from class_collision import Collision
 from constants import *
-from datetime import datetime
 from class_vec2 import Vec2
+from pong.models import Game as GameModel 
+from pong.models import Score as ScoreModel
+from asgiref.sync import sync_to_async
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -20,10 +21,11 @@ class Game:
 		self.players[PLAYER2] = Paddle(Vec2(0.9, 0.))
 		self.ball = Ball(Vec2(1., 0.))
 		self.score = {}
-		self.score[PLAYER1] = 0
-		self.score[PLAYER2] = 0
+		# self.score[PLAYER1] = 0
+		# self.score[PLAYER2] = 0
 		self.someone_scored = False
 		self.model = {}
+		self.match_is_running = True
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -53,7 +55,22 @@ class Game:
 		self.ball.position.x += delta_position.x
 		self.ball.position.y += delta_position.y
 	
-	def UpdateScore(self, player: str):
-		self.score[player] += 1
+	async def UpdateScore(self, player: str):
+		self.score[player].score += 1
+		await self.score[player].asave()
 		self.someone_scored = True
 
+	def IsMatchRunning(self):
+		return self.match_is_running
+
+	async def CreateModel(self, room_id):
+		self.model = await GameModel.objects.acreate(room_id=room_id)
+		await self.model.asave()
+		self.score[PLAYER1] = await ScoreModel.objects.acreate(game=self.model, score=0)
+		self.score[PLAYER2] = await ScoreModel.objects.acreate(game=self.model, score=0)
+		await self.score[PLAYER1].asave()
+		await self.score[PLAYER2].asave()
+
+	async def TerminateModel(self):
+		self.model.status = 'terminee'
+		await self.model.asave()

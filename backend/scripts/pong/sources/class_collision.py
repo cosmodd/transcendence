@@ -18,19 +18,19 @@ class Collision:
         elif (player.boundingbox_bottom * kScalingFactor[1] < -1.):
             player.position.y += -(player.boundingbox_bottom * kScalingFactor[1] + 1.)
 
-    def BallWall(self, ball: Ball):
+    async def BallWall(self, ball: Ball):
         ball.ComputeBoundingbox()
 
         if (ball.boundingbox_left <= -1.):
             ball.direction.x = abs(ball.direction.x);
             ball.Reset()
             ball.collided = True
-            self.attached_game.UpdateScore(DATA_PLAYER_PLAYER2)
+            await self.attached_game.UpdateScore(DATA_PLAYER_PLAYER2)
         elif (ball.boundingbox_right >= 1.):
             ball.direction.x = -abs(ball.direction.x)
             ball.Reset()
             ball.collided = True
-            self.attached_game.UpdateScore(DATA_PLAYER_PLAYER1)
+            await self.attached_game.UpdateScore(DATA_PLAYER_PLAYER1)
         elif (ball.boundingbox_top >= 1.):
             ball.direction.y = -abs(ball.direction.y)
             ball.collided = True

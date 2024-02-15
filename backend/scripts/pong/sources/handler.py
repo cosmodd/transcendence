@@ -16,8 +16,6 @@ import sender
 from gamelogic import ClientRecvLoop, ServerSendLoop
 from class_game import *
 from constants import *
-from pong.models import Game as GameModel
-from asgiref.sync import sync_to_async
 #from websockets.frames import CloseCode
 #from django.core.management import call_command
 
@@ -26,7 +24,6 @@ connected_clients = asyncio.Queue()
 
 async def main():
     asyncio.ensure_future(queue())
-
     async with websockets.serve(handler, "0.0.0.0", 8888):
         await asyncio.Future()  # run forever
 
@@ -50,17 +47,15 @@ async def handler(websocket):
             break 
     
     game, connected = ROOM[event[DATA_LOBBY_ROOM_ID]]
-    await ClientRecvLoop(websocket, game, event[DATA_PLAYER], connected, event["Room_ID"])
-    
-    
+    await ClientRecvLoop(websocket, game, event[DATA_PLAYER])
+ 
 async def new_room():
     client1 = await connected_clients.get()
     client2 = await connected_clients.get()
 
     room_id = secrets.token_urlsafe(3)
     game = Game()
-    game.model = await GameModel.objects.acreate(room_id=room_id)
-    await game.model.asave()
+    await game.CreateModel(room_id)
     ROOM[room_id] = game, [client1, client2]
 
     event = {
