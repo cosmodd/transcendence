@@ -5,18 +5,18 @@ let KeyListener = {}
 
 KeyListener.up_key_pressed = false;
 KeyListener.down_key_pressed = false;
-KeyListener.left_key_pressed = false;
-KeyListener.right_key_pressed = false;
+KeyListener.w_key_pressed = false;
+KeyListener.s_key_pressed = false;
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'ArrowUp') {
         KeyListener.up_key_pressed = true;
     } else if (event.key === 'ArrowDown') {
         KeyListener.down_key_pressed = true;
-    } else if (event.key === 'ArrowLeft') {
-        KeyListener.left_key_pressed = true;
-    } else if (event.key === 'ArrowRight') {
-        KeyListener.right_key_pressed = true;
+    } else if (event.key === 'w') {
+        KeyListener.w_key_pressed = true;
+    } else if (event.key === 's') {
+        KeyListener.s_key_pressed = true;
     }
 });
 
@@ -25,10 +25,10 @@ document.addEventListener('keyup', (event) => {
         KeyListener.up_key_pressed = false;
     } else if (event.key === 'ArrowDown') {
         KeyListener.down_key_pressed = false;
-    } else if (event.key === 'ArrowLeft') {
-        KeyListener.left_key_pressed = false;
-    } else if (event.key === 'ArrowRight') {
-        KeyListener.right_key_pressed = false;
+    } else if (event.key === 'w') {
+        KeyListener.w_key_pressed = false;
+    } else if (event.key === 's') {
+        KeyListener.s_key_pressed = false;
     }
 });
 
@@ -46,12 +46,22 @@ document.addEventListener('touchend', (event) => {
     KeyListener.down_key_pressed = false;
 });
 
-KeyListener.LastKeyPressed = function()
+KeyListener.LastKeyPressed = function(caller)
 {
-    if (KeyListener.up_key_pressed)
-        return D.KEY_UP;
-    else if (KeyListener.down_key_pressed)
-        return D.KEY_DOWN;
+    switch (caller) {
+        case D.PLAYER:
+            if (KeyListener.up_key_pressed)
+                return D.KEY_UP;
+            else if (KeyListener.down_key_pressed)
+                return D.KEY_DOWN;
+            break;
+        case D.OPPONENT:
+            if (KeyListener.w_key_pressed)
+                return D.KEY_W;
+            else if (KeyListener.s_key_pressed)
+                return D.KEY_S;
+            break;
+    }
     return D.KEY_NONE;
 }
 

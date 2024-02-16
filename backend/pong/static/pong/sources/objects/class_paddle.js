@@ -47,8 +47,7 @@ class Paddle extends Mesh {
 	SendInputToServer() {
 		if (this.data_origin === DataOrigin.WebSocket) {
 			if (this.iam === D.PLAYER) {
-				let key_pressed = KeyListener.LastKeyPressed();
-			
+				let key_pressed = KeyListener.LastKeyPressed(this.iam);
 				if (key_pressed !== this.last_key) {
 					ServerAPI.SendDataKey(key_pressed);
 					this.last_key = key_pressed;
@@ -63,12 +62,7 @@ class Paddle extends Mesh {
 		let paddle_state = null;
 		switch (this.data_origin) {
 			case DataOrigin.Client:
-				if (this.iam === D.PLAYER) {
-					this.last_key = KeyListener.LastKeyPressed();
-				}
-				else if (this.iam === D.OPPONENT) {
-					// Do something (update key from IA API ?)
-				}
+				this.last_key = KeyListener.LastKeyPressed(this.iam);
 				break;
 			case DataOrigin.WebSocket:
 				try {
@@ -76,7 +70,7 @@ class Paddle extends Mesh {
 						paddle_state = await ServerAPI.GetPlayerState();
 					if (this.iam === D.OPPONENT && await ServerAPI.NewOpponentStateAvailable())
 						paddle_state = await ServerAPI.GetOpponentState();
-				} catch (e) {}
+				} catch (e) {/* catching errors if match not running yet */}
 				break ;
 		}
 
@@ -88,7 +82,7 @@ class Paddle extends Mesh {
 			if (this.last_key == D.KEY_NONE)
 				return ;
 			let move = this.speed * delta_time;
-			if (this.last_key == D.KEY_DOWN)
+			if (this.last_key == D.KEY_DOWN || this.last_key == D.KEY_S)
 				move *= -1.0;
 			this._uEntityPosition.y += move;
 		}
