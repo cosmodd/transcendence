@@ -12,9 +12,9 @@ class Ball:
         self.collided = False
         #self.accelerationStep
     
-    def Reset(self):
+    def Reset(self, new_direction: Vec2):
         self.position = Vec2(0., 0.)
-        self.direction = Vec2(-1., 0.)
+        self.direction = new_direction
         self.acceleration = 0.;
 
     def ComputeBoundingbox(self):

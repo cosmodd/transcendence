@@ -12,23 +12,21 @@ Les clients:
 ## Todo
 #### General
 * 2 players via Websockets
-* 2 players via local/ia
+* 2 players via local
 * UX 
-
-
-#### Reconnexion
-- Systeme de pause
 
 #### Specific
 - Server
+  - Refactor
 
 - Client
-  - Ball Reset - selon le gagnant
+  - Local coop
 
 #### General
 - Collision - bugs
-- Server optimisation
-- Local coop ? IA + API ?
+- Reconnexion
+  - Systeme de pause
+- Esthetique
 
 #### Guidelines
 - ES.22

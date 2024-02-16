@@ -5,12 +5,13 @@ import sender
 from class_game import *
 from constants import *
 from datetime import datetime
+from class_vec2 import Vec2
 import asyncio
 
 
 async def ServerSendLoop(game: Game, connected):
     last_update_time = datetime.now()
-    game.ball.Reset()
+    game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
     while (game.IsMatchRunning()):
         # Check disconnection

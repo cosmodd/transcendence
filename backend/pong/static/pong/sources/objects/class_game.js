@@ -46,7 +46,7 @@ class Game {
 		await this.ball.Setup()
 
 	    if (this.game_type === GameType.Local)
-			this.ball.Reset();
+			this.ball.Reset(new Vec2(-1., 0.));
 	}
 
 	ComputeDeltatime()

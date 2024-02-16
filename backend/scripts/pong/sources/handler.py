@@ -53,7 +53,7 @@ async def handler(websocket):
         await ClientRecvLoop(websocket, game, event[DATA_PLAYER])
 
     except:
-        logger.debug("DEBUG::Client left while searching game")
+        # logger.debug("DEBUG::Client left while searching game")
         tmp_connected_clients = asyncio.Queue()
         while not connected_clients.empty():
             client = await connected_clients.get()

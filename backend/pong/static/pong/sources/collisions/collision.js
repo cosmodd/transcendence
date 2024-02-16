@@ -125,13 +125,11 @@ Collision.BallWall = function(game, ball) {
     ball.ComputeBoundingbox();
 
     if (ball.boundingbox_left <= -1) {
-        ball.direction.x = Math.abs(ball.direction.x);
-        ball.Reset();
+        ball.Reset(new Vec2(-1.0, 0.));
         game.score[1] += 1;
     }
     else if (ball.boundingbox_right >= 1.) {
-        ball.direction.x = -Math.abs(ball.direction.x);
-        ball.Reset();
+        ball.Reset(new Vec2(1.0, 0.));
         game.score[0] += 1;
     }
     else if (ball.boundingbox_top >= 1.) {

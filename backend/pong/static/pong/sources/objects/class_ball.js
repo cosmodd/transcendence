@@ -67,14 +67,11 @@ class Ball extends Mesh {
 		} catch(e) {}
 	}
 
-	Reset()
+	Reset(new_direction)
 	{
-		// this._uEntityPosition.x = -0.9;
-		// this._uEntityPosition.y = -0.9;
-		this.direction = new Vec2(-1., -1.);
+		this.direction = new_direction
 		this._uEntityPosition.y = 0.0;
 		this._uEntityPosition.x = 0.0;
-		// this.direction = new Vec2(-1., 0.);
 		this.acceleration = 0.;
 	}
 
