@@ -9,7 +9,6 @@ from datetime import datetime
 from class_vec2 import Vec2
 import asyncio
 
-
 async def ServerSendLoop(game: Game):
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
@@ -17,6 +16,10 @@ async def ServerSendLoop(game: Game):
     while (game.IsMatchRunning()):
         # Check disconnection
         await CaDecoOuuu(game);
+
+        # Game paused
+        while game.match_is_paused:
+            await asyncio.sleep(3)
 
         # Delta time
         current_time = datetime.now()
@@ -81,18 +84,18 @@ async def ClientRecvLoop(websocket, game: Game, current_player):
             print(f"An unexpected Error occurred: {e}")
  
 async def CaDecoOuuu(game: Game):
-    disconnected_clients = []
     # Check if any client has disconnected
     for c in game.connected:
         if c.ws.closed:
-            disconnected_clients.append(c)
-    # Remove disconnected clients from the connected list
-    for c in disconnected_clients:
+            game.disconnected.append(c)
+    for c in game.disconnected:
         game.connected.remove(c)
-    # Is everybody out ?
-    if (len(game.connected) != 2):
+    # Halt or end match ?
+    if (len(game.connected) == 0):
         game.match_is_running = False
+    if (len(game.connected) == 1):
+        game.match_is_paused = True
     # Send disconnection message
-    for c in disconnected_clients:
+    for c in game.disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")

@@ -2,7 +2,7 @@ import ServerAPI from "./server_api.js";
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState } from './objects_state.js'
 import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
-import { SetCookie, DeleteCookie } from '../utils/cookie.js'
+import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 
 ServerAPI.InitConnection = function()
 {
@@ -18,11 +18,14 @@ ServerAPI._InitGame = function()
 {
 	ServerAPI.websocket.addEventListener("open", () => {
 		// cookie ? -> tentative reconnexion
-		// si reconnexion non fructueuse -> delete cookie
+		// si reconnexion non fructueuse -> delete cookie, new room
+
 		let event = {
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
-			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH
+			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
+			[ServerAPI.DATA_PLAYER_UUID]: GetCookie("pong-uuid"),
+			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid")
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")
@@ -133,6 +136,10 @@ ServerAPI.UpdateLobbyState = function(event)
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
 			DeleteCookie("pong-uuid");
 			DeleteCookie("pong-roomid");
+			break ;
+		// Match paused
+		case ServerAPI.DATA_LOBBY_ROOM_PAUSED:
+			PrintInfo(event);
 			break ;
 	}
 }

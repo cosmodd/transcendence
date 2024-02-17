@@ -18,12 +18,13 @@ Les clients:
 #### Specific
 - Server
   - Refactor
+  - ROOMS data race
 
 - Client
   - index.html import 
-  - Reco
-    - Cookies
-
+  - Reconnexion
+    - Change "Searching for players..."
+  - Refactor server_handler
 #### General
 - Collision - bugs
 - Reconnexion

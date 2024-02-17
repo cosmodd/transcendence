@@ -40,9 +40,20 @@ class MessageBuilder:
 			] 
 		})
 	
+	def PausedGame(self):
+		return json.dumps({
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_LOBBY,
+			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_PAUSED,
+			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+			DATA_INFO_TYPE_MESSAGE: "Match paused"
+		})
+
+	
 	def EndGame(self):
 		return json.dumps({
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_ENDED
 		})
+

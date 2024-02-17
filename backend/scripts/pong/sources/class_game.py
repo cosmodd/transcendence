@@ -23,8 +23,10 @@ class Game:
 		self.someone_scored = False
 		self.model = {}
 		self.match_is_running = True
+		self.match_is_paused = False
 		self.room_id = room_id
 		self.connected = clients
+		self.disconnected = []
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
