@@ -1,7 +1,7 @@
+from constants import *
 from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
 from class_collision import Collision
-from constants import *
 from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
@@ -10,7 +10,6 @@ from asgiref.sync import sync_to_async
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
 PLAYER1, PLAYER2 = DATA_PLAYER_PLAYER1, DATA_PLAYER_PLAYER2
-
 
 class Game:
 	def __init__(self):

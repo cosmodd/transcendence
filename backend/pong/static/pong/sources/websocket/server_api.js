@@ -27,6 +27,7 @@ ServerAPI.DATA_LOBBY_STATE = "State";
 ServerAPI.DATA_LOBBY_ROOM_ID = "Room_ID";
 ServerAPI.DATA_LOBBY_JOINKEY = "JoinKey"; // - Join key
 ServerAPI.DATA_LOBBY_SCORE = "Score"; // - Join key
+ServerAPI.DATA_PLAYER_UUID = "UUID";
 ServerAPI.DATA_INFO_TYPE = "Info_Type";
 /**/ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
 /**/ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";

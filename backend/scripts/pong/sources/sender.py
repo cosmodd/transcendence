@@ -12,5 +12,5 @@ async def Error(websocket, message):
 
 async def ToAll(dumped_message, connected):
     # websockets.broadcast(connected, dumped_message)
-    for ws in connected:
-        await ws.send(dumped_message)
+    for c in connected:
+        await c.ws.send(dumped_message)

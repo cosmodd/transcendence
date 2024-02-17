@@ -3,6 +3,7 @@ import websockets
 import scripts.pong.sources.class_collision as class_collision
 import sender
 from class_game import *
+from class_client import *
 from constants import *
 from datetime import datetime
 from class_vec2 import Vec2
@@ -78,18 +79,18 @@ async def ClientRecvLoop(websocket, game: Game, current_player):
             print(f"An unexpected Error occurred: {e}")
  
 async def CaDecoOuuu(connected, game: Game):
-    # Check if any client has disconnected
     disconnected_clients = []
-    for ws in connected:
-        if ws.closed:
-            disconnected_clients.append(ws)
+    # Check if any client has disconnected
+    for c in connected:
+        if c.ws.closed:
+            disconnected_clients.append(c)
     # Remove disconnected clients from the connected list
-    for ws in disconnected_clients:
-        connected.remove(ws)
+    for c in disconnected_clients:
+        connected.remove(c)
     # Is everybody out ?
     if (len(connected) != 2):
         game.match_is_running = False
     # Send disconnection message
-    for ws in disconnected_clients:
-        for wsc in connected:
-            await sender.Error(wsc, "Opponent disconnected.")
+    for c in disconnected_clients:
+        for cc in connected:
+            await sender.Error(cc.ws, "Opponent disconnected.")

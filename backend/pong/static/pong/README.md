@@ -20,7 +20,6 @@ Les clients:
   - Refactor
 
 - Client
-  - Local coop
 
 #### General
 - Collision - bugs
