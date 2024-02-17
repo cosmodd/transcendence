@@ -20,6 +20,8 @@ Les clients:
   - Refactor
 
 - Client
+  - Reco
+    - Cookies
 
 #### General
 - Collision - bugs

@@ -39,3 +39,10 @@ class MessageBuilder:
 				self.attached_game.score[DATA_PLAYER_PLAYER2].score
 			] 
 		})
+	
+	def EndGame(self):
+		return json.dumps({
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_LOBBY,
+			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_ENDED
+		})

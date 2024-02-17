@@ -10,13 +10,13 @@ from class_vec2 import Vec2
 import asyncio
 
 
-async def ServerSendLoop(game: Game, connected):
+async def ServerSendLoop(game: Game):
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
     while (game.IsMatchRunning()):
         # Check disconnection
-        await CaDecoOuuu(connected, game);
+        await CaDecoOuuu(game);
 
         # Delta time
         current_time = datetime.now()
@@ -39,26 +39,28 @@ async def ServerSendLoop(game: Game, connected):
         # Send game state to clients [only if:]
         if  (game.players[PLAYER1].key_has_changed):
             player1_message = game.MessageBuilder.Paddle(PLAYER1)
-            await sender.ToAll(player1_message, connected)
+            await sender.ToAll(player1_message, game.connected)
             game.players[PLAYER1].key_has_changed = False
 
         if  (game.players[PLAYER2].key_has_changed):
             player2_message = game.MessageBuilder.Paddle(PLAYER2)
-            await sender.ToAll(player2_message, connected)
+            await sender.ToAll(player2_message, game.connected)
             game.players[PLAYER2].key_has_changed = False
 
         if (game.ball.collided):
             ball_message = game.MessageBuilder.Ball()
-            await sender.ToAll(ball_message, connected)
+            await sender.ToAll(ball_message, game.connected)
             game.ball.collided = False
 
         if (game.someone_scored):
             score_message = game.MessageBuilder.Score()
-            await sender.ToAll(score_message, connected)
+            await sender.ToAll(score_message, game.connected)
             game.someone_scored = False
 
         await asyncio.sleep(1 / 60) 
     await game.TerminateModel()
+    end_message = game.MessageBuilder.EndGame()
+    await sender.ToAll(end_message, game.connected)
 
 
 async def ClientRecvLoop(websocket, game: Game, current_player):
@@ -78,19 +80,19 @@ async def ClientRecvLoop(websocket, game: Game, current_player):
         except Exception as e:
             print(f"An unexpected Error occurred: {e}")
  
-async def CaDecoOuuu(connected, game: Game):
+async def CaDecoOuuu(game: Game):
     disconnected_clients = []
     # Check if any client has disconnected
-    for c in connected:
+    for c in game.connected:
         if c.ws.closed:
             disconnected_clients.append(c)
     # Remove disconnected clients from the connected list
     for c in disconnected_clients:
-        connected.remove(c)
+        game.connected.remove(c)
     # Is everybody out ?
-    if (len(connected) != 2):
+    if (len(game.connected) != 2):
         game.match_is_running = False
     # Send disconnection message
     for c in disconnected_clients:
-        for cc in connected:
+        for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")

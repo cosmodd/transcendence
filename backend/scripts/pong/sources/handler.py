@@ -20,17 +20,17 @@ from constants import *
 #from websockets.frames import CloseCode
 #from django.core.management import call_command
 
-ROOM = {}
+ROOMS = {}
 connected_clients = asyncio.Queue()
 # disconnected_clients = asyncio.Queue()
 
 async def main():
-    asyncio.ensure_future(queue())
+    asyncio.ensure_future(Matchmaking())
     async with websockets.serve(handler, "0.0.0.0", 8888):
         await asyncio.Future()  # run forever
 
 # Create room if enough new clients
-async def queue():
+async def Matchmaking():
     global connected_clients
     while True:
         await asyncio.sleep(1)
@@ -54,7 +54,7 @@ async def handler(websocket):
             event = json.loads(message)
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
-        game, connected = ROOM[event[DATA_LOBBY_ROOM_ID]]
+        game = ROOMS[event[DATA_LOBBY_ROOM_ID]]
         await ClientRecvLoop(websocket, game, event[DATA_PLAYER])
 
 	# Client left while searching match
@@ -69,24 +69,26 @@ async def handler(websocket):
  
 async def new_room(client1: Client, client2: Client):
     room_id = secrets.token_urlsafe(3)
-    game = Game()
-    await game.CreateModel(room_id)
-    ROOM[room_id] = game, [client1, client2]
+    game = Game(room_id, [client1, client2])
+    await game.CreateModel()
+    ROOMS[room_id] = game
 
     event = {
         METHOD: FROM_SERVER,
         OBJECT: OBJECT_LOBBY,
         DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
-        DATA_PLAYER: PLAYER1,
         DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
         DATA_INFO_TYPE_MESSAGE: "Room found: " + str(room_id),
-        DATA_LOBBY_ROOM_ID: room_id
+        DATA_LOBBY_ROOM_ID: room_id,
+        DATA_PLAYER: PLAYER1,
+        DATA_PLAYER_UUID: game.connected[0].uuid
     }
     await client1.ws.send(json.dumps(event))
     event[DATA_PLAYER] = PLAYER2
+    event[DATA_PLAYER_UUID] = game.connected[1].uuid
     await client2.ws.send(json.dumps(event))
 
-    asyncio.ensure_future(ServerSendLoop(game, [client1, client2]))
+    asyncio.ensure_future(ServerSendLoop(game))
 
 if __name__ == "__main__":
     asyncio.run(main())
