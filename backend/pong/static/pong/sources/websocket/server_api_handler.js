@@ -2,6 +2,7 @@ import ServerAPI from "./server_api.js";
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState } from './objects_state.js'
 import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
+import { SetCookie, DeleteCookie } from '../utils/cookie.js'
 
 ServerAPI.InitConnection = function()
 {
@@ -16,6 +17,8 @@ ServerAPI.InitConnection = function()
 ServerAPI._InitGame = function()
 {
 	ServerAPI.websocket.addEventListener("open", () => {
+		// cookie ? -> tentative reconnexion
+		// si reconnexion non fructueuse -> delete cookie
 		let event = {
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
@@ -109,10 +112,13 @@ ServerAPI.UpdateLobby = function(event)
 ServerAPI.UpdateLobbyState = function(event)
 {
 	switch (event[ServerAPI.DATA_LOBBY_STATE]) {
+		// Room created
 		case ServerAPI.DATA_LOBBY_ROOM_CREATED:
 			ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+			SetCookie("pong-uuid", event[ServerAPI.DATA_PLAYER_UUID]);
+			SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
 			let response = {
 				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
@@ -122,5 +128,11 @@ ServerAPI.UpdateLobbyState = function(event)
 			}
 			ServerAPI.websocket.send(JSON.stringify(response));
 			PrintInfo(event);
+			break;
+		// Room ended
+		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
+			DeleteCookie("pong-uuid");
+			DeleteCookie("pong-roomid");
+			break ;
 	}
 }

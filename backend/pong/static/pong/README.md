@@ -20,6 +20,7 @@ Les clients:
   - Refactor
 
 - Client
+  - index.html import 
   - Reco
     - Cookies
 
