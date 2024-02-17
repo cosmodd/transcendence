@@ -104,7 +104,7 @@ async def new_room(client1: Client, client2: Client):
     event[DATA_PLAYER_UUID] = game.connected[1].uuid
     await client2.ws.send(json.dumps(event))
 
-    await asyncio.ensure_future(ServerSendLoop(game))
+    await ServerSendLoop(game)
     del ROOMS[game.room_id]
 
 if __name__ == "__main__":

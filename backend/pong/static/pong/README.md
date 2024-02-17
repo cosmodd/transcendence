@@ -17,8 +17,10 @@ Les clients:
 
 #### Specific
 - Server
-  - Refactor
+  - BUG - Finding room even if both players left earlier
   - ROOMS data race
+  - Regrouper game.players et game.clients
+  - Refactor
 
 - Client
   - index.html import 
@@ -29,6 +31,8 @@ Les clients:
 - Collision - bugs
 - Reconnexion
   - Systeme de pause
+  - Message de reconnexion
+- Score max constants
 - Esthetique
 
 #### Guidelines

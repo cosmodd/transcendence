@@ -14,12 +14,6 @@ async def ServerSendLoop(game: Game):
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
     while (game.IsMatchRunning()):
-        # Check disconnection
-        await CaDecoOuuu(game);
-
-        # Game paused
-        while game.match_is_paused:
-            await asyncio.sleep(3)
 
         # Delta time
         current_time = datetime.now()
@@ -41,30 +35,32 @@ async def ServerSendLoop(game: Game):
 
         # Send game state to clients [only if:]
         if  (game.players[PLAYER1].key_has_changed):
-            player1_message = game.MessageBuilder.Paddle(PLAYER1)
-            await sender.ToAll(player1_message, game.connected)
+            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
             game.players[PLAYER1].key_has_changed = False
 
         if  (game.players[PLAYER2].key_has_changed):
-            player2_message = game.MessageBuilder.Paddle(PLAYER2)
-            await sender.ToAll(player2_message, game.connected)
+            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
             game.players[PLAYER2].key_has_changed = False
 
         if (game.ball.collided):
-            ball_message = game.MessageBuilder.Ball()
-            await sender.ToAll(ball_message, game.connected)
+            await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
             game.ball.collided = False
 
         if (game.someone_scored):
-            score_message = game.MessageBuilder.Score()
-            await sender.ToAll(score_message, game.connected)
+            await sender.ToAll(game.MessageBuilder.Score(), game.connected)
             game.someone_scored = False
+
+        # Check disconnection
+        await CaDecoOuuu(game);
+
+        # Game paused
+        while game.IsMatchPaused():
+            await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
+            await asyncio.sleep(1)
 
         await asyncio.sleep(1 / 60) 
     await game.TerminateModel()
-    end_message = game.MessageBuilder.EndGame()
-    await sender.ToAll(end_message, game.connected)
-
+    await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
 
 async def ClientRecvLoop(websocket, game: Game, current_player):
     async for message in websocket:
@@ -84,18 +80,21 @@ async def ClientRecvLoop(websocket, game: Game, current_player):
             print(f"An unexpected Error occurred: {e}")
  
 async def CaDecoOuuu(game: Game):
+    newly_disconnected = []
     # Check if any client has disconnected
     for c in game.connected:
         if c.ws.closed:
-            game.disconnected.append(c)
-    for c in game.disconnected:
+            newly_disconnected.append(c)
+    for c in newly_disconnected:
         game.connected.remove(c)
-    # Halt or end match ?
+    # end match ?
     if (len(game.connected) == 0):
         game.match_is_running = False
+        game.match_is_paused = False
     if (len(game.connected) == 1):
         game.match_is_paused = True
     # Send disconnection message
-    for c in game.disconnected:
+    for c in newly_disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
+    game.disconnected = newly_disconnected

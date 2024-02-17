@@ -64,6 +64,9 @@ class Game:
 	def IsMatchRunning(self):
 		return self.match_is_running
 
+	def IsMatchPaused(self):
+		return self.match_is_paused
+
 	async def CreateModel(self):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)
 		await self.model.asave()
