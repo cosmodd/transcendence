@@ -1,15 +1,4 @@
 export default (container) => {
-	// Play page for Pong
-	// This page will display the different game modes available to the user
-	// The user will be able to click on a game mode card to start a game
-	// The game mode cards will be displayed in a grid
-	// The game mode cards will contain the following information:
-	// - A title: gamemode name
-	// - A description: a brief description of the game mode
-	// - A thumbnail: a visual representation of the game mode
-	// - A button: to start the game
-	// - A gradient background: to make the card more visually appealing
-
 	const render = () => {
 		container.innerHTML = /*html*/ `
 		<div class="container gap-3">

@@ -60,7 +60,7 @@ export default (container) => {
 					</div>
 				</div>
 			</nav>
-			<main id="root" class="container-fluid h-100"></main>
+			<main id="root" class="container h-100"></main>
 		`;
 	};
 
