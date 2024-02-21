@@ -9,7 +9,24 @@ from datetime import datetime
 from class_vec2 import Vec2
 import asyncio
 
-async def ServerSendLoop(game: Game):
+async def ClientLoop(websocket, game: Game, current_player):
+    async for message in websocket:
+        try:
+            event = json.loads(message)
+            assert event[METHOD] == FROM_CLIENT
+
+            # Receive key from player
+            if event[OBJECT] == OBJECT_PADDLE:
+                game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
+
+        except json.JSONDecodeError:
+            print("Error decoding JSON message.")
+        except KeyError as e:
+            print(f"KeyError: {e}")
+        except Exception as e:
+            print(f"An unexpected Error occurred: {e}")
+
+async def ServerLoop(game: Game):
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
@@ -62,30 +79,10 @@ async def ServerSendLoop(game: Game):
         await asyncio.sleep(1 / 60) 
     await game.TerminateModel()
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
-
-async def ClientRecvLoop(websocket, game: Game, current_player):
-    async for message in websocket:
-        try:
-            event = json.loads(message)
-            assert event[METHOD] == FROM_CLIENT
-
-            # Receive key from player
-            if event[OBJECT] == OBJECT_PADDLE:
-                game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
-
-        except json.JSONDecodeError:
-            print("Error decoding JSON message.")
-        except KeyError as e:
-            print(f"KeyError: {e}")
-        except Exception as e:
-            print(f"An unexpected Error occurred: {e}")
  
 async def Deconnection(game: Game):
-    newly_disconnected = []
+    newly_disconnected = [c for c in game.connected if c.ws.closed]
     # Check if any client has disconnected
-    for c in game.connected:
-        if c.ws.closed:
-            newly_disconnected.append(c)
     for c in newly_disconnected:
         game.connected.remove(c)
     # end match ?

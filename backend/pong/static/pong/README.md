@@ -17,15 +17,14 @@ Les clients:
 
 #### Specific
 - Server
-  - BUG - Finding room even if both players left earlier
-  - ROOMS data race
+  - ROOMS & Reco data race
   - Regrouper game.players et game.clients
   - Refactor
 
 - Client
-  - index.html import 
   - Reconnexion
     - Change "Searching for players..."
+  - index.html import 
   - Refactor server_handler
 #### General
 - Collision - bugs

@@ -13,7 +13,7 @@ import websockets
 import secrets
 import json
 import sender
-from gamelogic import ClientRecvLoop, ServerSendLoop
+from gamelogic import ClientLoop, ServerLoop
 from class_client import Client
 from class_game import *
 from constants import *
@@ -26,7 +26,7 @@ connected_clients = asyncio.Queue()
 
 async def main():
     asyncio.ensure_future(Matchmaking())
-    async with websockets.serve(handler, "0.0.0.0", 8888):
+    async with websockets.serve(Handler, "0.0.0.0", 8888):
         await asyncio.Future()  # run forever
 
 # Create room if enough new clients
@@ -37,28 +37,16 @@ async def Matchmaking():
         if connected_clients.qsize() >= 2:
             client1 = Client(await connected_clients.get(), secrets.token_urlsafe(2), PLAYER1)
             client2 = Client(await connected_clients.get(), secrets.token_urlsafe(2), PLAYER2)
-            asyncio.create_task(new_room(client1, client2))
+            asyncio.create_task(NewRoom([client1, client2]))
 
-async def handler(websocket):
+async def Handler(websocket):
     global connected_clients
     message = await websocket.recv()
     event = json.loads(message)
     assert event[METHOD] == FROM_CLIENT
 
-    # Reconnection
-    room_id = event[DATA_LOBBY_ROOM_ID]
-    uuid = event[DATA_PLAYER_UUID]
-    if (len(room_id) != 0):
-        if room_id in ROOMS:
-            game = ROOMS[room_id]
-            for c in game.disconnected:
-                if (uuid == c.uuid):
-                    logger.debug("FOUND ROOM - READY TO RECONNECT")
-                    game.disconnected.remove(c)
-                    c.ws = websocket
-                    game.connected.append(c)
-                    game.match_is_paused = False
-                    await ClientRecvLoop(websocket, game, c.name)
+    # Reconnection ?
+    await Reconnection(websocket, event)
 
     # New client
     await connected_clients.put(websocket)
@@ -70,42 +58,58 @@ async def handler(websocket):
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
         game = ROOMS[event[DATA_LOBBY_ROOM_ID]]
-        await ClientRecvLoop(websocket, game, event[DATA_PLAYER])
+        await ClientLoop(websocket, game, event[DATA_PLAYER])
 
-	# Client left while searching match
-    except:
-        # logger.debug("DEBUG::Client left while searching game")
-        tmp_connected_clients = asyncio.Queue()
-        while not connected_clients.empty():
-            client = await connected_clients.get()
-            if client != websocket:
-                await tmp_connected_clients.put(client)
-        connected_clients = tmp_connected_clients
+	# Client left while searching for a match
+    except Exception as e:
+        await RemoveClientFromQueue(websocket)
+
+async def Reconnection(websocket, event):
+    room_id = event.get(DATA_LOBBY_ROOM_ID, "")
+    uuid = event.get(DATA_PLAYER_UUID, "")
+    if room_id and room_id in ROOMS:
+        game = ROOMS[room_id]
+        for c in game.disconnected:
+            if (uuid == c.uuid):
+                logger.debug("FOUND ROOM - READY TO RECONNECT")
+                game.disconnected.remove(c)
+                c.ws = websocket
+                game.connected.append(c)
+                game.match_is_paused = False
+                await ClientLoop(websocket, game, c.name)
  
-async def new_room(client1: Client, client2: Client):
+async def NewRoom(clients: [Client]):
     room_id = secrets.token_urlsafe(3)
-    game = Game(room_id, [client1, client2])
+    game = Game(room_id, clients)
     await game.CreateModel()
     ROOMS[room_id] = game
 
-    # TODO -> loop to send
-    event = {
-        METHOD: FROM_SERVER,
-        OBJECT: OBJECT_LOBBY,
-        DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
-        DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-        DATA_INFO_TYPE_MESSAGE: "Room found: " + str(room_id),
-        DATA_LOBBY_ROOM_ID: room_id,
-        DATA_PLAYER: game.connected[0].name,
-        DATA_PLAYER_UUID: game.connected[0].uuid
-    }
-    await client1.ws.send(json.dumps(event))
-    event[DATA_PLAYER] = game.connected[1].name
-    event[DATA_PLAYER_UUID] = game.connected[1].uuid
-    await client2.ws.send(json.dumps(event))
+    for i in range(len(clients)):
+        event = {
+            METHOD: FROM_SERVER,
+            OBJECT: OBJECT_LOBBY,
+            DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
+            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+            DATA_INFO_TYPE_MESSAGE: "Room found: " + str(room_id),
+            DATA_LOBBY_ROOM_ID: room_id,
+            DATA_PLAYER: game.connected[i].name,
+            DATA_PLAYER_UUID: game.connected[i].uuid
+        }
+        await clients[i].ws.send(json.dumps(event))
 
-    await ServerSendLoop(game)
+    await ServerLoop(game)
     del ROOMS[game.room_id]
+
+async def RemoveClientFromQueue(websocket):
+    global connected_clients
+    # logger.debug("DEBUG::Client left while searching game")
+    tmp_connected_clients = asyncio.Queue()
+    while not connected_clients.empty():
+        client = await connected_clients.get()
+        if client != websocket:
+            await tmp_connected_clients.put(client)
+    connected_clients = tmp_connected_clients
+
 
 if __name__ == "__main__":
     asyncio.run(main())
