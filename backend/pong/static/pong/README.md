@@ -22,9 +22,9 @@ Les clients:
 - Client
   - index.html import 
   - Refactor server_handler
+  - Score max
 #### General
 - Collision - bugs
-- Score max
 - Temps max
 - Lobby constantes modifiables (score, time limit, etc)
 - Esthetique

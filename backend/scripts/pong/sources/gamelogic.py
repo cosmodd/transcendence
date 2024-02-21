@@ -8,6 +8,7 @@ from constants import *
 from datetime import datetime
 from class_vec2 import Vec2
 import asyncio
+from constants import *
 
 async def ClientLoop(websocket, game: Game, current_player):
     async for message in websocket:
@@ -66,6 +67,7 @@ async def ServerLoop(game: Game):
         if (game.someone_scored):
             await sender.ToAll(game.MessageBuilder.Score(), game.connected)
             game.someone_scored = False
+            game.match_is_running = IsScoreLimitNotReached(game)
 
         # Check disconnection
         await Deconnection(game);
@@ -107,3 +109,5 @@ async def LastPlayerDeconnection(game: Game):
             game.match_is_running = False
             game.match_is_paused = False
 
+def IsScoreLimitNotReached(game: Game):
+    return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)

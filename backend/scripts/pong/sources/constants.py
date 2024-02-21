@@ -42,7 +42,8 @@ __all__ = [
 	"kPaddleSpeed",
 	"kPaddleWidth",
 	"kPaddleHeight",	
-	"kScalingFactor"	
+	"kScalingFactor",
+	"kScoreLimit"
 	]
 
 METHOD = "Method"
@@ -88,3 +89,4 @@ kPaddleSpeed = 1.5
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2
 kScalingFactor = [1.0, 1.25] # temporary ?
+kScoreLimit = 10
