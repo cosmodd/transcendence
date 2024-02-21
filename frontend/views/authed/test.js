@@ -1,17 +1,17 @@
-export default (container, urlParams) => {
+export default function testPage(container, urlParams) {
 
-	// Test page that lists all the url paramters
 	const render = () => {
-
 		container.innerHTML = /*html*/ `
-			<div class="d-flex flex-column justify-content-center align-items-center h-100">
-				<h1 class="h3 fw-normal">URL Parameters</h1>
-				<ul>
-					${Object.entries(urlParams)
-						.map(([key, value]) => `<li class="list-group list-group-item">${key}: ${value}</li>`)
-						.join('')
-					}
-				</ul>
+			<div class="card p-3 w-100 d-flex flex-column gap-3 h-100">
+				${Array.from({ length: 20 }, () => {
+			return /*html*/ `
+						<div class="card p-3">
+							<h5 class="card-title">Card title</h5>
+							<p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+							<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+						</div>
+					`;
+		}).join("")}
 			</div>
 		`;
 	};

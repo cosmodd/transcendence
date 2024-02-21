@@ -14,7 +14,8 @@ const unauthedRoutes = {
 
 const authedRoutes = {
 	'/play': authed('play'),
-	'/test/:id': authed('test'),
+	'/test': authed('test'),
+	'/chat': authed('chat'),
 
 	// Profile routes
 	'/profile': authed('profile'),
@@ -32,10 +33,10 @@ const authedRoutes = {
  */
 function matchRoute(route, path) {
 	const routeParts = route.split(/\//g).filter(p => p !== '');
-	const pathParts = path.split(/\//g).filter(p => p !== '');
+	const pathParts = path.split(/\//g).filter(p => p !== ''); dispatchEvent
 
-	if (routeParts.length > pathParts.length) return null;
-	
+	if (routeParts.length !== pathParts.length) return null;
+
 	let params = {};
 
 	for (let i = 0; i < routeParts.length; i++) {
@@ -45,7 +46,7 @@ function matchRoute(route, path) {
 
 		if (/\d+\.\d+/.test(pathPart)) pathPart = parseFloat(pathPart);
 		else if (/\d+/.test(pathPart)) pathPart = parseInt(pathPart);
-		
+
 		if (paramName) params[paramName] = pathPart;
 		else if (routePart !== pathPart) return null;
 	}
