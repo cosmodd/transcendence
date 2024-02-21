@@ -8,18 +8,7 @@ export default (container) => {
 			<nav class="navbar navbar-expand mb-2">
 				<div class="container">
 					<a href="/" class="navbar-brand col-2 fw-bold">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="24"
-							height="24"
-							fill="currentColor"
-							viewBox="0 0 512 512"
-							class="me-2 align-text-top"
-						>
-							<path
-								d="M496.2 296.5C527.7 218.7 512 126.2 449 63.1 365.1-21 229-21 145.1 63.1l-56 56.1 211.5 211.5c46.1-62.1 131.5-77.4 195.6-34.2zm-217.9 79.7L57.9 155.9c-27.3 45.3-21.7 105 17.3 144.1l34.5 34.6L6.7 424c-8.6 7.5-9.1 20.7-1 28.8l53.4 53.5c8 8.1 21.2 7.6 28.7-1L177.1 402l35.7 35.7c19.7 19.7 44.6 30.5 70.3 33.3-7.1-17-11-35.6-11-55.1-.1-13.8 2.5-27 6.2-39.7zM416 320c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96z"
-							/>
-						</svg>
+						<i class="fa-solid fa-fw fa-table-tennis-paddle-ball"></i>
 						Transcendence
 					</a>
 					<ul class="navbar-nav justify-content-center update-active">
@@ -38,11 +27,10 @@ export default (container) => {
 							/>
 						</form> -->
 						<div class="dropdown profile">
-							<a href="#" data-bs-toggle="dropdown" class="text-decoration-none text-reset d-flex align-items-center gap-2">
+							<a href="#" data-bs-toggle="dropdown" class="text-decoration-none text-reset d-flex align-items-center gap-2 fw-bold">
 								${userInformations?.username}
-								<img src="${
-									userInformations?.avatar ?? '/assets/avatars/default.jpg'
-								}" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
+								<img src="${userInformations?.avatar ?? '/assets/avatars/default.jpg'
+			}" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end mt-2">
 								<li>
@@ -60,7 +48,7 @@ export default (container) => {
 					</div>
 				</div>
 			</nav>
-			<main id="root" class="container-fluid h-100"></main>
+			<main id="root" class="container flex-fill"></main>
 		`;
 	};
 
