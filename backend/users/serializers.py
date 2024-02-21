@@ -23,8 +23,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
     def validate(self, data):
-        user = Account.objects.get(username=data['username'])
-        # print(data['password'], file=sys.stderr)
+        #try to get user with username if not exists raise validation error
+        user = Account.objects.filter(username=data['username']).first()
         if not user:
             raise serializers.ValidationError("Invalid username")
         if not check_password(data['password'], user.password):
