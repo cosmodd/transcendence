@@ -72,7 +72,7 @@ async def ServerLoop(game: Game):
 
         # Game paused
         while game.IsMatchPaused():
-            await LastPlayerDeconnection(game);
+            async with game.reconnection_lock: await LastPlayerDeconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
             await asyncio.sleep(1)
 

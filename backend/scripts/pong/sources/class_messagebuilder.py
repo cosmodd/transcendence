@@ -49,6 +49,25 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: "Match paused."
 		})
 
+	def Reconnection(self):
+		return json.dumps({
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_LOBBY,
+			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
+			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+			DATA_INFO_TYPE_MESSAGE: "Reconnection..."
+		})
+	
+	def OpponentReconnected(self):
+		return json.dumps({
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_LOBBY,
+			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
+			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+			DATA_INFO_TYPE_MESSAGE: "Opponent Reconnected."
+		})
+
+
 	
 	def EndGame(self):
 		return json.dumps({

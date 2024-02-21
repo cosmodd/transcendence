@@ -17,21 +17,16 @@ Les clients:
 
 #### Specific
 - Server
-  - ROOMS & Reco data race
-  - Regrouper game.players et game.clients
   - Refactor
 
 - Client
-  - Reconnexion
-    - Change "Searching for players..."
   - index.html import 
   - Refactor server_handler
 #### General
 - Collision - bugs
-- Reconnexion
-  - Systeme de pause
-  - Message de reconnexion
-- Score max constants
+- Score max
+- Temps max
+- Lobby constantes modifiables (score, time limit, etc)
 - Esthetique
 
 #### Guidelines

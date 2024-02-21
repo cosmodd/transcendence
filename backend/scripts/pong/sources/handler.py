@@ -21,6 +21,7 @@ from constants import *
 #from django.core.management import call_command
 
 ROOMS = {}
+room_lock = asyncio.Lock()
 connected_clients = asyncio.Queue()
 # disconnected_clients = asyncio.Queue()
 
@@ -57,7 +58,7 @@ async def Handler(websocket):
             event = json.loads(message)
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
-        game = ROOMS[event[DATA_LOBBY_ROOM_ID]]
+        async with room_lock: game = ROOMS[event[DATA_LOBBY_ROOM_ID]]
         await ClientLoop(websocket, game, event[DATA_PLAYER])
 
 	# Client left while searching for a match
@@ -67,22 +68,26 @@ async def Handler(websocket):
 async def Reconnection(websocket, event):
     room_id = event.get(DATA_LOBBY_ROOM_ID, "")
     uuid = event.get(DATA_PLAYER_UUID, "")
-    if room_id and room_id in ROOMS:
-        game = ROOMS[room_id]
-        for c in game.disconnected:
-            if (uuid == c.uuid):
-                logger.debug("FOUND ROOM - READY TO RECONNECT")
-                game.disconnected.remove(c)
-                c.ws = websocket
-                game.connected.append(c)
-                game.match_is_paused = False
-                await ClientLoop(websocket, game, c.name)
+    async with room_lock:
+        if room_id and room_id in ROOMS:
+            game = ROOMS[room_id]
+            async with game.reconnection_lock:
+                for c in game.disconnected:
+                    if (uuid == c.uuid):
+                        logger.debug("FOUND ROOM - READY TO RECONNECT")
+                        game.disconnected.remove(c)
+                        c.ws = websocket
+                        game.connected.append(c)
+                        await sender.ToAll(game.MessageBuilder.OpponentReconnected(), game.connected)
+                        await c.ws.send(game.MessageBuilder.Reconnection())
+                        game.match_is_paused = False
+                        await ClientLoop(websocket, game, c.name)
  
 async def NewRoom(clients: [Client]):
     room_id = secrets.token_urlsafe(3)
     game = Game(room_id, clients)
     await game.CreateModel()
-    ROOMS[room_id] = game
+    async with room_lock: ROOMS[room_id] = game
 
     for i in range(len(clients)):
         event = {
@@ -98,7 +103,7 @@ async def NewRoom(clients: [Client]):
         await clients[i].ws.send(json.dumps(event))
 
     await ServerLoop(game)
-    del ROOMS[game.room_id]
+    async with room_lock: del ROOMS[game.room_id]
 
 async def RemoveClientFromQueue(websocket):
     global connected_clients

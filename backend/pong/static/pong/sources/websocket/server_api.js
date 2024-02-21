@@ -26,6 +26,7 @@ ServerAPI.DATA_LOBBY_STATE = "State";
 /**/ServerAPI.DATA_LOBBY_ROOM_CREATED = "Room_Created";
 /**/ServerAPI.DATA_LOBBY_ROOM_ENDED = "Room_Ended";
 /**/ServerAPI.DATA_LOBBY_ROOM_PAUSED = "Room_Paused";
+/**/ServerAPI.DATA_LOBBY_ROOM_RECONNECTED = "Room_Reconnected"
 ServerAPI.DATA_LOBBY_ROOM_ID = "Room_ID";
 ServerAPI.DATA_LOBBY_JOINKEY = "JoinKey"; // - Join key
 ServerAPI.DATA_LOBBY_SCORE = "Score"; // - Join key

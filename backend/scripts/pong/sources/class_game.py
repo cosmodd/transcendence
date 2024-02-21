@@ -5,7 +5,7 @@ from class_collision import Collision
 from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
-from asgiref.sync import sync_to_async
+import asyncio
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -27,6 +27,7 @@ class Game:
 		self.room_id = room_id
 		self.connected = clients
 		self.disconnected = []
+		self.reconnection_lock = asyncio.Lock()
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
