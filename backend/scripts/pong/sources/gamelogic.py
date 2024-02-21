@@ -51,10 +51,11 @@ async def ServerSendLoop(game: Game):
             game.someone_scored = False
 
         # Check disconnection
-        await CaDecoOuuu(game);
+        await Deconnection(game);
 
         # Game paused
         while game.IsMatchPaused():
+            await LastPlayerDeconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
             await asyncio.sleep(1)
 
@@ -79,7 +80,7 @@ async def ClientRecvLoop(websocket, game: Game, current_player):
         except Exception as e:
             print(f"An unexpected Error occurred: {e}")
  
-async def CaDecoOuuu(game: Game):
+async def Deconnection(game: Game):
     newly_disconnected = []
     # Check if any client has disconnected
     for c in game.connected:
@@ -98,3 +99,14 @@ async def CaDecoOuuu(game: Game):
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
     game.disconnected = newly_disconnected
+
+async def LastPlayerDeconnection(game: Game):
+    # Reconnection happened
+    if len(game.connected) == 2:
+        return
+    # Check if last client disconnected
+    for c in game.connected:
+        if c.ws.closed:
+            game.match_is_running = False
+            game.match_is_paused = False
+
