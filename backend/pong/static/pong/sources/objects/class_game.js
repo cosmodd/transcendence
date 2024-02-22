@@ -7,6 +7,7 @@ import Ball from "./class_ball.js"
 import DataOrigin from "../utils/data_origin.js";
 import GameType from "../utils/game_type.js";
 import ServerAPI from "../websocket/server_api.js";
+import { PrintInfoMessage } from "../ui/info.js"
 
 class Game {
 	constructor(game_type = GameType.Local, current_scale)
@@ -89,6 +90,23 @@ class Game {
 			}
 		}
 		// else ?
+	}
+
+	ScoreLimitReached()
+	{
+        return (this.score[0] >= k.ScoreLimit || this.score[1] >= k.ScoreLimit);
+	}
+
+	EndGame()
+	{
+		if (typeof this.EndGame.first_call === "undefined") {
+			this.winner = this.score[0] > this.score[1] ? D.PLAYER : D.OPPONENT;
+			PrintInfoMessage(this.winner + " won.");
+			this.EndGame.first_call = false;
+		}
+		this.ball.direction = new Vec2(0., 0.);
+		this.ball.speed = 0;
+		this.ball.position = new Vec2(0.0, 0.0);
 	}
 }
 

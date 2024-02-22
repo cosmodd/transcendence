@@ -15,19 +15,6 @@
 		</div>
 	</div>
 	
-	<form id="join_form">
-		<input type="text" name="token" id="token" placeholder="token">
-		<button type="button" onclick="RedirectToURL()">Rejoindre</button>
-	</form>
-	<script>
-		function RedirectToURL()
-		{
-			let token = document.getElementById('token').value;
-			var host = window.location.protocol + "//" + window.location.hostname;
-			window.location.href = host + "/pong/?join=" + token;
-		}
-	</script>
-
 	<!-- secure ?-->
 	<script>
 		const kEntityVertexShaderPath = "{% static 'pong/shaders/entity.vs' %}";

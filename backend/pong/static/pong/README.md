@@ -1,4 +1,4 @@
-## Server authority
+## Logic
 Le serveur:
 - Recoit: les nouveaux inputs (si changement avec frame precedente)
 - Calcul mouvements et collisions
@@ -10,10 +10,6 @@ Les clients:
 - Interpolation locale des positions (si aucun changement d'input avec frame precedente)
 
 ## Todo
-#### General
-* 2 players via Websockets
-* 2 players via local
-* UX 
 
 #### Specific
 - Server
@@ -22,12 +18,11 @@ Les clients:
 - Client
   - index.html import 
   - Refactor server_handler
-  - Score max
 #### General
 - Collision - bugs
 - Temps max
+- UI et UX
 - Lobby constantes modifiables (score, time limit, etc)
-- Esthetique
 
 #### Guidelines
 - ES.22

@@ -136,6 +136,7 @@ ServerAPI.UpdateLobbyState = function(event)
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
 			DeleteCookie("pong-uuid");
 			DeleteCookie("pong-roomid");
+			PrintInfo(event);
 			break ;
 		// Match paused
 		default:

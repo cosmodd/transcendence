@@ -80,6 +80,8 @@ async def ServerLoop(game: Game):
 
         await asyncio.sleep(1 / 60) 
     await game.TerminateModel()
+    game.StopBall()
+    await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
  
 async def Deconnection(game: Game):

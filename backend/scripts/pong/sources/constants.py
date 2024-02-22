@@ -87,6 +87,6 @@ kBallAccelerationStep = 0.1
 kBallRadius = 0.02
 kPaddleSpeed = 1.5
 kPaddleWidth = 0.05
-kPaddleHeight = 0.2
+kPaddleHeight = 0.3
 kScalingFactor = [1.0, 1.25] # temporary ?
 kScoreLimit = 10

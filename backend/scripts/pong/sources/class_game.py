@@ -28,6 +28,7 @@ class Game:
 		self.connected = clients
 		self.disconnected = []
 		self.reconnection_lock = asyncio.Lock()
+		self.winner = ""
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -57,6 +58,9 @@ class Game:
 		self.ball.position.x += delta_position.x
 		self.ball.position.y += delta_position.y
 	
+	def StopBall(self):
+		self.ball.direction = Vec2(0.0, 0.0)
+	
 	async def UpdateScore(self, player: str):
 		self.score[player].score += 1
 		await self.score[player].asave()
@@ -79,3 +83,4 @@ class Game:
 	async def TerminateModel(self):
 		self.model.status = 'terminee'
 		await self.model.asave()
+		self.winner = PLAYER1 if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else PLAYER2

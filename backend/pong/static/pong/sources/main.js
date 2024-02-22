@@ -4,6 +4,7 @@ import Game from './objects/class_game.js';
 import Collision from './collisions/collision.js'
 import { ResizeCanvas } from './events/resize.js';
 import { DebugDraw, DebugSetup } from './utils/debug.js';
+import * as k from './utils/constants_objects.js'
 
 let gl = null;
 let gl_canvas = null;
@@ -18,7 +19,7 @@ async function Init() {
 
     ResizeCanvas();
 
-    game = new Game(GameType.Online, [1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(GameType.Local, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
@@ -26,6 +27,7 @@ async function Init() {
     // await DebugSetup();
 
     GameLoop();
+
 }
 
 function GameLoop() {
@@ -39,6 +41,11 @@ function GameLoop() {
     // Send input to server
     if (game.game_type === GameType.Online)
         game.player.SendInputToServer();
+
+    // Game ended ?
+    if (game.game_type == GameType.Local)
+        if (game.ScoreLimitReached())
+            game.EndGame();
 
     // Get data from server or interpolate with known keys
     game.UpdatePositions();
