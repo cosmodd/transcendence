@@ -9,6 +9,13 @@ class AccountSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+    def create(self, validated_data):
+        user = Account.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+        return user
 
 def check_password(raw_password, password):
     return raw_password == password

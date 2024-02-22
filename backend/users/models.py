@@ -1,6 +1,7 @@
 from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+import sys
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, email, username, password=None):
@@ -12,7 +13,9 @@ class MyAccountManager(BaseUserManager):
             raise ValueError("User must have a password")
         user = self.model(email=self.normalize_email(email), username=username)
         user.set_password(password)
-        user.save()
+        #check password is hashed or not
+        print(user.password, file=sys.stderr)
+        user.save(using=self._db)
         return user
     
     def create_superuser(self, email, username, password=None):
