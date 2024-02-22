@@ -1,19 +1,18 @@
+from constants import *
 from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
 from class_collision import Collision
-from constants import *
 from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
-from asgiref.sync import sync_to_async
+import asyncio
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
 PLAYER1, PLAYER2 = DATA_PLAYER_PLAYER1, DATA_PLAYER_PLAYER2
 
-
 class Game:
-	def __init__(self):
+	def __init__(self, room_id, clients):
 		self.MessageBuilder = MessageBuilder(self)
 		self.Collision = Collision(self)
 		self.players = {}
@@ -21,11 +20,14 @@ class Game:
 		self.players[PLAYER2] = Paddle(Vec2(0.9, 0.))
 		self.ball = Ball(Vec2(1., 0.))
 		self.score = {}
-		# self.score[PLAYER1] = 0
-		# self.score[PLAYER2] = 0
 		self.someone_scored = False
 		self.model = {}
 		self.match_is_running = True
+		self.match_is_paused = False
+		self.room_id = room_id
+		self.connected = clients
+		self.disconnected = []
+		self.reconnection_lock = asyncio.Lock()
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -63,8 +65,11 @@ class Game:
 	def IsMatchRunning(self):
 		return self.match_is_running
 
-	async def CreateModel(self, room_id):
-		self.model = await GameModel.objects.acreate(room_id=room_id)
+	def IsMatchPaused(self):
+		return self.match_is_paused
+
+	async def CreateModel(self):
+		self.model = await GameModel.objects.acreate(room_id=self.room_id)
 		await self.model.asave()
 		self.score[PLAYER1] = await ScoreModel.objects.acreate(game=self.model, score=0)
 		self.score[PLAYER2] = await ScoreModel.objects.acreate(game=self.model, score=0)

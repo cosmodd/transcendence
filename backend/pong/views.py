@@ -11,7 +11,7 @@ def game_list(request):
 
 	for game in games:
 		scores = Score.objects.filter(game=game)
-		scores_data = [{'player': "unspecified",'score': score.score} for score in scores], 
+		scores_data = [{'player': "unspecified",'score': score.score} for score in scores]
 		game_data = {
 			'id': game.id,
 			'status': game.status,

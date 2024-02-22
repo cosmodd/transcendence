@@ -20,12 +20,13 @@ Les clients:
   - Refactor
 
 - Client
-  - Local coop
-
+  - index.html import 
+  - Refactor server_handler
+  - Score max
 #### General
 - Collision - bugs
-- Reconnexion
-  - Systeme de pause
+- Temps max
+- Lobby constantes modifiables (score, time limit, etc)
 - Esthetique
 
 #### Guidelines

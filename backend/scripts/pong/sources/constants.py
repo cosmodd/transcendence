@@ -14,9 +14,13 @@ __all__ = [
 	"DATA_LOBBY_JOIN",
 	"DATA_LOBBY_SEARCH",
 	"DATA_LOBBY_ROOM_CREATED",
+	"DATA_LOBBY_ROOM_ENDED",
+	"DATA_LOBBY_ROOM_PAUSED",
+	"DATA_LOBBY_ROOM_RECONNECTED",
 	"DATA_LOBBY_ROOM_ID",
 	"DATA_LOBBY_JOINKEY",
 	"DATA_LOBBY_SCORE",
+	"DATA_PLAYER_UUID",
 	"DATA_POSITION",
 	"DATA_DIRECTION",
 	"DATA_ACCELERATION",
@@ -38,7 +42,8 @@ __all__ = [
 	"kPaddleSpeed",
 	"kPaddleWidth",
 	"kPaddleHeight",	
-	"kScalingFactor"	
+	"kScalingFactor",
+	"kScoreLimit"
 	]
 
 METHOD = "Method"
@@ -62,9 +67,13 @@ DATA_LOBBY_CREATE = "Create"
 DATA_LOBBY_JOIN = "Join"
 DATA_LOBBY_SEARCH = "Search"
 DATA_LOBBY_ROOM_CREATED = "Room_Created"
+DATA_LOBBY_ROOM_ENDED = "Room_Ended"
+DATA_LOBBY_ROOM_PAUSED = "Room_Paused"
+DATA_LOBBY_ROOM_RECONNECTED = "Room_Reconnected"
 DATA_LOBBY_ROOM_ID = "Room_ID"
 DATA_LOBBY_JOINKEY = "JoinKey"
 DATA_LOBBY_SCORE = "Score"
+DATA_PLAYER_UUID = "UUID"
 DATA_POSITION = "Position"
 DATA_DIRECTION = "Direction"
 DATA_ACCELERATION = "Acceleration"
@@ -80,3 +89,4 @@ kPaddleSpeed = 1.5
 kPaddleWidth = 0.05
 kPaddleHeight = 0.2
 kScalingFactor = [1.0, 1.25] # temporary ?
+kScoreLimit = 10
