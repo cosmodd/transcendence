@@ -9,6 +9,7 @@ __all__ = [
 	"OBJECT_LOBBY",
 	"OBJECT_INFO",
 
+	"DATA_TIME",
 	"DATA_LOBBY_STATE",
 	"DATA_LOBBY_CREATE",
 	"DATA_LOBBY_JOIN",
@@ -43,7 +44,8 @@ __all__ = [
 	"kPaddleWidth",
 	"kPaddleHeight",	
 	"kScalingFactor",
-	"kScoreLimit"
+	"kScoreLimit",
+	"kGameDuration"
 	]
 
 METHOD = "Method"
@@ -55,6 +57,7 @@ OBJECT_BALL = "Ball"
 OBJECT_PADDLE = "Paddle"
 OBJECT_LOBBY = "Lobby"
 OBJECT_INFO = "Info"
+DATA_TIME = "Time"
 DATA_INPUT = "Input"
 DATA_INPUT_KEY_UP = "KeyUp"
 DATA_INPUT_KEY_DOWN = "KeyDown"
@@ -90,3 +93,4 @@ kPaddleWidth = 0.05
 kPaddleHeight = 0.3
 kScalingFactor = [1.0, 1.25] # temporary ?
 kScoreLimit = 10
+kGameDuration = 1

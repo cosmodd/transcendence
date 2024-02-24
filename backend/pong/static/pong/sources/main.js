@@ -3,6 +3,7 @@ import GameType from './utils/game_type.js';
 import Game from './objects/class_game.js';
 import Collision from './collisions/collision.js'
 import { ResizeCanvas } from './events/resize.js';
+import Timer from './utils/timer.js'
 import { DebugDraw, DebugSetup } from './utils/debug.js';
 import * as k from './utils/constants_objects.js'
 
@@ -19,7 +20,7 @@ async function Init() {
 
     ResizeCanvas();
 
-    game = new Game(GameType.Local, [1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(GameType.Online , [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
@@ -57,6 +58,8 @@ function GameLoop() {
         Collision.BallPaddle(game.ball, game.player);
         Collision.BallPaddle(game.ball, game.opponent);
         Collision.BallWall(game, game.ball);
+        if (Collision.BallJustLandedInTheNet && game.TimerEnded())
+            game.EndGame();
     }
 
     // Update uniforms - position in shader

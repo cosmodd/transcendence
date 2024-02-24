@@ -83,7 +83,7 @@ async def Reconnection(websocket, event):
                         game.match_is_paused = False
                         await ClientLoop(websocket, game, c.name)
  
-async def NewRoom(clients: [Client]):
+async def NewRoom(clients):
     room_id = secrets.token_urlsafe(3)
     game = Game(room_id, clients)
     await game.CreateModel()

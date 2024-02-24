@@ -1,4 +1,5 @@
 import json
+import datetime
 from constants import *
 from class_vec2 import Vec2
 from class_game import *
@@ -37,7 +38,8 @@ class MessageBuilder:
 			DATA_LOBBY_SCORE: [
 				self.attached_game.score[DATA_PLAYER_PLAYER1].score,
 				self.attached_game.score[DATA_PLAYER_PLAYER2].score
-			] 
+			], 
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds()
 		})
 	
 	def PausedGame(self):

@@ -6,6 +6,8 @@ import { SetDebug } from "../utils/debug.js";
 // Namespace equivalent
 let Collision = {};
 
+Collision.BallJustLandedInTheNet = false;
+
 let last_ball_pos_needs_update = 0
 let last_ball_pos = null;
 Collision.BallPaddle = function(ball, paddle)
@@ -127,18 +129,22 @@ Collision.BallWall = function(game, ball) {
     if (ball.boundingbox_left <= -1) {
         ball.Reset(new Vec2(-1.0, 0.));
         game.score[1] += 1;
+        this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_right >= 1.) {
         ball.Reset(new Vec2(1.0, 0.));
         game.score[0] += 1;
+        this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_top >= 1.) {
         ball.direction.y = -Math.abs(ball.direction.y);
         ball.acceleration += k.BallAccelerationStep;
+        this.BallJustLandedInTheNet = false;
     }
     else if (ball.boundingbox_bottom <= -1.) {
         ball.direction.y = Math.abs(ball.direction.y);
         ball.acceleration += k.BallAccelerationStep;
+        this.BallJustLandedInTheNet = false;
     }
 }
 

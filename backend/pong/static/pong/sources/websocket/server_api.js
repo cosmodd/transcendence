@@ -37,6 +37,7 @@ ServerAPI.DATA_INFO_TYPE = "Info_Type";
 ServerAPI.DATA_POSITION = "Position";
 ServerAPI.DATA_DIRECTION = "Direction";
 ServerAPI.DATA_ACCELERATION = "Acceleration";
+ServerAPI.DATA_TIME = "Time";
 
 // Constants
 

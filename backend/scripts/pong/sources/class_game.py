@@ -1,3 +1,4 @@
+import asyncio
 from constants import *
 from classes_objects import Ball, Paddle
 from class_messagebuilder import MessageBuilder
@@ -5,7 +6,6 @@ from class_collision import Collision
 from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
-import asyncio
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -22,6 +22,7 @@ class Game:
 		self.score = {}
 		self.someone_scored = False
 		self.model = {}
+		self.start_time = 0
 		self.match_is_running = True
 		self.match_is_paused = False
 		self.room_id = room_id

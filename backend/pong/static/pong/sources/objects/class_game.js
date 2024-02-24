@@ -8,6 +8,7 @@ import DataOrigin from "../utils/data_origin.js";
 import GameType from "../utils/game_type.js";
 import ServerAPI from "../websocket/server_api.js";
 import { PrintInfoMessage } from "../ui/info.js"
+import Timer  from "../utils/timer.js";
 
 class Game {
 	constructor(game_type = GameType.Local, current_scale)
@@ -24,6 +25,9 @@ class Game {
 
 		if (this.game_type === GameType.Online)
 			ServerAPI.InitConnection();
+
+		if (this.game_type === GameType.Local)
+			Timer.Start(k.GameDuration * 60);
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
@@ -95,6 +99,11 @@ class Game {
 	ScoreLimitReached()
 	{
         return (this.score[0] >= k.ScoreLimit || this.score[1] >= k.ScoreLimit);
+	}
+
+	TimerEnded()
+	{
+		return Timer.is_expired;
 	}
 
 	EndGame()

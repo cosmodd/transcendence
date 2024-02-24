@@ -3,6 +3,8 @@ import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState } from './objects_state.js'
 import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
+import Timer from "../utils/timer.js";
+import * as k from "../utils/constants_objects.js"
 
 ServerAPI.InitConnection = function()
 {
@@ -17,9 +19,6 @@ ServerAPI.InitConnection = function()
 ServerAPI._InitGame = function()
 {
 	ServerAPI.websocket.addEventListener("open", () => {
-		// cookie ? -> tentative reconnexion
-		// si reconnexion non fructueuse -> delete cookie, new room
-
 		let event = {
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
@@ -110,6 +109,10 @@ ServerAPI.UpdateLobby = function(event)
 			ServerAPI.ball_state.new_data_available = true;
 		});
 	}
+
+	if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
+		Timer.ChangeRemainingTime((k.GameDuration * 60) - Math.floor(event[ServerAPI.DATA_TIME]));
+	}
 }
 
 ServerAPI.UpdateLobbyState = function(event)
@@ -131,6 +134,7 @@ ServerAPI.UpdateLobbyState = function(event)
 			}
 			ServerAPI.websocket.send(JSON.stringify(response));
 			PrintInfo(event);
+			Timer.Start(k.GameDuration * 60);
 			break;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:

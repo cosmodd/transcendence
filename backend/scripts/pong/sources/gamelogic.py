@@ -1,13 +1,11 @@
 import json
-import websockets
-import scripts.pong.sources.class_collision as class_collision
 import sender
+import asyncio
+from datetime import datetime
 from class_game import *
 from class_client import *
 from constants import *
-from datetime import datetime
 from class_vec2 import Vec2
-import asyncio
 from constants import *
 
 async def ClientLoop(websocket, game: Game, current_player):
@@ -31,8 +29,8 @@ async def ServerLoop(game: Game):
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
+    game.start_time = datetime.now()
     while (game.IsMatchRunning()):
-
         # Delta time
         current_time = datetime.now()
         delta_time = (current_time - last_update_time).total_seconds()
@@ -67,10 +65,10 @@ async def ServerLoop(game: Game):
         if (game.someone_scored):
             await sender.ToAll(game.MessageBuilder.Score(), game.connected)
             game.someone_scored = False
-            game.match_is_running = IsScoreLimitNotReached(game)
+            game.match_is_running = IsScoreLimitNotReached(game) and IsTimeNotExpired(game)
 
         # Check disconnection
-        await Deconnection(game);
+        await Disconnection(game);
 
         # Game paused
         while game.IsMatchPaused():
@@ -84,7 +82,7 @@ async def ServerLoop(game: Game):
     await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
  
-async def Deconnection(game: Game):
+async def Disconnection(game: Game):
     newly_disconnected = [c for c in game.connected if c.ws.closed]
     # Check if any client has disconnected
     for c in newly_disconnected:
@@ -113,3 +111,6 @@ async def LastPlayerDeconnection(game: Game):
 
 def IsScoreLimitNotReached(game: Game):
     return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)
+
+def IsTimeNotExpired(game: Game):
+    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration * 60)))
