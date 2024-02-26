@@ -66,6 +66,8 @@ async def ServerLoop(game: Game):
             await sender.ToAll(game.MessageBuilder.Score(), game.connected)
             game.someone_scored = False
             game.match_is_running = IsScoreLimitNotReached(game) and IsTimeNotExpired(game)
+            if (game.match_is_running == False):
+                game.match_is_running = ScoreIsEven(game)
 
         # Check disconnection
         await Disconnection(game);
@@ -113,4 +115,7 @@ def IsScoreLimitNotReached(game: Game):
     return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)
 
 def IsTimeNotExpired(game: Game):
-    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration * 60)))
+    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration * 60.0)))
+
+def ScoreIsEven(game: Game):
+    return (game.score[PLAYER1].score == game.score[PLAYER2].score)

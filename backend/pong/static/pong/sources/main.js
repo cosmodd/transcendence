@@ -58,7 +58,7 @@ function GameLoop() {
         Collision.BallPaddle(game.ball, game.player);
         Collision.BallPaddle(game.ball, game.opponent);
         Collision.BallWall(game, game.ball);
-        if (Collision.BallJustLandedInTheNet && game.TimerEnded())
+        if (Collision.BallJustLandedInTheNet && game.TimerEnded() && game.ScoreIsNotEven())
             game.EndGame();
     }
 

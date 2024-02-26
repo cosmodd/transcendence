@@ -103,7 +103,12 @@ class Game {
 
 	TimerEnded()
 	{
-		return Timer.is_expired;
+		return (Timer.is_expired);
+	}
+
+	ScoreIsNotEven()
+	{
+		return (this.score[0] != this.score[1]);
 	}
 
 	EndGame()
