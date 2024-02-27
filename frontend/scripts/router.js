@@ -78,6 +78,12 @@ function replaceLinks() {
 	});
 }
 
+function clearDynamicStyles() {
+	const dynamicStyles = document.querySelectorAll('style[data-dynamic]');
+
+	for (const style of dynamicStyles) style.textContent = '';
+}
+
 // Handles routing for the app
 // This function is called whenever the user navigates to a new page
 // If the user is not authenticated, they will be redirected to the splash screen
@@ -85,6 +91,8 @@ function replaceLinks() {
 async function router() {
 	const path = window.location.pathname;
 	const authed = localStorage.getItem('user') != null;
+
+	clearDynamicStyles();
 
 	let main = document.body;
 	let route = null

@@ -3,18 +3,14 @@ import { navigateTo } from '../../scripts/router.js';
 export default (container) => {
 
 	const addCSS = () => {
-		const style = document.createElement('style');
+		const layoutCSS = document.querySelector('style[data-dynamic]');
 
-		style.id = 'layout-styles';
-
-		style.textContent = /*css*/ `
+		layoutCSS.textContent += /*css*/ `
 			body {
 				display: grid;
 				grid-template-rows: auto 1fr;
 			}
 		`;
-
-		if (!document.querySelector('#layout-styles')) document.head.appendChild(style);
 	};
 
 	const render = () => {
