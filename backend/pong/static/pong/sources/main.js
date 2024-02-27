@@ -28,7 +28,6 @@ async function Init() {
     // await DebugSetup();
 
     GameLoop();
-
 }
 
 function GameLoop() {

@@ -23,11 +23,14 @@ class Game {
 		this.current_time;
 		this.previous_time = 0.0;
 
-		if (this.game_type === GameType.Online)
+		if (this.game_type === GameType.Online) {
 			ServerAPI.InitConnection();
+			Timer.DisplayTimer();
+		}
 
-		if (this.game_type === GameType.Local)
-			Timer.Start(k.GameDuration * 60);
+		if (this.game_type === GameType.Local) {
+			Timer.Start(k.GameDuration);
+		}
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))

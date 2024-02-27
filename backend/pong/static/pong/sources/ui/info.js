@@ -18,7 +18,6 @@ export function PrintInfoMessage(message)
 {
 	console.log(message);
 
-	// Supprimer tous les éléments de classe "info" existants
 	document.querySelectorAll('.info').forEach(element => {
 		element.remove();
 	});
@@ -37,7 +36,6 @@ export function PrintError(error)
 {
 	console.log(error);
 
-	// Supprimer tous les éléments de classe "info" existants
 	document.querySelectorAll('.info').forEach(element => {
 		element.remove();
 	});

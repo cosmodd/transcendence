@@ -115,7 +115,7 @@ def IsScoreLimitNotReached(game: Game):
     return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)
 
 def IsTimeNotExpired(game: Game):
-    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration * 60.0)))
+    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration)))
 
 def ScoreIsEven(game: Game):
     return (game.score[PLAYER1].score == game.score[PLAYER2].score)

@@ -93,4 +93,4 @@ kPaddleWidth = 0.05
 kPaddleHeight = 0.3
 kScalingFactor = [1.0, 1.25] # temporary ?
 kScoreLimit = 10
-kGameDuration = 1
+kGameDuration = 30

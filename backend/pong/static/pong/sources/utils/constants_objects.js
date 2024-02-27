@@ -7,4 +7,4 @@ export const ScoreLimit = 10
 export const PaddleSpeed = 1.5;
 export const PaddleWidth = 0.05;
 export const PaddleHeight = 0.3;
-export const GameDuration = 1;
+export const GameDuration = 30;

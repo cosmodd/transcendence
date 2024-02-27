@@ -111,7 +111,7 @@ ServerAPI.UpdateLobby = function(event)
 	}
 
 	if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
-		Timer.ChangeRemainingTime((k.GameDuration * 60) - Math.floor(event[ServerAPI.DATA_TIME]));
+		Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
 	}
 }
 
@@ -134,7 +134,7 @@ ServerAPI.UpdateLobbyState = function(event)
 			}
 			ServerAPI.websocket.send(JSON.stringify(response));
 			PrintInfo(event);
-			Timer.Start(k.GameDuration * 60);
+			Timer.Start(k.GameDuration);
 			break;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:

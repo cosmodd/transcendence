@@ -20,7 +20,6 @@ Les clients:
   - Refactor server_handler
 #### General
 - Collision - bugs
-- Temps max
 - UI et UX
 - Lobby constantes modifiables (score, time limit, etc)
 
