@@ -16,8 +16,8 @@ export default function profilePage(container, params) {
 	const render = () => {
 
 		container.innerHTML = /*html*/ `
-			<div class="container gap-3">
-				<div class="row gap-3">
+			<div class="container gap-3 pb-3 h-100">
+				<div class="row gap-3 h-100">
 					<div class="col-3 card border-2 p-4 gap-3">
 						<div class="d-flex flex-column align-items-center">
 							<img src="/assets/avatars/default.jpg" class="rounded-circle" alt="Profile Picture" style="width: 100px; height: 100px;">
@@ -58,7 +58,7 @@ export default function profilePage(container, params) {
 					</div>
 					<div class="col card border-2 h-100 p-0">
 						<h1 class="h3 fw-bold p-3 m-0">Games</h1>
-						<div class="container-fluid overflow-scroll" id="games"></div>
+						<div class="container-fluid overflow-y-scroll" id="games"></div>
 					</div>
 				</div>
 			</div>

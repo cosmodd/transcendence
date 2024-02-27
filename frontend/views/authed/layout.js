@@ -1,6 +1,22 @@
 import { navigateTo } from '../../scripts/router.js';
 
 export default (container) => {
+
+	const addCSS = () => {
+		const style = document.createElement('style');
+
+		style.id = 'layout-styles';
+
+		style.textContent = /*css*/ `
+			body {
+				display: grid;
+				grid-template-rows: auto 1fr;
+			}
+		`;
+
+		if (!document.querySelector('#layout-styles')) document.head.appendChild(style);
+	};
+
 	const render = () => {
 		const userInformations = JSON.parse(localStorage.getItem('user'));
 
@@ -29,26 +45,19 @@ export default (container) => {
 						<div class="dropdown profile">
 							<a href="#" data-bs-toggle="dropdown" class="text-decoration-none text-reset d-flex align-items-center gap-2 fw-bold">
 								${userInformations?.username}
-								<img src="${userInformations?.avatar ?? '/assets/avatars/default.jpg'
-			}" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
+								<img src="${userInformations?.avatar ?? '/assets/avatars/default.jpg'}" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end mt-2">
-								<li>
-									<a class="dropdown-item" href="/profile">Profile</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="/settings">Settings</a>
-								</li>
+								<li><a class="dropdown-item" href="/profile">Profile</a></li>
+								<li><a class="dropdown-item" href="/settings">Settings</a></li>
 								<div class="dropdown-divider"></div>
-								<li>
-									<a class="dropdown-item text-danger" href="/logout" id="logout">Logout</a>
-								</li>
+								<li><a class="dropdown-item text-danger" href="/logout" id="logout">Logout</a></li>
 							</ul>
 						</div>
 					</div>
 				</div>
 			</nav>
-			<main id="root" class="container flex-fill"></main>
+			<main id="root" class="container-fluid overflow-y-auto p-3 pt-0"></main>
 		`;
 	};
 
@@ -73,6 +82,7 @@ export default (container) => {
 		});
 	};
 
+	addCSS();
 	render();
 	addReactivity();
 };
