@@ -5,6 +5,15 @@ export default function profilePage(container, params) {
 
 	// TODO: Fetch user data from the server
 	const currentDate = new Date();
+
+	const userStatistics = {
+		wins: Math.floor(Math.random() * 100),
+		losses: Math.floor(Math.random() * 100),
+		leaderboardPosition: Math.floor(Math.random() * 100),
+	};
+
+	userStatistics.gamesPlayed = userStatistics.wins + userStatistics.losses;
+
 	const gameDatas = Array.from({ length: 20 }, () => ({
 		scores: [
 			{ username: user.username, score: Math.floor(Math.random() * 100) },
@@ -33,21 +42,35 @@ export default function profilePage(container, params) {
 									<i class="fa-solid fa-fw fa-gamepad"></i>
 									<p class="m-0">Games Played</p>
 								</div>
-								<p class="m-0">${Math.floor(Math.random() * 100)}</p>
+								<p class="m-0">${userStatistics.gamesPlayed}</p>
 							</div>
 							<div class="d-flex justify-content-between">
 								<div class="col d-flex gap-2 align-items-center">
 									<i class="fa-solid fa-fw fa-trophy"></i>
 									<p class="m-0">Wins</p>
 								</div>
-								<p class="m-0">${Math.floor(Math.random() * 100)}</p>
+								<p class="m-0">${userStatistics.wins}</p>
 							</div>
 							<div class="d-flex justify-content-between">
 								<div class="col d-flex gap-2 align-items-center">
 									<i class="fa-solid fa-fw fa-face-frown"></i>
 									<p class="m-0">Losses</p>
 								</div>
-								<p class="m-0">${Math.floor(Math.random() * 100)}</p>
+								<p class="m-0">${userStatistics.losses}</p>
+							</div>
+							<div class="d-flex justify-content-between">
+								<div class="col d-flex gap-2 align-items-center">
+									<i class="fa-solid fa-fw fa-star"></i>
+									<p class="m-0">Win Rate</p>
+								</div>
+								<p class="m-0">${Math.floor(userStatistics.wins / userStatistics.gamesPlayed * 100)}%</p>
+							</div>
+							<div class="d-flex justify-content-between">
+								<div class="col d-flex gap-2 align-items-center">
+									<i class="fa-solid fa-fw fa-trophy"></i>
+									<p class="m-0">Leaderboard Position</p>
+								</div>
+								<p class="m-0">${userStatistics.leaderboardPosition}</p>
 							</div>
 						</div>
 						<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
