@@ -13,13 +13,17 @@ const unauthedRoutes = {
 };
 
 const authedRoutes = {
-	'/play': authed('play'),
+	'/': authed('play'),
+	'/tournaments': authed('tournaments'),
 	'/test': authed('test'),
 	'/chat': authed('chat'),
 
 	// Profile routes
 	'/profile': authed('profile'),
 	'/profile/:username': authed('profile'),
+
+	// Settings routes
+	'/settings': authed('settings'),
 };
 
 /**

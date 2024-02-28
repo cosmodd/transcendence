@@ -25,7 +25,7 @@ export default function profilePage(container, params) {
 	const render = () => {
 
 		container.innerHTML = /*html*/ `
-			<div class="container gap-3 pb-3 h-100">
+			<div class="container gap-3 h-100">
 				<div class="row gap-3 h-100">
 					<div class="col-3 card border-2 p-4 gap-3">
 						<div class="d-flex flex-column align-items-center">

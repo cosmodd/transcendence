@@ -24,7 +24,8 @@ export default (container) => {
 						Transcendence
 					</a>
 					<ul class="navbar-nav justify-content-center update-active">
-						<li class="nav-item"><a href="/play" class="nav-link">Play</a></li>
+						<li class="nav-item"><a href="/" class="nav-link">Play</a></li>
+						<li class="nav-item"><a href="/tournaments" class="nav-link">Tournaments</a></li>
 						<li class="nav-item"><a href="/leaderboard" class="nav-link">Leaderboard</a></li>
 						<li class="nav-item"><a href="/chat" class="nav-link">Chat</a></li>
 					</ul>
