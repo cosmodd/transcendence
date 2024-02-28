@@ -41,7 +41,7 @@ export default (container) => {
 						</form> -->
 						<div class="dropdown profile">
 							<a href="#" data-bs-toggle="dropdown" class="text-decoration-none text-reset d-flex align-items-center gap-2 fw-bold">
-								${userInformations?.username}
+								${userInformations?.displayname}
 								<img src="${userInformations?.avatar ?? '/assets/avatars/default.jpg'}" alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end mt-2">
