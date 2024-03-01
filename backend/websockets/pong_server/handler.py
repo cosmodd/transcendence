@@ -46,6 +46,9 @@ async def Handler(websocket):
     event = json.loads(message)
     assert event[METHOD] == FROM_CLIENT
 
+    # Expected for a tournament ?
+    # Expected for a duel ?
+
     # Reconnection ?
     await Reconnection(websocket, event)
 

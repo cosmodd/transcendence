@@ -13,7 +13,7 @@ Les clients:
 
 #### Specific
 - Server
-  - Open to chat + refactor folders 
+  - Create room duel
   - Refactor
 
 - Client
@@ -29,7 +29,6 @@ Les clients:
 - Invitations
 - Front Integration
 - Back Integration
-
 
 ### Maybe
 - Customization (minor)
