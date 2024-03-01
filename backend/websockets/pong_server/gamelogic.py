@@ -1,7 +1,7 @@
 import json
-import sender
 import asyncio
 from datetime import datetime
+import sender as sender
 from class_game import *
 from class_client import *
 from constants import *

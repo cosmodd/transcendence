@@ -15,8 +15,8 @@ python manage.py migrate
 echo "Migrations done"
 
 # Websockets servers
-echo "Starting pong websocket server in the background..."
-./scripts/pong/launch_server.sh &
+echo "Starting websocket server in the background..."
+./websockets/pong_server/launch_pong_server.sh &
 
 # Start server
 python manage.py runserver 0.0.0.0:8000
