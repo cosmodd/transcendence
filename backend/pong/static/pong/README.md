@@ -13,6 +13,7 @@ Les clients:
 
 #### Specific
 - Server
+  - Reco handler -> game method
   - Create room duel
   - Refactor
 

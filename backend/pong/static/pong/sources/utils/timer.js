@@ -3,12 +3,23 @@ import { time_node } from "../ui/overlay.js";
 let Timer = {}
 Timer.is_expired = false;
 let remaining_time = 0;
+let intervalID = undefined
 
-Timer.Start = function(duration)
+Timer.Start = function()
 {
-	remaining_time = duration;
+	if (arguments.length == 1 && typeof arguments[0] === 'number')
+		remaining_time = arguments[0];
+	intervalID = setInterval(UpdateTimer, 1000);
+}
 
-	let interval = setInterval(UpdateTimer, 1000);
+Timer.IsIntervalRunning = function()
+{
+	return (intervalID !== undefined)
+}
+
+Timer.Pause = function()
+{
+	intervalID = clearInterval(intervalID);
 }
 
 Timer.ChangeRemainingTime = function(new_remaining_time)
@@ -33,8 +44,5 @@ function UpdateTimer()
 		Timer.is_expired = true;
 	}
 }
-
-
-
 
 export default Timer;

@@ -98,6 +98,10 @@ ServerAPI.UpdateBallData = function(event)
 
 ServerAPI.UpdateLobby = function(event)
 {
+	if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
+		Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
+	}
+
 	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_STATE))
 		ServerAPI.UpdateLobbyState(event)
 
@@ -108,10 +112,6 @@ ServerAPI.UpdateLobby = function(event)
 			ServerAPI.score_state.score[ServerAPI.DATA_PLAYER_PLAYER2] = score[1];
 			ServerAPI.ball_state.new_data_available = true;
 		});
-	}
-
-	if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
-		Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
 	}
 }
 
@@ -143,6 +143,12 @@ ServerAPI.UpdateLobbyState = function(event)
 			PrintInfo(event);
 			break ;
 		// Match paused
+		case ServerAPI.DATA_LOBBY_ROOM_PAUSED:
+			Timer.Pause();
+		// Reconnection
+		case ServerAPI.DATA_LOBBY_ROOM_RECONNECTED:
+			if (Timer.IsIntervalRunning() == false)
+				Timer.Start()
 		default:
 			PrintInfo(event);
 			break ;

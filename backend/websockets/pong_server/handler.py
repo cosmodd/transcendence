@@ -12,6 +12,7 @@ import asyncio
 import websockets
 import secrets
 import json
+from datetime import datetime
 import sender
 from gamelogic import ClientLoop, ServerLoop
 from class_client import Client
@@ -49,14 +50,14 @@ async def Handler(websocket):
     # Expected for a tournament ?
     # Expected for a duel ?
 
-    # Reconnection ?
-    await Reconnection(websocket, event)
-
-    # New client
-    await connected_clients.put(websocket)
-
-    # Searching match
     try:
+        # Reconnection ?
+        await Reconnection(websocket, event)
+
+        # New client
+        await connected_clients.put(websocket)
+
+        # Searching match
         async for message in websocket:
             event = json.loads(message)
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
@@ -77,13 +78,14 @@ async def Reconnection(websocket, event):
             async with game.reconnection_lock:
                 for c in game.disconnected:
                     if (uuid == c.uuid):
-                        logger.debug("FOUND ROOM - READY TO RECONNECT")
+                        # logger.debug("FOUND ROOM - READY TO RECONNECT")
                         game.disconnected.remove(c)
                         c.ws = websocket
                         game.connected.append(c)
                         await sender.ToAll(game.MessageBuilder.OpponentReconnected(), game.connected)
                         await c.ws.send(game.MessageBuilder.Reconnection())
                         game.match_is_paused = False
+                        game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
                         await ClientLoop(websocket, game, c.name)
  
 async def NewRoom(clients):

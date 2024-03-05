@@ -90,16 +90,19 @@ async def Disconnection(game: Game):
     for c in newly_disconnected:
         game.connected.remove(c)
     # end match ?
+    if (len(game.connected) == 2):
+        return 
+    if (len(game.connected) == 1):
+        game.match_is_paused = True
     if (len(game.connected) == 0):
         game.match_is_running = False
         game.match_is_paused = False
-    if (len(game.connected) == 1):
-        game.match_is_paused = True
     # Send disconnection message
     for c in newly_disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
     game.disconnected = newly_disconnected
+    game.pause_timer = datetime.now()
 
 async def LastPlayerDeconnection(game: Game):
     # Reconnection happened
@@ -110,12 +113,17 @@ async def LastPlayerDeconnection(game: Game):
         if c.ws.closed:
             game.match_is_running = False
             game.match_is_paused = False
+    # Reconnection timeout
+    if ((datetime.now() - game.pause_timer).total_seconds() >= kReconnectionWaitingTime):
+        game.match_is_running = False
+        game.match_is_paused = False
+        game.game_ended_with_timeout = True
 
 def IsScoreLimitNotReached(game: Game):
     return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)
 
 def IsTimeNotExpired(game: Game):
-    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration)))
+    return ((datetime.now() - game.start_time).total_seconds() < float(kGameDuration + game.pause_time_added))
 
 def ScoreIsEven(game: Game):
     return (game.score[PLAYER1].score == game.score[PLAYER2].score)
