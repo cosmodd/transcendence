@@ -18,6 +18,10 @@ async def ClientLoop(websocket, game: Game, current_player):
             if event[OBJECT] == OBJECT_PADDLE:
                 game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
 
+            # Game ended
+            if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
+                return ;
+
         except json.JSONDecodeError:
             print("Error decoding JSON message.")
         except KeyError as e:
@@ -76,6 +80,7 @@ async def ServerLoop(game: Game):
         while game.IsMatchPaused():
             async with game.reconnection_lock: await LastPlayerDeconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
+            await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
             await asyncio.sleep(1)
 
         await asyncio.sleep(1 / 60) 
@@ -94,15 +99,16 @@ async def Disconnection(game: Game):
         return 
     if (len(game.connected) == 1):
         game.match_is_paused = True
+        game.pause_timer = datetime.now()
     if (len(game.connected) == 0):
         game.match_is_running = False
         game.match_is_paused = False
+        return 
     # Send disconnection message
     for c in newly_disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
     game.disconnected = newly_disconnected
-    game.pause_timer = datetime.now()
 
 async def LastPlayerDeconnection(game: Game):
     # Reconnection happened

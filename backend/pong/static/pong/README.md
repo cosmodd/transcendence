@@ -12,8 +12,13 @@ Les clients:
 ## Todo
 
 #### Specific
+- Reconnexion
+  - Pause time inconsistent
+
 - Server
   - Reco handler -> game method
+  - Refactor gamelogic - reconnexion
+  - Add room created to MessageBuilder
   - Create room duel
   - Refactor
 

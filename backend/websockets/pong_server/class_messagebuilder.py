@@ -28,7 +28,20 @@ class MessageBuilder:
                     OBJECT: OBJECT_BALL,
                     DATA_POSITION: [position.x, position.y],
                     DATA_DIRECTION: [direction.x, direction.y],
-                    DATA_ACCELERATION: acceleration
+                    DATA_ACCELERATION: acceleration,
+					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
+                })
+	def FreezeBall(self):
+		position = self.attached_game.ball.position
+		direction = Vec2(0, 0)
+		acceleration = 0
+		return json.dumps({
+                    METHOD: FROM_SERVER,
+                    OBJECT: OBJECT_BALL,
+                    DATA_POSITION: [position.x, position.y],
+                    DATA_DIRECTION: [direction.x, direction.y],
+                    DATA_ACCELERATION: acceleration,
+					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
                 })
 	
 	def Score(self):
@@ -39,7 +52,7 @@ class MessageBuilder:
 				self.attached_game.score[DATA_PLAYER_PLAYER1].score,
 				self.attached_game.score[DATA_PLAYER_PLAYER2].score
 			], 
-			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds()
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
 		})
 	
 	def PausedGame(self):

@@ -2,42 +2,40 @@ import { time_node } from "../ui/overlay.js";
 
 let Timer = {}
 Timer.is_expired = false;
-let remaining_time = 0;
-let intervalID = undefined
+Timer.intervalID = null
+Timer.remaining_time = 0;
 
 Timer.Start = function()
 {
+	if (Timer.intervalID !== null)
+		return ;
 	if (arguments.length == 1 && typeof arguments[0] === 'number')
-		remaining_time = arguments[0];
-	intervalID = setInterval(UpdateTimer, 1000);
-}
-
-Timer.IsIntervalRunning = function()
-{
-	return (intervalID !== undefined)
+		Timer.remaining_time = arguments[0];
+	Timer.intervalID = setInterval(UpdateTimer, 1000);
 }
 
 Timer.Pause = function()
 {
-	intervalID = clearInterval(intervalID);
+	Timer.intervalID = clearInterval(Timer.intervalID);
+	Timer.intervalID = null;
 }
 
 Timer.ChangeRemainingTime = function(new_remaining_time)
 {
-	remaining_time = new_remaining_time;
+	Timer.remaining_time = new_remaining_time;
 }
 
 Timer.DisplayTimer = function()
 {
-	var minutes = Math.floor(remaining_time / 60);
-	var secondes = remaining_time % 60;
+	var minutes = Math.floor(Timer.remaining_time / 60);
+	var secondes = Timer.remaining_time % 60;
 	time_node.nodeValue = ('0' + minutes).slice(-2) + ':' + ('0' + secondes).slice(-2);
 }
 
 function UpdateTimer()
 {
-	if (remaining_time > 0) {
-		remaining_time--;
+	if (Timer.remaining_time > 0) {
+		Timer.remaining_time--;
 		Timer.DisplayTimer();
 	}
 	else {

@@ -38,6 +38,10 @@ ServerAPI._Recv = function() {
 		if (event[ServerAPI.METHOD] != ServerAPI.FROM_SERVER)
 			return ;
 
+		if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
+			Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
+		}
+
 		switch (event[ServerAPI.OBJECT]) {
 			case ServerAPI.OBJECT_PADDLE:
 				ServerAPI.UpdatePaddleData(event);
@@ -98,10 +102,6 @@ ServerAPI.UpdateBallData = function(event)
 
 ServerAPI.UpdateLobby = function(event)
 {
-	if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
-		Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
-	}
-
 	if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_STATE))
 		ServerAPI.UpdateLobbyState(event)
 
@@ -125,30 +125,37 @@ ServerAPI.UpdateLobbyState = function(event)
 			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
 			SetCookie("pong-uuid", event[ServerAPI.DATA_PLAYER_UUID]);
 			SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
-			let response = {
+			let response_create = {
 				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
 				[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
 				[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
 			}
-			ServerAPI.websocket.send(JSON.stringify(response));
+			ServerAPI.websocket.send(JSON.stringify(response_create));
 			PrintInfo(event);
 			Timer.Start(k.GameDuration);
-			break;
+			break ;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
 			DeleteCookie("pong-uuid");
 			DeleteCookie("pong-roomid");
+			let response_end = {
+				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_ENDED,
+			}
+			ServerAPI.websocket.send(JSON.stringify(response_end));
 			PrintInfo(event);
 			break ;
 		// Match paused
 		case ServerAPI.DATA_LOBBY_ROOM_PAUSED:
 			Timer.Pause();
+			break ;
 		// Reconnection
 		case ServerAPI.DATA_LOBBY_ROOM_RECONNECTED:
-			if (Timer.IsIntervalRunning() == false)
-				Timer.Start()
+			Timer.Start()
+			break ;
 		default:
 			PrintInfo(event);
 			break ;
