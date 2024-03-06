@@ -74,11 +74,11 @@ async def ServerLoop(game: Game):
                 game.match_is_running = ScoreIsEven(game)
 
         # Check disconnection
-        await Disconnection(game);
+        await CheckDisconnection(game);
 
         # Game paused
         while game.IsMatchPaused():
-            async with game.reconnection_lock: await LastPlayerDeconnection(game);
+            async with game.reconnection_lock: await LastPlayerDisconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
             await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
             await asyncio.sleep(1)
@@ -89,28 +89,30 @@ async def ServerLoop(game: Game):
     await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
  
-async def Disconnection(game: Game):
-    newly_disconnected = [c for c in game.connected if c.ws.closed]
+async def CheckDisconnection(game: Game):
     # Check if any client has disconnected
+    newly_disconnected = [c for c in game.connected if c.ws.closed]
     for c in newly_disconnected:
         game.connected.remove(c)
-    # end match ?
+    game.disconnected = newly_disconnected
+    # Both connected
     if (len(game.connected) == 2):
         return 
-    if (len(game.connected) == 1):
-        game.match_is_paused = True
-        game.pause_timer = datetime.now()
+    # Both disconnected
     if (len(game.connected) == 0):
         game.match_is_running = False
         game.match_is_paused = False
         return 
+    # One disconnection
+    if (len(game.connected) == 1):
+        game.match_is_paused = True
+        game.pause_timer = datetime.now()
     # Send disconnection message
     for c in newly_disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
-    game.disconnected = newly_disconnected
 
-async def LastPlayerDeconnection(game: Game):
+async def LastPlayerDisconnection(game: Game):
     # Reconnection happened
     if len(game.connected) == 2:
         return

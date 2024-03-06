@@ -93,3 +93,15 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: ("Timeout. " if self.attached_game.game_ended_with_timeout else "") + self.attached_game.winner + " won."
 		})
 
+	def NewRoomInfoFor(self, client_index):
+		return json.dumps({
+            METHOD: FROM_SERVER,
+            OBJECT: OBJECT_LOBBY,
+            DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
+            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+            DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
+            DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
+            DATA_PLAYER: self.attached_game.connected[client_index].name,
+            DATA_PLAYER_UUID: self.attached_game.connected[client_index].uuid
+		})
+

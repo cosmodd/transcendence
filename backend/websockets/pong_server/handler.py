@@ -95,17 +95,7 @@ async def NewRoom(clients):
     async with room_lock: ROOMS[room_id] = game
 
     for i in range(len(clients)):
-        event = {
-            METHOD: FROM_SERVER,
-            OBJECT: OBJECT_LOBBY,
-            DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
-            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-            DATA_INFO_TYPE_MESSAGE: "Room found: " + str(room_id),
-            DATA_LOBBY_ROOM_ID: room_id,
-            DATA_PLAYER: game.connected[i].name,
-            DATA_PLAYER_UUID: game.connected[i].uuid
-        }
-        await clients[i].ws.send(json.dumps(event))
+        await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i))
 
     await ServerLoop(game)
     async with room_lock: del ROOMS[game.room_id]

@@ -13,12 +13,10 @@ Les clients:
 
 #### Specific
 - Reconnexion
-  - Pause time inconsistent
+  - Pause time inconsistent ?
 
 - Server
-  - Reco handler -> game method
-  - Refactor gamelogic - reconnexion
-  - Add room created to MessageBuilder
+  - Reconnection handler -> game method
   - Create room duel
   - Refactor
 
