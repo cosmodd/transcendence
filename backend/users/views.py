@@ -1,11 +1,13 @@
+from django.views.generic import RedirectView, View
+from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Account
 from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-import sys
-import re
+import re, requests, random, string, os, sys
+from django.http import JsonResponse
 
 class RegisterView(generics.CreateAPIView):
     queryset = Account.objects.all()
@@ -45,7 +47,6 @@ class LoginView(TokenObtainPairView):
         refresh = RefreshToken.for_user(user)
         return Response(
         {
-
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": {
@@ -64,3 +65,95 @@ class ProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+CLIENT_ID = os.environ.get('CLIENT_ID')
+CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+REDIRECT_URI = os.environ.get('REDIRECT_URI')
+
+# Auth with 42
+class AuthentificationWith42View(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        print("HERE 1", file=sys.stderr)
+        return f'https://api.intra.42.fr/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code'
+
+class Handle42CallbackView(View):
+
+    def manage_intra_user(self, user_info):
+        User = get_user_model()
+        #if login_42 already exists, return the user
+        if User.objects.filter(login_intra=user_info['login']).exists():
+            user = User.objects.get(login_intra=user_info['login'])
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse(
+                {
+                    "refresh": str(refresh),
+                    "access": str(refresh.access_token),
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email,
+                        "profile_image": user.profile_image.url if user.profile_image else None
+                    }
+                }
+            )
+
+        username_base = user_info['login']
+        attempts = 0
+        #randomize a number in int 
+        nb = random.randint(0, 9999)
+        while User.objects.filter(username=username_base).exists():
+            #convert int to string
+            nb += attempts
+            username_base = f'{user_info["login"]}{str(nb)}'
+            attempts += 1
+        user = User.objects.create_user(
+            email=user_info['email'],
+            username=username_base,
+            login_intra=user_info['login'],
+            password='42password'
+        )
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "profile_image": user.profile_image.url if user.profile_image else None
+                }
+            }, status=201
+        )
+
+    def get(self, request, *args, **kwargs):
+        print("HERE 2", file=sys.stderr)
+        #authorization code : None means user denied the request for authorization
+        code = request.GET.get('code')
+
+        print("HERE", file=sys.stderr)
+        if code:
+            response = requests.post('https://api.intra.42.fr/oauth/token', data={
+                'grant_type': 'authorization_code',
+                'client_id': CLIENT_ID,
+                'client_secret': CLIENT_SECRET,
+                'code': code,
+                'redirect_uri': REDIRECT_URI,
+            })
+            
+            if response.status_code == 200:
+                # extract the access token from the response
+                access_token = response.json().get('access_token')
+                # get user info from 42 api
+                user_info_response = requests.get('https://api.intra.42.fr/v2/me', headers={
+                    'Authorization': f'Bearer {access_token}',
+                })
+
+                if user_info_response.status_code == 200:
+                    user_info = user_info_response.json()
+                    #print user_info to see what you can use in stdin
+                    print(user_info, file=sys.stderr)
+                    return self.manage_intra_user(user_info)
+
+        return Response({'error': 'Authentication failed'}, status=400)
+
