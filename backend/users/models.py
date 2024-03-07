@@ -38,6 +38,10 @@ class Account(AbstractBaseUser):
     login_intra = models.CharField(max_length=30, unique=True, null=True, blank=True)
     profile_image = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
 
+    # 2FA fields
+    confirmation_code = models.CharField(max_length=6, unique=False, null=True, blank=True)
+    is_two_factor_enabled = models.BooleanField(default=False)
+
     # Required fields for admin panel work properly
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
