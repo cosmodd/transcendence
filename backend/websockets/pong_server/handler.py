@@ -86,6 +86,7 @@ async def Reconnection(websocket, event):
                         await c.ws.send(game.MessageBuilder.Reconnection())
                         game.match_is_paused = False
                         game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
+                        game.reconnection_lock.release()
                         await ClientLoop(websocket, game, c.name)
  
 async def NewRoom(clients):

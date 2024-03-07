@@ -16,7 +16,7 @@ Les clients:
   - Pause time inconsistent ?
 
 - Server
-  - Reconnection handler -> game method
+  - UUID with User Model ?
   - Create room duel
   - Refactor
 
