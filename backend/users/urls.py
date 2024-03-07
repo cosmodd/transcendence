@@ -8,8 +8,9 @@ urlpatterns = [
 
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
-    path('profile/', ProfileView.as_view(), name='profile'),
-    
+    path('user/', ProfileView.as_view(), name='user'),
+    # path('user/<str:username>/', .as_view(), name='user-by-username'), TODO: build this view
+
     path('auth/42/', AuthentificationWith42View.as_view(), name='authentification-with-42'),
     path('auth/42/callback/', Handle42CallbackView.as_view(), name='authentification-with-42-callback'),
     # path('profile/update/', UpdateProfileView.as_view(), name='update-profile'), TODO: build this view
