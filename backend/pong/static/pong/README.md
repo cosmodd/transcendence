@@ -12,8 +12,12 @@ Les clients:
 ## Todo
 
 #### Specific
+- Reconnexion
+  - Pause time inconsistent ?
+
 - Server
-  - Open to chat + refactor folders 
+  - UUID with User Model ?
+  - Create room duel
   - Refactor
 
 - Client
@@ -29,7 +33,6 @@ Les clients:
 - Invitations
 - Front Integration
 - Back Integration
-
 
 ### Maybe
 - Customization (minor)

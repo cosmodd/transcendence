@@ -18,6 +18,10 @@ async def ClientLoop(websocket, game: Game, current_player):
             if event[OBJECT] == OBJECT_PADDLE:
                 game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
 
+            # Game ended
+            if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
+                return ;
+
         except json.JSONDecodeError:
             print("Error decoding JSON message.")
         except KeyError as e:
@@ -70,12 +74,13 @@ async def ServerLoop(game: Game):
                 game.match_is_running = ScoreIsEven(game)
 
         # Check disconnection
-        await Disconnection(game);
+        await CheckDisconnection(game);
 
         # Game paused
         while game.IsMatchPaused():
-            async with game.reconnection_lock: await LastPlayerDeconnection(game);
+            async with game.reconnection_lock: await LastPlayerDisconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
+            await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
             await asyncio.sleep(1)
 
         await asyncio.sleep(1 / 60) 
@@ -84,24 +89,30 @@ async def ServerLoop(game: Game):
     await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
  
-async def Disconnection(game: Game):
-    newly_disconnected = [c for c in game.connected if c.ws.closed]
+async def CheckDisconnection(game: Game):
     # Check if any client has disconnected
+    newly_disconnected = [c for c in game.connected if c.ws.closed]
     for c in newly_disconnected:
         game.connected.remove(c)
-    # end match ?
+    game.disconnected = newly_disconnected
+    # Both connected
+    if (len(game.connected) == 2):
+        return 
+    # Both disconnected
     if (len(game.connected) == 0):
         game.match_is_running = False
         game.match_is_paused = False
+        return 
+    # One disconnection
     if (len(game.connected) == 1):
         game.match_is_paused = True
+        game.pause_timer = datetime.now()
     # Send disconnection message
     for c in newly_disconnected:
         for cc in game.connected:
             await sender.Error(cc.ws, "Opponent disconnected.")
-    game.disconnected = newly_disconnected
 
-async def LastPlayerDeconnection(game: Game):
+async def LastPlayerDisconnection(game: Game):
     # Reconnection happened
     if len(game.connected) == 2:
         return
@@ -110,12 +121,17 @@ async def LastPlayerDeconnection(game: Game):
         if c.ws.closed:
             game.match_is_running = False
             game.match_is_paused = False
+    # Reconnection timeout
+    if ((datetime.now() - game.pause_timer).total_seconds() >= kReconnectionWaitingTime):
+        game.match_is_running = False
+        game.match_is_paused = False
+        game.game_ended_with_timeout = True
 
 def IsScoreLimitNotReached(game: Game):
     return (game.score[PLAYER1].score < kScoreLimit and game.score[PLAYER2].score < kScoreLimit)
 
 def IsTimeNotExpired(game: Game):
-    return ((datetime.now() - game.start_time).total_seconds() < float((kGameDuration)))
+    return ((datetime.now() - game.start_time).total_seconds() < float(kGameDuration + game.pause_time_added))
 
 def ScoreIsEven(game: Game):
     return (game.score[PLAYER1].score == game.score[PLAYER2].score)

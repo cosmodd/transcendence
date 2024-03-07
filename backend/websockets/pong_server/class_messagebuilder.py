@@ -28,7 +28,20 @@ class MessageBuilder:
                     OBJECT: OBJECT_BALL,
                     DATA_POSITION: [position.x, position.y],
                     DATA_DIRECTION: [direction.x, direction.y],
-                    DATA_ACCELERATION: acceleration
+                    DATA_ACCELERATION: acceleration,
+					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
+                })
+	def FreezeBall(self):
+		position = self.attached_game.ball.position
+		direction = Vec2(0, 0)
+		acceleration = 0
+		return json.dumps({
+                    METHOD: FROM_SERVER,
+                    OBJECT: OBJECT_BALL,
+                    DATA_POSITION: [position.x, position.y],
+                    DATA_DIRECTION: [direction.x, direction.y],
+                    DATA_ACCELERATION: acceleration,
+					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
                 })
 	
 	def Score(self):
@@ -39,7 +52,7 @@ class MessageBuilder:
 				self.attached_game.score[DATA_PLAYER_PLAYER1].score,
 				self.attached_game.score[DATA_PLAYER_PLAYER2].score
 			], 
-			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds()
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
 		})
 	
 	def PausedGame(self):
@@ -57,7 +70,8 @@ class MessageBuilder:
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-			DATA_INFO_TYPE_MESSAGE: "Reconnection..."
+			DATA_INFO_TYPE_MESSAGE: "Reconnection...",
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
 		})
 	
 	def OpponentReconnected(self):
@@ -66,10 +80,9 @@ class MessageBuilder:
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-			DATA_INFO_TYPE_MESSAGE: "Opponent Reconnected."
+			DATA_INFO_TYPE_MESSAGE: "Opponent Reconnected.",
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
 		})
-
-
 	
 	def EndGame(self):
 		return json.dumps({
@@ -77,6 +90,18 @@ class MessageBuilder:
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_ENDED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-			DATA_INFO_TYPE_MESSAGE: self.attached_game.winner + " won."
+			DATA_INFO_TYPE_MESSAGE: ("Timeout. " if self.attached_game.game_ended_with_timeout else "") + self.attached_game.winner + " won."
+		})
+
+	def NewRoomInfoFor(self, client_index):
+		return json.dumps({
+            METHOD: FROM_SERVER,
+            OBJECT: OBJECT_LOBBY,
+            DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
+            DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
+            DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
+            DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
+            DATA_PLAYER: self.attached_game.connected[client_index].name,
+            DATA_PLAYER_UUID: self.attached_game.connected[client_index].uuid
 		})
 

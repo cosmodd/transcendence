@@ -30,6 +30,9 @@ class Game:
 		self.disconnected = []
 		self.reconnection_lock = asyncio.Lock()
 		self.winner = ""
+		self.pause_timer = 0
+		self.pause_time_added = 0
+		self.game_ended_with_timeout = False
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -84,4 +87,7 @@ class Game:
 	async def TerminateModel(self):
 		self.model.status = 'terminee'
 		await self.model.asave()
-		self.winner = PLAYER1 if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else PLAYER2
+		if (self.game_ended_with_timeout):
+			self.winner = self.connected[0].name
+		else:
+			self.winner = PLAYER1 if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else PLAYER2

@@ -45,7 +45,8 @@ __all__ = [
 	"kPaddleHeight",	
 	"kScalingFactor",
 	"kScoreLimit",
-	"kGameDuration"
+	"kGameDuration",
+	"kReconnectionWaitingTime"
 	]
 
 METHOD = "Method"
@@ -94,3 +95,4 @@ kPaddleHeight = 0.3
 kScalingFactor = [1.0, 1.25] # temporary ?
 kScoreLimit = 10
 kGameDuration = 30
+kReconnectionWaitingTime = 5
