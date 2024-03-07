@@ -1,14 +1,19 @@
 # API Documentation
 
-## Endpoints
-
 **URL** : http://localhost:80/
+
+
+Summary:
+  * [User Registration](#1-user-registration) - `POST /api/register/`
+  * [User Login](#2-user-login) - `POST /api/login/`
+  * [User Profile Information](#3-user-profile-information) - `GET /api/profile/`
+  * [42 OAuth2](#4-42-oauth2) - `GET /api/auth/42/`
 
 ------------------------------------------------------------------------------------------------------------------
 ### 1. User Registration
 
-- **PATH:** `/api/register/`
 - **HTTP Method:** `POST`
+- **PATH:** `/api/register/`
 - **Permissions:** All (unauthenticated)
 - **Description:** Allows a user to register with an email, username and password.
 
@@ -39,8 +44,8 @@ Status code : 201
 
 ### 2. User Login
 
-- **PATH:** `/api/login/`
 - **HTTP Method:** `POST`
+- **PATH:** `/api/login/`
 - **Permissions:** All (unauthenticated)
 - **Description:** Allows an existing user to log in and obtain a JWT authentication token.
 
@@ -118,8 +123,8 @@ async function refreshToken() {
 
 ### 3. User Profile Information
 
-- **PATH:** `/api/profile/`
 - **HTTP Method:** `GET`
+- **PATH:** `/api/profile/`
 - **Permissions:** Authenticated
 - **Description:** Returns the profile information of the authenticated user.
 
@@ -135,5 +140,32 @@ Status code : 200
   "username": "user",
   "email": "user@gmail.com",
   "profile_image": "backend/profile_images/default.jpg"
+}
+```
+
+------------------------------------------------------------------------------------------------------------------
+
+### 4. 42 OAuth2
+
+- **HTTP Method:** `GET`
+- **PATH:** `/api/auth/42/`
+- **Permissions:** All (unauthenticated)
+- **Description:** Redirects the user to the 42 OAuth2 authentication page.
+
+#### Response
+
+###### <span style="color:green">Success</span>
+Status code : 200
+
+```json
+{
+  "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "refresh" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+  "user": {
+    "id": 1,
+    "username": "user",
+    "email": "user@gmail.com",
+    "profile_image": "backend/profile_images/default.jpg"
+  }
 }
 ```

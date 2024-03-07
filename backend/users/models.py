@@ -4,14 +4,14 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 import sys
 
 class MyAccountManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
+    def create_user(self, email, username, password=None, login_intra=None, display_name=None):
         if not email:
             raise ValueError("User must have an email address")
         if not username:
             raise ValueError("User must have an username")
         if password is None:
             raise ValueError("User must have a password")
-        user = self.model(email=self.normalize_email(email), username=username)
+        user = self.model(email=self.normalize_email(email), username=username, display_name=username, login_intra=login_intra)
         user.set_password(password)
         #check password is hashed or not
         print(user.password, file=sys.stderr)
@@ -34,6 +34,8 @@ def default_profile_image():
 class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name="email", max_length=60, unique=True)
     username = models.CharField(max_length=30, unique=True)
+    display_name = models.CharField(max_length=30, unique=False)
+    login_intra = models.CharField(max_length=30, unique=True, null=True, blank=True)
     profile_image = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
 
     # Required fields for admin panel work properly
