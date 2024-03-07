@@ -7,7 +7,7 @@
 <form class="card p-5 d-flex flex-column gap-3" id="login-form" style="min-width: 400px;">
 	<h1 class="h3 fw-normal">Welcome back!</h1>
 	<label for="username" class="visually-hidden">Username</label>
-	<input type="text" id="username" class="form-control" placeholder="Username" required autofocus />
+	<input type="text" id="username" class="form-control" placeholder="Username" required />
 	<label for="password" class="visually-hidden">Password</label>
 	<input type="password" id="password" class="form-control" placeholder="Password" required />
 	<p class="mb-0 text-muted">Don't have an account? <a href="/register">Register</a></p>
