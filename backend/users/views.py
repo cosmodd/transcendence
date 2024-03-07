@@ -15,6 +15,14 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
+        # check if required fields are present
+        if not request.data['username']:
+            return Response({"message": "Username is required"}, status=400)
+        if not request.data['email']:
+            return Response({"message": "Email is required"}, status=400)
+        if not request.data['password']:
+            return Response({"message": "Password is required"}, status=400)
+        
         # length of username should be between 2 and 30 characters
         if len(request.data['username']) < 2 or len(request.data['username']) > 30:
             return Response({"message": "Username must be between 2 and 30 characters long"}, status=400)
