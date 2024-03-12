@@ -3,7 +3,7 @@ export function SetCookie(name, value, path = "/")
     var expirationDate = new Date();
     expirationDate.setTime(expirationDate.getTime() + (1 * 24 * 60 * 60 * 1000));
     var expires = "expires=" + expirationDate.toUTCString();
-    document.cookie = name + "=" + value + ";" + expires + ";path=" + path + ";SameSite=Strict";
+    document.cookie = name + "=" + value + ";" + expires + ";path=" + path + ";SameSite=Lax";
 }
 
 export function DeleteCookie(name)

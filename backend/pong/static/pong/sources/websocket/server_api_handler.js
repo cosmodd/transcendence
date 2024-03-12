@@ -34,10 +34,8 @@ ServerAPI._InitGame = function()
 ServerAPI._Recv = function() {
 	ServerAPI.websocket.addEventListener("message", ({data}) => {
 		const event = JSON.parse(data);
-
 		if (event[ServerAPI.METHOD] != ServerAPI.FROM_SERVER)
 			return ;
-
 		if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
 			Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
 		}
@@ -83,11 +81,14 @@ ServerAPI.UpdatePaddleData = function(event)
 			ServerAPI.player_state :
 			ServerAPI.opponent_state;
 
-		paddle_state.promise = paddle_state.promise.then(async () => {
-			paddle_state.position.SetXY(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
-			paddle_state.key = event[ServerAPI.DATA_INPUT];
-			paddle_state.new_data_available = true;
-		});
+	if (paddle_state === null)
+		return ;
+
+	paddle_state.promise = paddle_state.promise.then(async () => {
+		paddle_state.position.SetXY(event[ServerAPI.DATA_POSITION][0], event[ServerAPI.DATA_POSITION][1]);
+		paddle_state.key = event[ServerAPI.DATA_INPUT];
+		paddle_state.new_data_available = true;
+	});
 }
 
 ServerAPI.UpdateBallData = function(event)
@@ -120,33 +121,11 @@ ServerAPI.UpdateLobbyState = function(event)
 	switch (event[ServerAPI.DATA_LOBBY_STATE]) {
 		// Room created
 		case ServerAPI.DATA_LOBBY_ROOM_CREATED:
-			ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
-			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
-			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
-			SetCookie("pong-uuid", event[ServerAPI.DATA_PLAYER_UUID]);
-			SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
-			let response_create = {
-				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
-				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
-				[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
-				[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
-			}
-			ServerAPI.websocket.send(JSON.stringify(response_create));
-			PrintInfo(event);
-			Timer.Start(k.GameDuration);
+			ServerAPI.UpdateLobbyStateRoomCreated(event);
 			break ;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
-			DeleteCookie("pong-uuid");
-			DeleteCookie("pong-roomid");
-			let response_end = {
-				[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
-				[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
-				[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_ENDED,
-			}
-			ServerAPI.websocket.send(JSON.stringify(response_end));
-			PrintInfo(event);
+			ServerAPI.UpdateLobbyStateRoomEnded(event);
 			break ;
 		// Match paused
 		case ServerAPI.DATA_LOBBY_ROOM_PAUSED:
@@ -160,4 +139,36 @@ ServerAPI.UpdateLobbyState = function(event)
 			PrintInfo(event);
 			break ;
 	}
+}
+
+ServerAPI.UpdateLobbyStateRoomCreated = function(event)
+{
+	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
+	ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+	ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+	SetCookie("pong-uuid", event[ServerAPI.DATA_PLAYER_UUID]);
+	SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
+	let response_create = {
+		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+		[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
+		[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
+		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
+	}
+	ServerAPI.websocket.send(JSON.stringify(response_create));
+	PrintInfo(event);
+	Timer.Start(k.GameDuration);
+}
+
+ServerAPI.UpdateLobbyStateRoomEnded = function(event)
+{
+	DeleteCookie("pong-uuid");
+	DeleteCookie("pong-roomid");
+	let response_end = {
+		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
+		[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_ENDED,
+	}
+	ServerAPI.websocket.send(JSON.stringify(response_end));
+	PrintInfo(event);
 }

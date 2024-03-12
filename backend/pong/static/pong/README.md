@@ -12,30 +12,31 @@ Les clients:
 ## Todo
 
 #### Specific
-- Reconnexion
-  - Pause time inconsistent ?
+- Django
+  - Permissions.authorized
 
 - Server
-  - UUID with User Model ?
+  - UUID replaced by Username
   - Create room duel
+  - Tournament
   - Refactor
+  - Pause time inconsistent ?
 
 - Client
   - index.html import 
-  - Refactor server_handler
 
 #### General
 - Collision - bugs
 - UI et UX
-- Lobby constantes modifiables (score, time limit, etc)
 - Casual
 - Tournaments
-- Invitations
+- Invitations (Duel)
 - Front Integration
 - Back Integration
 
 ### Maybe
 - Customization (minor)
+- Lobby constantes modifiables (score, time limit, etc)
 
 #### Guidelines
 - ES.22
