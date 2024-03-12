@@ -42,3 +42,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'username', 'email', 'profile_image']
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['display_name', 'profile_image', 'email', 'password', 'enabled_2FA']
