@@ -8,3 +8,6 @@ export const PaddleSpeed = 1.5;
 export const PaddleWidth = 0.05;
 export const PaddleHeight = 0.3;
 export const GameDuration = 30;
+
+export const EntityVertexShaderPath = "/static/pong/shaders/entity.vs";
+export const EntityFragmentShaderPath = "/static/pong/shaders/entity.fs";

@@ -1,10 +1,11 @@
-import ServerAPI from "./server_api.js";
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState } from './objects_state.js'
 import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 import Timer from "../utils/timer.js";
 import * as k from "../utils/constants_objects.js"
+
+let ServerAPI = {};
 
 ServerAPI.InitConnection = function()
 {
@@ -172,3 +173,5 @@ ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 	ServerAPI.websocket.send(JSON.stringify(response_end));
 	PrintInfo(event);
 }
+
+export default ServerAPI;

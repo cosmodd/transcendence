@@ -37,6 +37,7 @@ Les clients:
 ### Maybe
 - Customization (minor)
 - Lobby constantes modifiables (score, time limit, etc)
+- Responsive resize
 
 #### Guidelines
 - ES.22

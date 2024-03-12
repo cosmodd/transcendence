@@ -12,7 +12,8 @@ let gl_canvas = null;
 
 let game;
 
-window.addEventListener("load", Init, false);
+
+Init();
 
 async function Init() {
     gl_canvas = document.getElementById("glcanvas");
@@ -20,9 +21,9 @@ async function Init() {
 
     ResizeCanvas();
 
-    game = new Game(GameType.Online , [1.0, gl_canvas.width / gl_canvas.height]);
-    await game.SetupPlayer(new Vec3(0, 0, 1.), new Vec2(-0.9, 0.));
-    await game.SetupOpponent(new Vec3(1., 0, 0), new Vec2(0.9, 0.));
+    game = new Game(GameType.Local , [1.0, gl_canvas.width / gl_canvas.height]);
+    await game.SetupPlayer(new Vec3(13 / 255, 110 / 255, 253 / 255), new Vec2(-0.9, 0.));
+    await game.SetupOpponent(new Vec3(220 / 255, 53 / 255, 69 / 255), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
 
     // await DebugSetup();
@@ -32,7 +33,7 @@ async function Init() {
 
 function GameLoop() {
     gl.viewport(0, 0, gl_canvas.width, gl_canvas.height);
-    gl.clearColor(0., 0., 0., 1.0);
+    gl.clearColor(0., 0., 0., 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Delta time

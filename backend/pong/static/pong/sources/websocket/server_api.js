@@ -1,7 +1,9 @@
 import { NewPaddleState, NewBallState, NewScoreState } from './objects_state.js'
 
+import ServerAPI from './server_api_handler.js';
+
 // Namespace equivalent
-let ServerAPI = {};
+// let ServerAPI = {};
 
 // Server messaging logic
 ServerAPI.METHOD = "Method";

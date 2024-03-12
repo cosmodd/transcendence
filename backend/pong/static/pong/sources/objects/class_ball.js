@@ -11,11 +11,11 @@ class Ball extends Mesh {
 		const shader_infos = [
 			{
 				type: WebGL2RenderingContext.VERTEX_SHADER,
-				file_path: kEntityVertexShaderPath,
+				file_path: k.EntityVertexShaderPath,
 			},
 			{
 				type: WebGL2RenderingContext.FRAGMENT_SHADER,
-				file_path: kEntityFragmentShaderPath,
+				file_path: k.EntityFragmentShaderPath,
 			},
 		];
 
