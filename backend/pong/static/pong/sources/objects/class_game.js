@@ -1,7 +1,7 @@
 import { Vec2 } from "../utils/class_vec.js";
 import * as k from "../utils/constants_objects.js";
 import * as D from "../utils/defines.js"
-import { score_node } from '../ui/overlay.js';
+import { score_node1, score_node2 } from '../ui/overlay.js';
 import Paddle from "./class_paddle.js";
 import Ball from "./class_ball.js"
 import DataOrigin from "../utils/data_origin.js";
@@ -54,7 +54,7 @@ class Game {
 		await this.ball.Setup()
 
 	    if (this.game_type === GameType.Local)
-			this.ball.Reset(new Vec2(-1., 0.));
+			this.ball.Reset(new Vec2(-0.2, 0.));
 	}
 
 	ComputeDeltatime()
@@ -84,7 +84,8 @@ class Game {
 		this.player.Draw();
 		this.opponent.Draw();
 		this.ball.Draw();
-    	score_node.nodeValue = this.score[0] + " | " + this.score[1];
+		score_node1.nodeValue = this.score[0];
+		score_node2.nodeValue = this.score[1];
 	}
 
 	async UpdateScore()
