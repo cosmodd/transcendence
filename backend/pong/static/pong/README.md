@@ -12,9 +12,6 @@ Les clients:
 ## Todo
 
 #### Specific
-- Django
-  - Permissions.authorized
-
 - Server
   - UUID replaced by Username
   - Create room duel
@@ -23,7 +20,7 @@ Les clients:
   - Pause time inconsistent ?
 
 - Client
-  - index.html import 
+ - Local score 0 - 1 bug
 
 #### General
 - Collision - bugs

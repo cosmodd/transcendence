@@ -12,15 +12,15 @@
 	<div class="col card d-flex flex-column p-3 bg-success bg-gradient border-0">
 		<div class="card-body d-flex flex-column">
 			<h2 class="card-title fw-bold text-light">Multiplayer</h2>
-			<p class="card-text text-light">Play against other players in real-time</p>
-			<a href="/game" class="btn btn-dark">Play</a>
+			<p class="card-text text-light">Play against a random opponent online</p>
+			<a href="/game/online" class="btn btn-dark">Play</a>
 		</div>
 	</div>
 	<div class="col card d-flex flex-column p-3 bg-primary bg-gradient border-0">
 		<div class="card-body d-flex flex-column">
 			<h2 class="card-title fw-bold text-light">Local</h2>
 			<p class="card-text text-light">Play against your fake IRL friends</p>
-			<button class="btn btn-dark">Play</button>
+			<a href="/game/local" class="btn btn-dark">Play</a>
 		</div>
 	</div>
 </div>

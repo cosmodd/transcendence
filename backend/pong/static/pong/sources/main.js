@@ -12,16 +12,13 @@ let gl_canvas = null;
 
 let game;
 
-
-Init();
-
-async function Init() {
+async function Init(game_type) {
     gl_canvas = document.getElementById("glcanvas");
     gl = gl_canvas.getContext("webgl");
 
     ResizeCanvas();
 
-    game = new Game(GameType.Online , [1.0, gl_canvas.width / gl_canvas.height]);
+    game = new Game(game_type, [1.0, gl_canvas.width / gl_canvas.height]);
     await game.SetupPlayer(new Vec3(13 / 255, 110 / 255, 253 / 255), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(220 / 255, 53 / 255, 69 / 255), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
@@ -77,4 +74,4 @@ function GameLoop() {
     requestAnimationFrame(GameLoop);
 }
 
-export default gl;
+export default Init;

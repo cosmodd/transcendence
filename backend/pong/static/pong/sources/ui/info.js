@@ -24,7 +24,7 @@ export function PrintInfoMessage(message)
 
 	let newInfoElement = document.createElement('div');
 	newInfoElement.textContent = message;
-	newInfoElement.classList.add('info', 'info_message');
+	newInfoElement.classList.add(...('alert info border-none bg-primary m-3'.split(/\s/g)));
 	document.body.appendChild(newInfoElement);
 
 	newInfoElement.addEventListener('animationend', function() {
@@ -42,7 +42,7 @@ export function PrintError(error)
 
 	let newInfoElement = document.createElement('div');
 	newInfoElement.textContent = error;
-	newInfoElement.classList.add('info', 'info_error');
+	newInfoElement.classList.add(...('alert info border-none bg-danger m-3'.split(/\s/g)));
 	document.body.appendChild(newInfoElement);
 
 	newInfoElement.addEventListener('animationend', function() {
