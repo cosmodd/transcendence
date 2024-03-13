@@ -1,13 +1,17 @@
 from django.views.generic import RedirectView, View
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, parsers
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import Account
-from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer
+from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, UpdateProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import re, requests, random, string, os, sys
 from django.http import JsonResponse
+
+# *******************************************************************************************************************
+# ************************************************* Register / Login ************************************************
+# *******************************************************************************************************************
 
 class RegisterView(generics.CreateAPIView):
     queryset = Account.objects.all()
@@ -67,12 +71,60 @@ class LoginView(TokenObtainPairView):
         )
 
 
+# *******************************************************************************************************************
+# ********************************************* User Profile & Update ***********************************************
+# *******************************************************************************************************************
+
+# will return user info of the logged in user
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         return self.request.user
+
+# return user info by username, eg: /user/rookie/ will return user info of user with username rookie
+class UserProfile(generics.RetrieveAPIView):
+    queryset = Account.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.AllowAny]
+    lookup_field = 'username'
+
+    def get_object(self):
+        return Account.objects.get(username=self.kwargs['username'])
+    
+# update user profile
+# class UpdateProfileView(generics.UpdateAPIView):
+#     queryset = Account.objects.all()
+#     serializer_class = UpdateProfileSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+#     parser_classes = [MultiPartParser]
+
+#     def get_object(self):
+#         return self.request.user
+    
+#     def update(self, request, *args, **kwargs):
+#         if request.data['display_name']:
+#             self.get_object().display_name = request.data['display_name']
+
+#         if request.data['old_password']:
+#             #check if old_password is equal to the current password if not return error
+#             if not self.get_object().check_password(request.data['old_password']):
+#                 return Response({"message": "Old password is incorrect"}, status=400)
+#             elif not request.data['new_password']:
+#                 return Response({"message": "New password is required"}, status=400)
+#             else:
+#                 self.get_object().set_password(request.data['new_password'])
+        
+#         if request.data['enable_2FA']:
+#             if request.data['enable_2FA'] == "true":
+#                 self.get_object().enabled_2FA = True
+#             else:
+#                 self.get_object().enabled_2FA = False
+
+# *******************************************************************************************************************
+# ***************************************************** 42 AUTH *****************************************************
+# *******************************************************************************************************************
 
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
@@ -81,7 +133,6 @@ REDIRECT_URI = os.environ.get('REDIRECT_URI')
 # Auth with 42
 class AuthentificationWith42View(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
-        print("HERE 1", file=sys.stderr)
         return f'https://api.intra.42.fr/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code'
 
 class Handle42CallbackView(View):

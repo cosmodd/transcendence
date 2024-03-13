@@ -25,10 +25,10 @@ class MyAccountManager(BaseUserManager):
         user.is_superuser = True
 
 def profile_image(instance):
-    return f'profile_images/{instance.username}/profile_image.png'
+    return f'static/users/profile_images/{instance.id}/'
 
 def default_profile_image():
-    return 'profile_images/default.png'
+    return 'static/users/profile_images/default.jpg'
 
 # Create your models here.
 class Account(AbstractBaseUser):
@@ -40,7 +40,7 @@ class Account(AbstractBaseUser):
 
     # 2FA fields
     confirmation_code = models.CharField(max_length=6, unique=False, null=True, blank=True)
-    is_two_factor_enabled = models.BooleanField(default=False)
+    enabled_2FA = models.BooleanField(default=False)
 
     # Required fields for admin panel work properly
     is_admin = models.BooleanField(default=False)
