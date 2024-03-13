@@ -25,28 +25,29 @@ class MyAccountManager(BaseUserManager):
         user.is_superuser = True
 
 def profile_image(instance):
-    return f'static/users/profile_images/{instance.id}/'
+    return f'/static/users/profile_images/{instance.id}/'
 
 def default_profile_image():
-    return 'static/users/profile_images/default.jpg'
+    return '/static/users/profile_images/default.jpg'
 
 # Create your models here.
 class Account(AbstractBaseUser):
-    email = models.EmailField(verbose_name="email", max_length=60, unique=True)
-    username = models.CharField(max_length=30, unique=True)
-    display_name = models.CharField(max_length=30, unique=False)
-    login_intra = models.CharField(max_length=30, unique=True, null=True, blank=True)
-    profile_image = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
+    email           = models.EmailField(verbose_name="email", max_length=60, unique=True)
+    username        = models.CharField(max_length=32, unique=True)
+    display_name    = models.CharField(max_length=32, unique=False)
+    login_intra     = models.CharField(max_length=32, unique=True, null=True, blank=True)
+    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
 
     # 2FA fields
-    confirmation_code = models.CharField(max_length=6, unique=False, null=True, blank=True)
-    enabled_2FA = models.BooleanField(default=False)
+    enabled_2FA     = models.BooleanField(default=False)
+    waiting_2FA     = models.DateTimeField(null=True, blank=True)
+    nb_try_2FA      = models.IntegerField(default=0)
 
     # Required fields for admin panel work properly
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
+    is_admin        = models.BooleanField(default=False)
+    is_active       = models.BooleanField(default=True)
+    is_staff        = models.BooleanField(default=False)
+    is_superuser    = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']

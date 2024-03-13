@@ -21,24 +21,24 @@ class RegisterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         # check if required fields are present
         if not request.data['username']:
-            return Response({"message": "Username is required"}, status=400)
+            return Response({"message": "Username is required"}, status=401)
         if not request.data['email']:
-            return Response({"message": "Email is required"}, status=400)
+            return Response({"message": "Email is required"}, status=401)
         if not request.data['password']:
-            return Response({"message": "Password is required"}, status=400)
+            return Response({"message": "Password is required"}, status=401)
         
         # length of username should be between 2 and 30 characters
         if len(request.data['username']) < 2 or len(request.data['username']) > 30:
-            return Response({"message": "Username must be between 2 and 30 characters long"}, status=400)
+            return Response({"message": "Username must be between 2 and 30 characters long"}, status=401)
         # username should contain only letters, numbers, underscores and dots
         if not re.match("^[a-zA-Z0-9_.]*$", request.data['username']):
-            return Response({"message": "Username can only contain letters, numbers, underscores and dots"}, status=400)
+            return Response({"message": "Username can only contain letters, numbers, underscores and dots"}, status=401)
         # not allow consecutive dots or underscores
         if ".." in request.data['username'] or "__" in request.data['username']:
-            return Response({"message": "Username can't have consecutive dots or underscores"}, status=400)
+            return Response({"message": "Username can't have consecutive dots or underscores"}, status=401)
         # email should be valid format
         if not re.match(r"[^@]+@[^@]+\.[^@]+", request.data['email']):
-            return Response({"message": "Invalid email"}, status=400)
+            return Response({"message": "Invalid email"}, status=401)
         # create user if all checks pass
         return super().post(request, *args, **kwargs)
         
@@ -51,9 +51,9 @@ class LoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid() and "non_field_errors" in serializer.errors:
-            return Response({"message": "Invalid username"}, status=400)
+            return Response({"message": "Invalid username"}, status=401)
         if not serializer.is_valid() and "password" in serializer.errors:
-            return Response({"message": "Invalid password"}, status=400)
+            return Response({"message": "Invalid password"}, status=401)
         # print(serializer.validated_data, file=sys.stderr)
         user = Account.objects.get(username=request.data['username'])
         refresh = RefreshToken.for_user(user)
@@ -153,7 +153,7 @@ class Handle42CallbackView(View):
                         "email": user.email,
                         "profile_image": user.profile_image.url if user.profile_image else None
                     }
-                }
+                }, status=302, headers={'Location': 'http://localhost:8080/'}
             )
 
         username_base = user_info['login']
@@ -172,6 +172,7 @@ class Handle42CallbackView(View):
             password='42password'
         )
         refresh = RefreshToken.for_user(user)
+        # return user info and tokens and redirect to frontend home page
         return JsonResponse(
             {
                 "refresh": str(refresh),
@@ -182,7 +183,7 @@ class Handle42CallbackView(View):
                     "email": user.email,
                     "profile_image": user.profile_image.url if user.profile_image else None
                 }
-            }, status=201
+            }, status=302, headers={'Location': 'http://localhost:8080/'}
         )
 
     def get(self, request, *args, **kwargs):
@@ -214,5 +215,5 @@ class Handle42CallbackView(View):
                     print(user_info, file=sys.stderr)
                     return self.manage_intra_user(user_info)
 
-        return Response({'error': 'Authentication failed'}, status=400)
+        return JsonResponse({'error': 'Authentication failed'}, status=400)
 
