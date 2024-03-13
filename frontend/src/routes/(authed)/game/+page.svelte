@@ -29,7 +29,7 @@
 <script src="pong/sources/objects/class_shader.js" type="module"></script> -->
 
 <div class="wrapper h-100 position-relative">
-	<canvas class="card border-2 mx-auto h-100" id="glcanvas">
+	<canvas class="card border-2 mx-auto w-100" id="glcanvas">
 	</canvas>
 	<div class="position-absolute top-0 start-50 translate-middle-x text-center">
 		<div><span id="score"></span></div>
