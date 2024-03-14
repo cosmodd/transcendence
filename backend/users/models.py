@@ -1,6 +1,7 @@
 from typing import Any
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+import pyotp
 import sys
 
 class MyAccountManager(BaseUserManager):
@@ -13,9 +14,10 @@ class MyAccountManager(BaseUserManager):
             raise ValueError("User must have a password")
         user = self.model(email=self.normalize_email(email), username=username, display_name=username, login_intra=login_intra)
         user.set_password(password)
-        #check password is hashed or not
-        print(user.password, file=sys.stderr)
+        # check password is hashed or not
+        # print(user.password, file=sys.stderr)
         user.save(using=self._db)
+        user.secret_2FA = pyotp.random_base32()
         return user
     
     def create_superuser(self, email, username, password=None):
@@ -40,6 +42,7 @@ class Account(AbstractBaseUser):
 
     # 2FA fields
     enabled_2FA     = models.BooleanField(default=False)
+    secret_2FA      = models.CharField(max_length=16, unique=True, null=True, blank=True)
     waiting_2FA     = models.DateTimeField(null=True, blank=True)
     nb_try_2FA      = models.IntegerField(default=0)
 
@@ -64,3 +67,8 @@ class Account(AbstractBaseUser):
     def has_module_perms(self, app_label):
         return True
     
+    def get_authentification_setup_uri(self):
+        return pyotp.totp.TOTP(self.secret_2FA).provisioning_uri(self.username, issuer_name="Transcendence")
+    
+    def is_otp_valid(self, otp):
+        return pyotp.TOTP(self.secret_2FA).verify(otp)

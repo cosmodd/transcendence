@@ -27,6 +27,12 @@ class RegisterView(generics.CreateAPIView):
         if not request.data['password']:
             return Response({"message": "Password is required"}, status=401)
         
+        # check if username and email already exists
+        if Account.objects.filter(username=request.data['username']).exists():
+            return Response({"message": "Username already exists"}, status=401)
+        if Account.objects.filter(email=request.data['email']).exists():
+            return Response({"message": "Email already exists"}, status=401)
+
         # length of username should be between 2 and 30 characters
         if len(request.data['username']) < 2 or len(request.data['username']) > 30:
             return Response({"message": "Username must be between 2 and 30 characters long"}, status=401)
