@@ -1,7 +1,8 @@
 from typing import Any
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-import pyotp
+import pyotp, qrcode
 import sys
 
 class MyAccountManager(BaseUserManager):
@@ -18,6 +19,9 @@ class MyAccountManager(BaseUserManager):
         # print(user.password, file=sys.stderr)
         user.save(using=self._db)
         user.secret_2FA = pyotp.random_base32()
+        qrcode.make(user.get_authentification_setup_uri()).save(f'./users/static/users/qrcodes/{user.id}.png')
+        user.qrcode_2FA = f'./users/static/users/qrcodes/{user.id}.png'
+        user.save(using=self._db)
         return user
     
     def create_superuser(self, email, username, password=None):
@@ -27,10 +31,13 @@ class MyAccountManager(BaseUserManager):
         user.is_superuser = True
 
 def profile_image(instance):
-    return f'/static/users/profile_images/{instance.id}/'
+    return f'./users/static/users/profile_images/{instance.id}/'
 
 def default_profile_image():
-    return '/static/users/profile_images/default.jpg'
+    return './users/static/users/profile_images/default.jpg'
+
+def user_qrcode(instance):
+    return f'./users/static/users/qrcodes/{instance.id}.png'
 
 # Create your models here.
 class Account(AbstractBaseUser):
@@ -42,7 +49,8 @@ class Account(AbstractBaseUser):
 
     # 2FA fields
     enabled_2FA     = models.BooleanField(default=False)
-    secret_2FA      = models.CharField(max_length=16, unique=True, null=True, blank=True)
+    secret_2FA      = models.CharField(max_length=32, unique=True, null=True, blank=True)
+    qrcode_2FA      = models.ImageField(max_length=255, upload_to=user_qrcode, null=True, blank=True)
     waiting_2FA     = models.DateTimeField(null=True, blank=True)
     nb_try_2FA      = models.IntegerField(default=0)
 
@@ -72,3 +80,17 @@ class Account(AbstractBaseUser):
     
     def is_otp_valid(self, otp):
         return pyotp.TOTP(self.secret_2FA).verify(otp)
+    
+    def set_2FA(self, val: bool):
+        self.enabled_2FA = val
+        self.save()
+
+    def set_date_2FA(self):
+        if self.waiting_2FA is not None:
+            self.waiting_2FA = None
+        else:
+            self.waiting_2FA = timezone.now()
+        self.save()
+
+    def compare_date_2FA(self):
+        return (timezone.now() - self.waiting_2FA).seconds > 60

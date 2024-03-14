@@ -3,11 +3,13 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, parsers
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import UntypedToken
 from .models import Account
 from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, UpdateProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import re, requests, random, string, os, sys
 from django.http import JsonResponse
+from datetime import datetime
 
 # *******************************************************************************************************************
 # ************************************************* Register / Login ************************************************
@@ -56,12 +58,15 @@ class LoginView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid() and "non_field_errors" in serializer.errors:
+        if not serializer.is_valid() and "username" in serializer.errors:
             return Response({"message": "Invalid username"}, status=401)
         if not serializer.is_valid() and "password" in serializer.errors:
             return Response({"message": "Invalid password"}, status=401)
         # print(serializer.validated_data, file=sys.stderr)
         user = Account.objects.get(username=request.data['username'])
+        if user.enabled_2FA:
+            user.set_date_2FA()
+            return Response({"id": user.id}, status=200)
         refresh = RefreshToken.for_user(user)
         return Response(
         {
@@ -76,6 +81,39 @@ class LoginView(TokenObtainPairView):
         }
         )
 
+
+# *******************************************************************************************************************
+# ************************************************** 2FA Enable *****************************************************
+# *******************************************************************************************************************
+
+class Check_two_factor_code(TokenObtainPairView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        if not request.data['id']:
+            return Response({"message": "User id is required"}, status=400)
+        if not request.data['code']:
+            return Response({"message": "2FA code is required"}, status=400)
+        user = Account.objects.get(id=request.data['id'])
+        if not user.waiting_2FA:
+            return Response({"message": "Invalid request"}, status=400)
+        if user.compare_date_2FA():
+            user.set_date_2FA()
+        if user.is_otp_valid(request.data['code']) and user.waiting_2FA is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "profile_image": user.profile_image.url
+                }
+            }, status=200)
+        return Response({"message": "Invalid 2FA code"}, status=400)
+    
 
 # *******************************************************************************************************************
 # ********************************************* User Profile & Update ***********************************************
@@ -100,33 +138,23 @@ class UserProfile(generics.RetrieveAPIView):
         return Account.objects.get(username=self.kwargs['username'])
     
 # update user profile
-# class UpdateProfileView(generics.UpdateAPIView):
-#     queryset = Account.objects.all()
-#     serializer_class = UpdateProfileSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-#     parser_classes = [MultiPartParser]
+class UpdateProfileView(generics.UpdateAPIView):
+    queryset = Account.objects.all()
+    serializer_class = UpdateProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-#     def get_object(self):
-#         return self.request.user
+    def get_object(self):
+        token = self.request.headers.get('Authorization')
+        if token is None or not token.startswith('Bearer '):
+            return Response({"message": "Unauthorized"}, status=401)
+        token = token[7:]
+        try :
+            UntypedToken(token)
+        except:
+            return Response({"message": "Unauthorized"}, status=401)
+        return self.request.user
+
     
-#     def update(self, request, *args, **kwargs):
-#         if request.data['display_name']:
-#             self.get_object().display_name = request.data['display_name']
-
-#         if request.data['old_password']:
-#             #check if old_password is equal to the current password if not return error
-#             if not self.get_object().check_password(request.data['old_password']):
-#                 return Response({"message": "Old password is incorrect"}, status=400)
-#             elif not request.data['new_password']:
-#                 return Response({"message": "New password is required"}, status=400)
-#             else:
-#                 self.get_object().set_password(request.data['new_password'])
-        
-#         if request.data['enable_2FA']:
-#             if request.data['enable_2FA'] == "true":
-#                 self.get_object().enabled_2FA = True
-#             else:
-#                 self.get_object().enabled_2FA = False
 
 # *******************************************************************************************************************
 # ***************************************************** 42 AUTH *****************************************************

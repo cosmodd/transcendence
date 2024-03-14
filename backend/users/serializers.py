@@ -5,7 +5,7 @@ import sys
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'username', 'email', 'password', 'profile_image']
+        fields = ['id', 'username', 'email', 'password', 'profile_image', 'enabled_2FA']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -41,9 +41,9 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'username', 'email', 'profile_image']
+        fields = ['id', 'username', 'email', 'profile_image', 'display_name', 'enabled_2FA', 'qrcode_2FA']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['display_name', 'profile_image', 'email', 'password', 'enabled_2FA']
+        fields = ['display_name', 'profile_image', 'email', 'password', 'enabled_2FA', 'username']
