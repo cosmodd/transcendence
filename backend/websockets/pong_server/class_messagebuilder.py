@@ -103,6 +103,6 @@ class MessageBuilder:
             DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
             DATA_PLAYER: self.attached_game.connected[client_index].name,
-            DATA_PLAYER_UUID: self.attached_game.connected[client_index].uuid
+            DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token
 		})
 

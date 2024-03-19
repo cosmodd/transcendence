@@ -13,23 +13,27 @@ Les clients:
 
 #### Specific
 - Server
-  - UUID replaced by Username
+  - token dictionary for finding games
+  - GameModel foreign key with UserModel
+  - GameModel.asave() (username?-> fetched with token)
+  - GameModel views
+  - [error] already registered in a room
+  - [bug] paddle reset inconsistent
+  - [bug] pause time inconsistent ?
+
   - Create room duel
   - Tournament
   - Refactor
-  - Pause time inconsistent ?
 
 - Client
- - [bug] Local score 0 - 1
+  - UI - print username
+  - [bug] Local score 0 - 1
 
 #### General
-- Bugs
 - UI et UX
 - Casual
 - Tournaments
 - Invitations (Duel)
-- Front Integration
-- Back Integration
 
 ### Maybe
 - Customization (minor)

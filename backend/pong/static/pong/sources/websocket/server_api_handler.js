@@ -24,8 +24,9 @@ ServerAPI._InitGame = function()
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
-			[ServerAPI.DATA_PLAYER_UUID]: GetCookie("pong-uuid"),
+			[ServerAPI.DATA_PLAYER_TOKEN]: JSON.parse(localStorage.getItem("auth")).accessToken,
 			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid")
+			//localstorage.getitem("auth").accessToken
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")
@@ -135,6 +136,7 @@ ServerAPI.UpdateLobbyState = function(event)
 		// Reconnection
 		case ServerAPI.DATA_LOBBY_ROOM_RECONNECTED:
 			Timer.Start()
+			PrintInfo(event);
 			break ;
 		default:
 			PrintInfo(event);
@@ -147,7 +149,6 @@ ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 	ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 	ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
-	SetCookie("pong-uuid", event[ServerAPI.DATA_PLAYER_UUID]);
 	SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
 	let response_create = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,

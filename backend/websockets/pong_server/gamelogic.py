@@ -8,8 +8,8 @@ from constants import *
 from class_vec2 import Vec2
 from constants import *
 
-async def ClientLoop(websocket, game: Game, current_player):
-    async for message in websocket:
+async def ClientLoop(client: Client, game: Game, current_player):
+    async for message in client.ws:
         try:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
