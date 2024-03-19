@@ -7,6 +7,11 @@
 
 	let alertMessage = "";
 
+	let feedbacks = {
+		username: [],
+		password: [],
+	};
+
 	async function handleForm(event: SubmitEvent) {
 		const form = event.target as HTMLFormElement;
 		const formData = new FormData(event.target as HTMLFormElement);
@@ -27,7 +32,9 @@
 		const responseData = await loginResponse.json();
 
 		if (!loginResponse.ok) {
-			alertMessage = responseData.message;
+			feedbacks.username = responseData["username"] ?? [];
+			feedbacks.password = responseData["password"] ?? [];
+			console.log(feedbacks);
 			return;
 		}
 
@@ -53,11 +60,39 @@
 
 	<div id="usernameField">
 		<label for="username" class="visually-hidden">Username</label>
-		<input type="text" id="username" name="username" class="form-control" placeholder="Username" required />
+		<input
+			type="text"
+			id="username"
+			name="username"
+			class="form-control"
+			class:is-invalid={feedbacks.username.length > 0}
+			on:input={() => (feedbacks.username = [])}
+			placeholder="Username"
+			required
+		/>
+		<div class="invalid-feedback">
+			{#each feedbacks.username as feedback}
+				{feedback}
+			{/each}
+		</div>
 	</div>
 	<div id="passwordField">
 		<label for="password" class="visually-hidden">Password</label>
-		<input type="password" id="password" name="password" class="form-control" placeholder="Password" required />
+		<input
+			type="password"
+			id="password"
+			name="password"
+			class="form-control"
+			class:is-invalid={feedbacks.password.length > 0}
+			on:input={() => (feedbacks.password = [])}
+			placeholder="Password"
+			required
+		/>
+		<div class="invalid-feedback">
+			{#each feedbacks.password as feedback}
+				{feedback}
+			{/each}
+		</div>
 	</div>
 	<p class="mb-0 text-muted">Don't have an account? <a href="/register">Register</a></p>
 	<div class="d-flex flex-column justify-content-center gap-2">
