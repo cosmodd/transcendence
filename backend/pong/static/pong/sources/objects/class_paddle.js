@@ -98,6 +98,11 @@ class Paddle extends Mesh {
 		this.gl.useProgram(null);
 	}
 
+	Reset()
+	{
+		this._uEntityPosition.y = 0;
+	}
+
 	ComputeBoundingbox()
 	{
 		this.boundingbox_left = this._uEntityPosition.x - this.width_half;

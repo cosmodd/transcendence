@@ -12,37 +12,38 @@ class MessageBuilder:
 		position = self.attached_game.players[player].position
 		key = self.attached_game.players[player].key
 		return json.dumps({
-                    METHOD: FROM_SERVER,
-                    OBJECT: OBJECT_PADDLE,
-					DATA_PLAYER: player,
-                    DATA_POSITION: [position.x, position.y],
-                    DATA_INPUT: key
-                })
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_PADDLE,
+			DATA_PLAYER: player,
+			DATA_POSITION: [position.x, position.y],
+			DATA_INPUT: key
+		})
 
 	def Ball(self):
 		position = self.attached_game.ball.position
 		direction = self.attached_game.ball.direction
 		acceleration = self.attached_game.ball.acceleration
 		return json.dumps({
-                    METHOD: FROM_SERVER,
-                    OBJECT: OBJECT_BALL,
-                    DATA_POSITION: [position.x, position.y],
-                    DATA_DIRECTION: [direction.x, direction.y],
-                    DATA_ACCELERATION: acceleration,
-					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
-                })
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_BALL,
+			DATA_POSITION: [position.x, position.y],
+			DATA_DIRECTION: [direction.x, direction.y],
+			DATA_ACCELERATION: acceleration,
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
+		})
+
 	def FreezeBall(self):
 		position = self.attached_game.ball.position
 		direction = Vec2(0, 0)
 		acceleration = 0
 		return json.dumps({
-                    METHOD: FROM_SERVER,
-                    OBJECT: OBJECT_BALL,
-                    DATA_POSITION: [position.x, position.y],
-                    DATA_DIRECTION: [direction.x, direction.y],
-                    DATA_ACCELERATION: acceleration,
-					DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
-                })
+			METHOD: FROM_SERVER,
+			OBJECT: OBJECT_BALL,
+			DATA_POSITION: [position.x, position.y],
+			DATA_DIRECTION: [direction.x, direction.y],
+			DATA_ACCELERATION: acceleration,
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
+		})
 	
 	def Score(self):
 		return json.dumps({

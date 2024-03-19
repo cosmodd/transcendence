@@ -20,10 +20,10 @@ Les clients:
   - Pause time inconsistent ?
 
 - Client
- - Local score 0 - 1 bug
+ - [bug] Local score 0 - 1
 
 #### General
-- Collision - bugs
+- Bugs
 - UI et UX
 - Casual
 - Tournaments

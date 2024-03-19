@@ -127,11 +127,15 @@ Collision.BallWall = function(game, ball) {
     ball.ComputeBoundingbox();
 
     if (ball.boundingbox_left <= -1) {
+        game.player.Reset();
+        game.opponent.Reset();
         ball.Reset(new Vec2(-1.0, 0.));
         game.score[1] += 1;
         this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_right >= 1.) {
+        game.player.Reset();
+        game.opponent.Reset();
         ball.Reset(new Vec2(1.0, 0.));
         game.score[0] += 1;
         this.BallJustLandedInTheNet = true;

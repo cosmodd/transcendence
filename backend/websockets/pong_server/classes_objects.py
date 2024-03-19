@@ -15,7 +15,7 @@ class Ball:
     def Reset(self, new_direction: Vec2):
         self.position = Vec2(0., 0.)
         self.direction = new_direction
-        self.acceleration = 0.;
+        self.acceleration = 0.
 
     def ComputeBoundingbox(self):
         self.boundingbox_left = self.position.x - self.radius;
@@ -37,12 +37,15 @@ class Paddle:
         self.key_has_changed = False
 
     def ComputeBoundingbox(self):
-        self.boundingbox_left = self.position.x - self.width_half;
-        self.boundingbox_right = self.position.x + self.width_half;
-        self.boundingbox_top = self.position.y + self.height_half;
-        self.boundingbox_bottom = self.position.y - self.height_half;
+        self.boundingbox_left = self.position.x - self.width_half
+        self.boundingbox_right = self.position.x + self.width_half
+        self.boundingbox_top = self.position.y + self.height_half
+        self.boundingbox_bottom = self.position.y - self.height_half
         # self.boundingbox_left *= kScalingFactor[0]
         # self.boundingbox_right *= kScalingFactor[0];
         # self.boundingbox_top *= kScalingFactor[1];
         # self.boundingbox_bottom *= kScalingFactor[1];
+    
+    def Reset(self):
+        self.position = Vec2(self.position.x, 0.0)
 

@@ -68,6 +68,8 @@ async def ServerLoop(game: Game):
 
         if (game.someone_scored):
             await sender.ToAll(game.MessageBuilder.Score(), game.connected)
+            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
+            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
             game.someone_scored = False
             game.match_is_running = IsScoreLimitNotReached(game) and IsTimeNotExpired(game)
             if (game.match_is_running == False):

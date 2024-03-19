@@ -110,7 +110,7 @@ class Game {
 		return (Timer.is_expired);
 	}
 
-	ScoreIsNotEven()
+	ScoreIsOdd()
 	{
 		return (this.score[0] != this.score[1]);
 	}
