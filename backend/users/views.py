@@ -48,7 +48,19 @@ class RegisterView(generics.CreateAPIView):
         if not re.match(r"[^@]+@[^@]+\.[^@]+", request.data['email']):
             return Response({"message": "Invalid email"}, status=401)
         # create user if all checks pass
-        return super().post(request, *args, **kwargs)
+        super().post(request, *args, **kwargs)
+        refresh = RefreshToken.for_user(Account.objects.get(username=request.data['username']))
+        return Response(
+        {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": Account.objects.get(username=request.data['username']).id,
+                "username": request.data['username'],
+                "email": request.data['email'],
+                "profile_image": Account.objects.get(username=request.data['username']).profile_image.url
+            }
+        }, status=201)
         
 
 # custom error message for login if credentials are invalid
