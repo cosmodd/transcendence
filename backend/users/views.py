@@ -70,9 +70,9 @@ class LoginView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid() and "username" in serializer.errors:
+        if not serializer.is_valid() or "username" in serializer.errors:
             return Response({"message": "Invalid username"}, status=401)
-        if not serializer.is_valid() and "password" in serializer.errors:
+        if not serializer.is_valid() or "password" in serializer.errors:
             return Response({"message": "Invalid password"}, status=401)
         # print(serializer.validated_data, file=sys.stderr)
         user = Account.objects.get(username=request.data['username'])
