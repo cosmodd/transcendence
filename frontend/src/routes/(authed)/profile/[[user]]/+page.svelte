@@ -1,6 +1,5 @@
 <script lang="ts">
 	import defaultAvatar from "$lib/assets/images/default.jpg";
-	import { user } from "$lib/stores/user";
 	import MatchSummary from "$lib/components/profile/MatchSummary.svelte";
 	import {
 		faBan,

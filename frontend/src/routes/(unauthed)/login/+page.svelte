@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { login } from "$lib/stores/auth";
 	import Logo42 from "$lib/assets/icons/42.svelte";
 	import Fa from "svelte-fa";
 	import { faRightToBracket, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -15,8 +16,6 @@
 			password: formData.get("password") as string,
 		};
 
-		console.log(formData);
-
 		const loginResponse: Response = await fetch("/api/login/", {
 			method: "POST",
 			headers: {
@@ -25,21 +24,14 @@
 			body: JSON.stringify(data),
 		});
 
-		const loginData = await loginResponse.json();
+		const responseData = await loginResponse.json();
 
 		if (!loginResponse.ok) {
-			alertMessage = loginData.message;
+			alertMessage = responseData.message;
 			return;
 		}
 
-		localStorage.setItem(
-			"token",
-			JSON.stringify({
-				token: loginData["access"],
-				refresh: loginData["refresh"],
-			}),
-		);
-
+		login(responseData["access"], responseData["refresh"]);
 		goto("/play");
 	}
 </script>

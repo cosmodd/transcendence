@@ -55,7 +55,10 @@
 	<div id="usernameHelpBlock" class="form-text">
 		{#each requirements as requirement}
 			<!-- {#if focused || !requirement.matches(username)} -->
-			<div class="requirement d-flex flex-row align-items-center gap-1">
+			<div
+				class="requirement d-flex flex-row align-items-center gap-1"
+				class:valid={requirement.matches(username)}
+			>
 				{#if requirement.matches(username)}
 					<Fa icon={faSquareCheck} class="text-success" />
 				{:else}
@@ -67,3 +70,29 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+	/* When the requirement is valid, make it disappear with a transition */
+	.requirement.valid {
+		animation: validRequirement 0.5s ease-in-out 1;
+		height: 0;
+		opacity: 0;
+	}
+
+	@keyframes validRequirement {
+		0% {
+			opacity: 1;
+			height: 100%;
+		}
+
+		75% {
+			opacity: 1;
+			height: 100%;
+		}
+
+		100% {
+			opacity: 0;
+			height: 0;
+		}
+	}
+</style>

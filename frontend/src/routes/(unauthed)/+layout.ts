@@ -1,7 +1,6 @@
 import { redirect } from "@sveltejs/kit";
+import { isAuthed } from "$lib/stores/auth.js";
 
-export async function load({ url }) {
-	if (localStorage.getItem('token')) {
-		throw redirect(302, '/play');
-	}
+export async function load() {
+	if (isAuthed()) throw redirect(302, '/play');
 }

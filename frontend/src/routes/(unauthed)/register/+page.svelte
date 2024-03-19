@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { login } from "$lib/stores/auth"
 	import Logo42 from "$lib/assets/icons/42.svelte";
 	import UsernameField from "$lib/components/register/UsernameField.svelte";
 	import PasswordField from "$lib/components/register/PasswordField.svelte";
@@ -41,15 +42,12 @@
 		const responseData = await response.json();
 
 		if (!response.ok) {
-			if (response.status === 401) {
-				console.log(responseData);
-			} else {
-				alertMessage = responseData.message;
-			}
+			alertMessage = responseData?.message;
 			return;
 		}
 
-		console.log(responseData);
+		login(responseData["access"], responseData["refresh"]);
+		goto("/play");
 	}
 </script>
 
@@ -64,7 +62,7 @@
 
 	{#if alertMessage}
 		<div class="alert alert-danger m-0" role="alert">
-			<Fa icon={faTriangleExclamation} />
+			<Fa icon={faTriangleExclamation} class="me-1"/>
 			{alertMessage}
 		</div>
 	{/if}

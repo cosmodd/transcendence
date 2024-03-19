@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { logout } from "$lib/stores/auth";
 	import { goto } from "$app/navigation";
 	import defaultAvatar from "$lib/assets/images/default.jpg";
 	import NavLink from "$lib/components/NavLink.svelte";
-	import { user } from "$lib/stores/user";
 
-	function logout() {
-		localStorage.removeItem("token");
+	function logoutButton() {
+		logout();
 		goto("/login");
 	}
 </script>
@@ -47,7 +47,7 @@
 						data-bs-toggle="dropdown"
 						class="text-decoration-none text-reset d-flex align-items-center gap-2 fw-bold bg-transparent border-0"
 					>
-						{$user.username}
+						mrattez
 						<img src={defaultAvatar} alt="Avatar" class="rounded-circle me-2" width="32" height="32" />
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end mt-2">
@@ -62,7 +62,7 @@
 							<button
 								type="button"
 								class="dropdown-item text-danger"
-								on:click={logout}
+								on:click={logoutButton}
 								aria-label="Logout">Logout</button
 							>
 						</li>
