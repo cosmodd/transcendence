@@ -19,8 +19,8 @@ class AccountSerializer(serializers.ModelSerializer):
         return user
 
 class LoginSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(max_length=30, required=True)
-    password = serializers.CharField(max_length=30, required=True, write_only=True)
+    username = serializers.CharField(max_length=32, required=True)
+    password = serializers.CharField(max_length=32, required=True, write_only=True)
 
     class Meta:
         model = Account
@@ -31,13 +31,13 @@ class LoginSerializer(serializers.ModelSerializer):
         #try to get user with username if not exists raise validation error
         user = Account.objects.filter(username=data['username']).first()
         if not user:
-            raise serializers.ValidationError("Invalid username")
+            raise serializers.ValidationError({"username": "No users with that username"})
         if not user.check_password(data['password']):
-            raise serializers.ValidationError("Invalid password")
-        print("PASSED", file=sys.stderr)
+            raise serializers.ValidationError({"password": "Incorrect password"})
+        # print("PASSED", file=sys.stderr)
         return data
 
-            
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:

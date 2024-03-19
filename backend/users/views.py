@@ -28,7 +28,7 @@ class RegisterView(generics.CreateAPIView):
             return Response({"message": "Email is required"}, status=401)
         if not request.data['password']:
             return Response({"message": "Password is required"}, status=401)
-        
+
         # check if username and email already exists
         if Account.objects.filter(username=request.data['username']).exists():
             return Response({"message": "Username already exists"}, status=401)
@@ -61,7 +61,7 @@ class RegisterView(generics.CreateAPIView):
                 "profile_image": Account.objects.get(username=request.data['username']).profile_image.url
             }
         }, status=201)
-        
+
 
 # custom error message for login if credentials are invalid
 class LoginView(TokenObtainPairView):
@@ -70,11 +70,10 @@ class LoginView(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid() or "username" in serializer.errors:
-            return Response({"message": "Invalid username"}, status=401)
-        if not serializer.is_valid() or "password" in serializer.errors:
-            return Response({"message": "Invalid password"}, status=401)
-        # print(serializer.validated_data, file=sys.stderr)
+
+        # Validate the username and password
+        serializer.is_valid(raise_exception=True)
+
         user = Account.objects.get(username=request.data['username'])
         if user.enabled_2FA:
             user.set_date_2FA()
@@ -125,7 +124,7 @@ class Check_two_factor_code(TokenObtainPairView):
                 }
             }, status=200)
         return Response({"message": "Invalid 2FA code"}, status=400)
-    
+
 
 # *******************************************************************************************************************
 # ********************************************* User Profile & Update ***********************************************
@@ -148,7 +147,7 @@ class UserProfile(generics.RetrieveAPIView):
 
     def get_object(self):
         return Account.objects.get(username=self.kwargs['username'])
-    
+
 # update user profile
 class UpdateProfileView(generics.UpdateAPIView):
     queryset = Account.objects.all()
@@ -166,7 +165,7 @@ class UpdateProfileView(generics.UpdateAPIView):
             return Response({"message": "Unauthorized"}, status=401)
         return self.request.user
 
-    
+
 
 # *******************************************************************************************************************
 # ***************************************************** 42 AUTH *****************************************************
@@ -204,7 +203,7 @@ class Handle42CallbackView(View):
 
         username_base = user_info['login']
         attempts = 0
-        #randomize a number in int 
+        #randomize a number in int
         nb = random.randint(0, 9999)
         while User.objects.filter(username=username_base).exists():
             #convert int to string
@@ -246,7 +245,7 @@ class Handle42CallbackView(View):
                 'code': code,
                 'redirect_uri': REDIRECT_URI,
             })
-            
+
             if response.status_code == 200:
                 # extract the access token from the response
                 access_token = response.json().get('access_token')
