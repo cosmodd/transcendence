@@ -19,8 +19,9 @@ class MyAccountManager(BaseUserManager):
         # print(user.password, file=sys.stderr)
         user.save(using=self._db)
         user.secret_2FA = pyotp.random_base32()
-        qrcode.make(user.get_authentification_setup_uri()).save(f'./users/static/users/qrcodes/{user.id}.png')
-        user.qrcode_2FA = f'./users/static/users/qrcodes/{user.id}.png'
+        path = user_qrcode(user)
+        qrcode.make(user.get_authentification_setup_uri()).save(path)
+        user.qrcode_2FA = path
         user.save(using=self._db)
         return user
     
