@@ -36,6 +36,7 @@ APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'pong',
     'core',
     'users',
@@ -49,6 +50,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+ASGI_APPLICATION = 'core.asgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

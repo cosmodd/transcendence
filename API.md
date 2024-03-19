@@ -124,7 +124,7 @@ async function refreshToken() {
 ### 3. User Profile Information
 
 - **HTTP Method:** `GET`
-- **PATH:** `/api/profile/`
+- **PATH:** `/api/user/`
 - **Permissions:** Authenticated
 - **Description:** Returns the profile information of the authenticated user.
 
