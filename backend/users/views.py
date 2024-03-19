@@ -35,18 +35,26 @@ class RegisterView(generics.CreateAPIView):
         if Account.objects.filter(email=request.data['email']).exists():
             return Response({"message": "Email already exists"}, status=401)
 
-        # length of username should be between 2 and 30 characters
-        if len(request.data['username']) < 2 or len(request.data['username']) > 30:
-            return Response({"message": "Username must be between 2 and 30 characters long"}, status=401)
+        # length of username should be between 2 and 32 characters
+        if len(request.data['username']) < 2 or len(request.data['username']) > 32:
+            return Response({"message": "Username must be between 2 and 32 characters long"}, status=401)
         # username should contain only letters, numbers, underscores and dots
-        if not re.match("^[a-zA-Z0-9_.]*$", request.data['username']):
-            return Response({"message": "Username can only contain letters, numbers, underscores and dots"}, status=401)
+        if not re.match("^[a-z0-9_.]*$", request.data['username']):
+            return Response({"message": "Username can only contain lowercase letters, numbers, underscores and dots"}, status=401)
         # not allow consecutive dots or underscores
         if ".." in request.data['username'] or "__" in request.data['username']:
             return Response({"message": "Username can't have consecutive dots or underscores"}, status=401)
+        if request.data['username'][0] == '.' or request.data['username'][0] == '_':
+            return Response({"message": "Username can't start with a dot or an underscore"}, status=401)
+        if request.data['username'][-1] == '.' or request.data['username'][-1] == '_':
+            return Response({"message": "Username can't end with a dot or an underscore"}, status=401)
         # email should be valid format
         if not re.match(r"[^@]+@[^@]+\.[^@]+", request.data['email']):
             return Response({"message": "Invalid email"}, status=401)
+        if len(request.data['password']) < 8:
+            return Response({"message": "Password must be at least 8 characters long"}, status=401)
+        if len(request.data['password']) > 32:
+            return Response({"message": "Password must be at most 32 characters long"}, status=401)
         # create user if all checks pass
         super().post(request, *args, **kwargs)
         refresh = RefreshToken.for_user(Account.objects.get(username=request.data['username']))
