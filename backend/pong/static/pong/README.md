@@ -19,9 +19,8 @@ Les clients:
   - GameModel foreign key with UserModel
   - GameModel.asave() (username?-> fetched with token)
   - GameModel views
-  - [error] already queuing in a room
-  - [bug] paddle reset inconsistent
-  - [bug] pause time inconsistent ?
+  - [bug?] paddle reset inconsistent
+  - [bug?] pause time inconsistent
 
   - Create room duel
   - Tournament
