@@ -144,7 +144,9 @@ class ProfileView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return self.request.user
+        user = self.request.user
+        user.profile_image = user.profile_image.url
+        return user
 
 # return user info by username, eg: /user/rookie/ will return user info of user with username rookie
 class UserProfile(generics.RetrieveAPIView):
