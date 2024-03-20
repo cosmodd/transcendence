@@ -144,9 +144,24 @@ class ProfileView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        user = self.request.user
-        user.profile_image = user.profile_image.url
-        return user
+        return self.request.user
+    
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        #remove /users from the url path of profile_image and qrcode_2FA
+        user.profile_image = user.profile_image.url[6:]
+        user.qrcode_2FA = user.qrcode_2FA.url[6:]
+        return Response(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "profile_image": user.profile_image.url,
+            "display_name": user.display_name,
+            "enabled_2FA": user.enabled_2FA,
+            "qrcode_2FA": user.qrcode_2FA.url
+        })
+        
 
 # return user info by username, eg: /user/rookie/ will return user info of user with username rookie
 class UserProfile(generics.RetrieveAPIView):
