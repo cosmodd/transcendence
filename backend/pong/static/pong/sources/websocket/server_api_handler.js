@@ -26,7 +26,6 @@ ServerAPI._InitGame = function()
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
 			[ServerAPI.DATA_PLAYER_TOKEN]: JSON.parse(localStorage.getItem("auth")).accessToken,
 			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid")
-			//localstorage.getitem("auth").accessToken
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")
@@ -38,6 +37,7 @@ ServerAPI._Recv = function() {
 		const event = JSON.parse(data);
 		if (event[ServerAPI.METHOD] != ServerAPI.FROM_SERVER)
 			return ;
+
 		if (event.hasOwnProperty(ServerAPI.DATA_TIME)) {
 			Timer.ChangeRemainingTime((k.GameDuration) - Math.floor(event[ServerAPI.DATA_TIME]));
 		}
@@ -67,7 +67,7 @@ ServerAPI._Close = function()
 	ServerAPI.websocket.addEventListener("close", (event) => {
 		switch (event.code) {
 			case 1006:
-				PrintError("Connection closed: 1006: Abnormal Closure");
+				PrintError("Connection closed: Abnormal Closure");
 				break;
 			default:
 				// PrintError(event.reason);	

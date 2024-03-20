@@ -13,11 +13,13 @@ Les clients:
 
 #### Specific
 - Server
-  - token dictionary for finding games
+  - Ready State (for pre-created rooms)
+    - Ready bool
+    - Ready button
   - GameModel foreign key with UserModel
   - GameModel.asave() (username?-> fetched with token)
   - GameModel views
-  - [error] already registered in a room
+  - [error] already queuing in a room
   - [bug] paddle reset inconsistent
   - [bug] pause time inconsistent ?
 
@@ -30,10 +32,11 @@ Les clients:
   - [bug] Local score 0 - 1
 
 #### General
-- UI et UX
-- Casual
 - Tournaments
 - Invitations (Duel)
+- Local Game in Database ?
+- Stacking toasters
+- Casual Elo ?
 
 ### Maybe
 - Customization (minor)
