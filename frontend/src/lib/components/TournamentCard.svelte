@@ -1,23 +1,23 @@
 <script lang="ts">
+	import { faJoint, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+	import Fa from "svelte-fa";
+
 	export let tournament: {
 		id: number;
 		name?: string;
 		players: string[];
 		maxPlayers: number;
-		state: 0 | 1 | 2;
 	};
 
-	const states = [
-		"Waiting for players",
-		"In progress",
-		"Finished"
-	]
+	const states = ["Waiting for players", "In progress"];
 </script>
 
-<div class="card mb-3">
-	<div class="card-body">
-		<h5 class="card-title">{tournament.name}</h5>
-		<p class="card-text">{tournament.players.length}/{tournament.maxPlayers}</p>
-		<p class="card-text">State: {tournament.state}</p>
+<div class="card p-4 d-flex flex-column gap-1">
+	<h4 class="m-0 fw-bold">{tournament.name || `Tournament ${tournament.id}`}</h4>
+	<!-- Tournament players with an icon in front -->
+	<div class="d-flex flex-row align-items-center gap-2 mb-2 text-muted">
+		<Fa icon={faUserGroup} />
+		<span>{tournament.players.length} / {tournament.maxPlayers} players</span>
 	</div>
+	<a href="/tournament/{tournament.id}" class="btn btn-primary">Join</a>
 </div>

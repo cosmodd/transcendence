@@ -2,7 +2,6 @@ import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
 
 const _auth = browser ? localStorage.getItem('auth') : null;
-console.log('auth', _auth);
 
 export const authStore = writable(_auth != null ? JSON.parse(_auth) : null)
 
@@ -18,4 +17,8 @@ export function logout(): void {
 
 export function isAuthed(): boolean {
 	return get(authStore) != null;
+}
+
+export function authToken(): string | null {
+	return get(authStore)?.accessToken;
 }

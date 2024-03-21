@@ -42,7 +42,7 @@ class LoginSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'username', 'email', 'profile_image', 'display_name', 'enabled_2FA', 'qrcode_2FA']
+        fields = ['id', 'display_name', 'username', 'profile_image']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:

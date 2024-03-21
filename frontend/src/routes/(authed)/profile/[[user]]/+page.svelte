@@ -1,5 +1,5 @@
 <script lang="ts">
-	import defaultAvatar from "$lib/assets/images/default.jpg";
+	import { user } from "$lib/stores/user";
 	import MatchSummary from "$lib/components/profile/MatchSummary.svelte";
 	import {
 		faBan,
@@ -12,7 +12,7 @@
 	} from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
 
-	let userStatistics = {};
+	let userStatistics: any = {};
 
 	userStatistics.gamesPlayed = 100;
 	userStatistics.gamesWon = Math.floor(Math.random() * 100);
@@ -28,7 +28,7 @@
 
 		return {
 			scores: [
-				{ username: $user.username, score: firstScore },
+				{ username: $user.display_name, score: firstScore },
 				{ username: "random", score: secondScore },
 			],
 			date: date.toISOString(),
@@ -39,10 +39,13 @@
 <div class="row h-100 m-0 gap-3">
 	<div class="col-3 card border-2 p-4 gap-3">
 		<div class="d-flex flex-column align-items-center">
-			<img src={defaultAvatar} class="rounded-circle" style="width: 100px; height: 100px;" alt="Avatar" />
-			<h3 class="m-0 mt-2 fw-bold">{$user.firstName}</h3>
+			<img src={$user.profile_image} class="rounded-circle" style="width: 100px; height: 100px;" alt="Avatar" />
+			<h3 class="m-0 mt-2 fw-bold">{$user.display_name}</h3>
 			<p class="m-0 text-muted">@{$user.username}</p>
-			<p class="m-0 text-muted">Offline</p>
+			<p class="m-0 text-muted">
+				<span class="rounded-circle bg-success p-1"></span>
+				Offline
+			</p>
 		</div>
 		<hr class="m-0" />
 		<div class="d-flex flex-column gap-2">
