@@ -10,9 +10,16 @@ from constants import *
 
 async def ClientLoop(client: Client, game: Game, current_player):
     async for message in client.ws:
+        # waiting for ready state
+        if DATA_PLAYER_STATE in event:
+            if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
+                client.ready = True
+
+    async for message in client.ws:
         try:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
+
 
             # Receive key from player
             if event[OBJECT] == OBJECT_PADDLE:
@@ -20,7 +27,8 @@ async def ClientLoop(client: Client, game: Game, current_player):
 
             # Game ended
             if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
-                return ;
+                return
+
 
         except json.JSONDecodeError:
             print("Error decoding JSON message.")
@@ -30,6 +38,9 @@ async def ClientLoop(client: Client, game: Game, current_player):
             print(f"An unexpected Error occurred: {e}")
 
 async def ServerLoop(game: Game):
+    while game.ClientsAreReady == False:
+        asyncio.sleep(1)
+
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
@@ -79,7 +90,7 @@ async def ServerLoop(game: Game):
         await CheckDisconnection(game);
 
         # Game paused
-        while game.IsMatchPaused():
+        while game.IsMatchPaused() or game.ClientsAreReady == False:
             async with game.reconnection_lock: await LastPlayerDisconnection(game);
             await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
             await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)

@@ -4,3 +4,4 @@ class Client:
 		self.token = token
 		self.name = ""
 		self.username = username
+		self.ready = False

@@ -80,6 +80,9 @@ class Game:
 	def IsMatchPaused(self):
 		return self.match_is_paused
 
+	def ClientsAreReady(self):
+		return self.clients[0].ready and self.clients[1].ready
+
 	async def CreateModel(self):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)
 		account_list = [await AccountModel.objects.aget(username=self.clients[0].username), await AccountModel.objects.aget(username=self.clients[1].username)]

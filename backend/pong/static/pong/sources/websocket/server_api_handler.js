@@ -161,7 +161,8 @@ ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 		[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
 		[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
-		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
+		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID],
+		[ServerAPI.DATA_PLAYER_STATE]: ServerAPI.DATA_PLAYER_READY
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_create));
 	PrintInfo(event);

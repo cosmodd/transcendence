@@ -17,6 +17,7 @@ Les clients:
   - Ready State (for pre-created rooms)
     - Ready bool
     - Ready button
+  - [bug] ball reset inconsistent
   - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
 
