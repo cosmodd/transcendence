@@ -13,12 +13,11 @@ Les clients:
 
 #### Specific
 - Server
+  - GameModel views
+  - Game types to GameModel (duel, tournament, casual)
   - Ready State (for pre-created rooms)
     - Ready bool
     - Ready button
-  - GameModel foreign key with UserModel
-  - GameModel.asave() (username?-> fetched with token)
-  - GameModel views
   - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
 
@@ -29,6 +28,7 @@ Les clients:
 - Client
   - UI - print username
   - [bug] Local score 0 - 1
+  - [bug] Score/Time not loading (sometimes)
 
 #### General
 - Tournaments

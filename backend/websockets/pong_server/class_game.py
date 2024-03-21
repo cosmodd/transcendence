@@ -6,6 +6,8 @@ from class_collision import Collision
 from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
+from users.models import Account as AccountModel
+from asgiref.sync import sync_to_async
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -80,6 +82,8 @@ class Game:
 
 	async def CreateModel(self):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)
+		account_list = [await AccountModel.objects.aget(username=self.clients[0].username), await AccountModel.objects.aget(username=self.clients[1].username)]
+		await self.model.players.aadd(*account_list)
 		await self.model.asave()
 		self.score[PLAYER1] = await ScoreModel.objects.acreate(game=self.model, score=0)
 		self.score[PLAYER2] = await ScoreModel.objects.acreate(game=self.model, score=0)
@@ -87,9 +91,10 @@ class Game:
 		await self.score[PLAYER2].asave()
 
 	async def TerminateModel(self):
-		self.model.status = 'terminee'
-		await self.model.asave()
 		if (self.game_ended_with_timeout):
 			self.winner = self.connected[0].username
 		else:
 			self.winner = self.clients[0].username if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else self.clients[1].username
+		self.model.status = 'terminee'
+		self.model.winner = await AccountModel.objects.aget(username=self.winner)
+		await self.model.asave()
