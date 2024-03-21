@@ -20,12 +20,10 @@ class Game:
 		self.players[PLAYER2] = Paddle(Vec2(0.9, 0.))
 		self.ball = Ball(Vec2(1., 0.))
 		self.score = {}
-		self.someone_scored = False
 		self.model = {}
 		self.start_time = 0
-		self.match_is_running = True
-		self.match_is_paused = False
 		self.room_id = room_id
+		self.clients = clients
 		self.connected = clients
 		self.disconnected = []
 		self.reconnection_lock = asyncio.Lock()
@@ -33,6 +31,10 @@ class Game:
 		self.pause_timer = 0
 		self.pause_time_added = 0
 		self.game_ended_with_timeout = False
+		self.match_is_running = True
+		self.match_is_paused = False
+		self.someone_scored = False
+
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -88,6 +90,6 @@ class Game:
 		self.model.status = 'terminee'
 		await self.model.asave()
 		if (self.game_ended_with_timeout):
-			self.winner = self.connected[0].name
+			self.winner = self.connected[0].username
 		else:
-			self.winner = PLAYER1 if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else PLAYER2
+			self.winner = self.clients[0].username if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else self.clients[1].username

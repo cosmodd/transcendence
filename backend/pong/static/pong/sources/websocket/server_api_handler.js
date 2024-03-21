@@ -19,13 +19,19 @@ ServerAPI.InitConnection = function()
 
 ServerAPI._InitGame = function()
 {
-	ServerAPI.websocket.addEventListener("open", () => {
+	ServerAPI.websocket.addEventListener("open", async () => {
+		const token = JSON.parse(localStorage.getItem("auth")).accessToken;
 		let event = {
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
-			[ServerAPI.DATA_PLAYER_TOKEN]: JSON.parse(localStorage.getItem("auth")).accessToken,
-			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid")
+			[ServerAPI.DATA_PLAYER_TOKEN]: token,
+			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid"),
+			[ServerAPI.DATA_PLAYER_USERNAME]: await fetch("/api/user/", {
+				headers: {
+					"Authorization": `Bearer ${token}`
+				}
+			}).then(r => r.json()).then(j => j.username)
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")

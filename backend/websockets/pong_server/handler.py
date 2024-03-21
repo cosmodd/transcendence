@@ -50,7 +50,7 @@ async def Handler(websocket):
     message = await websocket.recv()
     event = json.loads(message)
     assert event[METHOD] == FROM_CLIENT
-    client = Client(websocket, event[DATA_PLAYER_TOKEN])
+    client = Client(websocket, event[DATA_PLAYER_TOKEN], event[DATA_PLAYER_USERNAME])
 
     # Expected for a tournament ?
     # Expected for a duel ?

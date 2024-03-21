@@ -33,6 +33,7 @@ ServerAPI.DATA_LOBBY_ROOM_ID = "Room_ID";
 ServerAPI.DATA_LOBBY_JOINKEY = "JoinKey"; // - Join key
 ServerAPI.DATA_LOBBY_SCORE = "Score"; // - Join key
 ServerAPI.DATA_PLAYER_TOKEN = "Token";
+ServerAPI.DATA_PLAYER_USERNAME = "Username";
 ServerAPI.DATA_INFO_TYPE = "Info_Type";
 /**/ServerAPI.DATA_INFO_TYPE_ERROR = "Error";
 /**/ServerAPI.DATA_INFO_TYPE_MESSAGE = "Message";
