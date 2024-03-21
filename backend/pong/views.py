@@ -1,23 +1,37 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Game, Score
+from users.models import Account
+from users.serializers import ProfileSerializer
+from rest_framework import generics
+from rest_framework.response import Response
 
 def index(request):
 	return render(request, "pong/index.html")
 
-def game_list(request):
-	games = Game.objects.all()
-	data = []
+class UserGameList(generics.RetrieveAPIView):
+    queryset = Account.objects.all()
+    serializer_class = ProfileSerializer
+    lookup_field = 'username'
 
-	for game in games:
-		scores = Score.objects.filter(game=game)
-		scores_data = [{'player': "unspecified",'score': score.score} for score in scores]
-		game_data = {
-			'id': game.id,
-			'status': game.status,
-			'scores': scores_data,
-			'date': game.date_begin
-		}
-		data.append(game_data)
+    def get_object(self):
+        return Account.objects.get(username=self.kwargs['username'])
 
-	return JsonResponse(data, safe=False)
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        games = Game.objects.filter(players=user)
+        games_list = []
+        for game in games:
+            players_names = [player.username for player in game.players.all()]
+            scores = game.scores.all()
+            scores_str = [score.score for score in scores]
+            games_list.append(
+                {
+					"players": players_names,
+                    "status": game.status,
+                    "scores": scores_str,
+                    "winner": game.winner.username,
+                    "date_begin": game.date_begin
+                }
+            )
+        return Response({"games": games_list})

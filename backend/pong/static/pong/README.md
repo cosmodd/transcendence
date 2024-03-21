@@ -13,7 +13,6 @@ Les clients:
 
 #### Specific
 - Server
-  - GameModel views
   - Game types to GameModel (duel, tournament, casual)
   - Ready State (for pre-created rooms)
     - Ready bool
