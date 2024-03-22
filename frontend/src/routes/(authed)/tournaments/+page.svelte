@@ -1,12 +1,35 @@
 <script lang="ts">
 	import TournamentCard from "$lib/components/TournamentCard.svelte";
 
+	const names = [
+		"Battle Bash",
+		"Infinite Invitational",
+		"Battleground Brawl",
+		"Iron Fist",
+		"Brutal Brawl",
+		"Iron Fist",
+		"Extreme Encounter",
+		"Ocean Odyssey",
+		"Valiant Vendetta",
+		"Legendary Lethal League",
+		"Royal Rumble Challenge",
+		"Shadow Cup",
+		"Apocalypse Arena",
+		"Sovereign Settle",
+		"Colossal Combat",
+		"Chaos Frenzy",
+		"Interdimensional Invitational",
+		"Carnage Cartel",
+		"Colossal Combat",
+		"Combat Chronicles",
+	];
+
 	const tournaments = Array.from({ length: 30 }, (_, i) => {
 		const maxPlayers = Math.floor(Math.random() * 10) * 2 + 2;
 		return {
 			players: Array.from({ length: Math.floor(Math.random() * maxPlayers) }, (_, j) => `Player ${j + 1}`),
 			maxPlayers,
-			name: `Tournament ${i + 1}`,
+			name: names[Math.floor(Math.random() * names.length)],
 			id: i,
 		};
 	});
@@ -24,6 +47,6 @@
 <style>
 	.tournaments {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 	}
 </style>
