@@ -90,8 +90,7 @@ async def Reconnection(reconnecting_client, event):
                 if len(game.disconnected):
                     for c in game.disconnected:
                         if (reconnecting_client.token == c.token):
-                            logger.debug("post token == token")
-                            logger.debug("FOUND ROOM - READY TO RECONNECT")
+                            logger.debug("DEBUG:: found room, ready to reconnect")
                             game.disconnected.remove(c)
                             c.ws = reconnecting_client.ws 
                             game.connected.append(c)

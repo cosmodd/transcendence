@@ -15,5 +15,5 @@
 		<span id="time" class="bg-light px-3 py-2 text-dark"></span>
 		<span id="score2" class="bg-secondary px-3 py-2 rounded-end"></span>
 	</div>
-
+	<button class="btn btn-warning" id="ready" ></button>
 </div>

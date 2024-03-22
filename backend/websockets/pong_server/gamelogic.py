@@ -9,17 +9,20 @@ from class_vec2 import Vec2
 from constants import *
 
 async def ClientLoop(client: Client, game: Game, current_player):
-    async for message in client.ws:
-        # waiting for ready state
-        if DATA_PLAYER_STATE in event:
-            if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
-                client.ready = True
+    # waiting for ready state
+    if client.ready == False:
+        async for message in client.ws:
+            event = json.loads(message)
+            assert event[METHOD] == FROM_CLIENT
+            if DATA_PLAYER_STATE in event:
+                if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
+                    client.ready = True
+                    break 
 
     async for message in client.ws:
         try:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
-
 
             # Receive key from player
             if event[OBJECT] == OBJECT_PADDLE:
@@ -38,8 +41,10 @@ async def ClientLoop(client: Client, game: Game, current_player):
             print(f"An unexpected Error occurred: {e}")
 
 async def ServerLoop(game: Game):
-    while game.ClientsAreReady == False:
-        asyncio.sleep(1)
+    while game.ClientsAreReady() == False:
+        await asyncio.sleep(1)
+
+    await sender.ToAll(game.MessageBuilder.ClientsAreReady(), game.connected);
 
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))

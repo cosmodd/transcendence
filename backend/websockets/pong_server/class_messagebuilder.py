@@ -105,4 +105,11 @@ class MessageBuilder:
             DATA_PLAYER: self.attached_game.connected[client_index].name,
             DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token
 		})
+	
+	def ClientsAreReady(self):
+		return json.dumps({
+            METHOD: FROM_SERVER,
+            OBJECT: OBJECT_LOBBY,
+            DATA_LOBBY_STATE: DATA_PLAYER_READY
+		})
 

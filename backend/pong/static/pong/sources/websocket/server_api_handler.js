@@ -4,6 +4,7 @@ import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 import Timer from "../utils/timer.js";
 import * as k from "../utils/constants_objects.js"
+import { ready_element } from '../ui/overlay.js';
 
 let ServerAPI = {};
 
@@ -131,6 +132,11 @@ ServerAPI.UpdateLobbyState = function(event)
 		case ServerAPI.DATA_LOBBY_ROOM_CREATED:
 			ServerAPI.UpdateLobbyStateRoomCreated(event);
 			break ;
+		case ServerAPI.DATA_PLAYER_READY:
+			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+			Timer.Start(k.GameDuration);
+			break;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
 			ServerAPI.UpdateLobbyStateRoomEnded(event);
@@ -153,20 +159,20 @@ ServerAPI.UpdateLobbyState = function(event)
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
 	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
-	ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
-	ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+	// ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+	// ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
 	SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
 	let response_create = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 		[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_CREATED,
 		[ServerAPI.DATA_PLAYER]: ServerAPI.iam,
-		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID],
-		[ServerAPI.DATA_PLAYER_STATE]: ServerAPI.DATA_PLAYER_READY
+		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_create));
 	PrintInfo(event);
-	Timer.Start(k.GameDuration);
+	// ready_element.classList.toggle('opacity-0');
+	// Timer.Start(k.GameDuration);
 }
 
 ServerAPI.UpdateLobbyStateRoomEnded = function(event)
@@ -180,6 +186,15 @@ ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_end));
 	PrintInfo(event);
+}
+
+ServerAPI.SendReadyState = function()
+{
+	let message = {
+		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
+		[ServerAPI.DATA_PLAYER_STATE]: ServerAPI.DATA_PLAYER_READY
+	}
+	ServerAPI.websocket.send(JSON.stringify(message));
 }
 
 export default ServerAPI;

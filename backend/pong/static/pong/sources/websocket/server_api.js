@@ -1,5 +1,4 @@
 import { NewPaddleState, NewBallState, NewScoreState } from './objects_state.js'
-
 import ServerAPI from './server_api_handler.js';
 
 // Namespace equivalent
@@ -48,6 +47,7 @@ ServerAPI.DATA_TIME = "Time";
 // Constants
 
 // Objects state initialization
+ServerAPI.client_ready = false
 ServerAPI.player_state = null;
 ServerAPI.opponent_state = null;
 ServerAPI.ball_state = NewBallState();
