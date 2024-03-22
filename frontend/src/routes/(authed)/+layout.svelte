@@ -5,7 +5,7 @@
 	import defaultAvatar from "$lib/assets/images/default.jpg";
 	import NavLink from "$lib/components/NavLink.svelte";
 	import Fa from "svelte-fa";
-	import { faBell } from "@fortawesome/free-solid-svg-icons";
+	import { faBell, faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
 
 	function logoutButton() {
 		logout();
@@ -17,7 +17,7 @@
 	<nav class="navbar navbar-expand mb-2">
 		<div class="container">
 			<a href="/" class="navbar-brand col-2 fw-bold">
-				<i class="fa-solid fa-fw fa-table-tennis-paddle-ball"></i>
+				<Fa icon={faTableTennisPaddleBall} />
 				Transcendence
 			</a>
 			<ul class="navbar-nav justify-content-center update-active">
