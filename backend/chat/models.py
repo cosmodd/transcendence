@@ -1,18 +1,26 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import Account
 
-class DirectMessage(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+class Conversation(models.Model):
+    CONVERSATION_TYPE_CHOICES = ['direct', 'group']
 
-    def __str__(self):
-        return f'{self.sender.username} -> {self.receiver.username}'
+    type = models.CharField(max_length=10, choices=CONVERSATION_TYPE_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-class Block(models.Model):
-    blocked = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocked')
-    blocker = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blocker')
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.blocker.username} blocked {self.blocked.username}'
+class UserConversation(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'conversation')
+
+
+class WebsocketToken(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    identifier = models.CharField(max_length=36)
