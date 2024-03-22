@@ -25,13 +25,7 @@
 					<NavLink href="/play">Play</NavLink>
 				</li>
 				<li class="nav-item">
-					<NavLink href="/tournaments">Tournaments</NavLink>
-				</li>
-				<li class="nav-item">
-					<NavLink href="/chat">Chat</NavLink>
-				</li>
-				<li class="nav-item">
-					<NavLink href="/test">Test</NavLink>
+					<NavLink href="/friends">Friends</NavLink>
 				</li>
 			</ul>
 			<div class="d-flex justify-content-end col-2">
