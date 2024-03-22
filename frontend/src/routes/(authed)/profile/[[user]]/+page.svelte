@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { user } from "$lib/stores/user";
-	import MatchSummary from "$lib/components/profile/MatchSummary.svelte";
+	import MatchSummary from "$lib/components/profile/GameSummary.svelte";
 	import {
 		faBan,
 		faFaceFrown,
@@ -19,9 +19,10 @@
 	userStatistics.gamesLost = userStatistics.gamesPlayed - userStatistics.gamesWon;
 	userStatistics.winRate = userStatistics.gamesWon / userStatistics.gamesPlayed;
 
+	const maxScore = 10;
 	const games = Array.from({ length: 30 }, (_, i) => {
-		const firstScore = Math.floor(Math.random() * 100);
-		const secondScore = 100 - firstScore;
+		const firstScore = Math.floor(Math.random() * maxScore);
+		const secondScore = maxScore - firstScore;
 
 		const date = new Date();
 		date.setDate(date.getDate() - i);
@@ -31,9 +32,16 @@
 				{ username: $user.display_name, score: firstScore },
 				{ username: "random", score: secondScore },
 			],
+			type: ["casual", "tournament"][Math.floor(Math.random() * 2)],
 			date: date.toISOString(),
+		} as {
+			scores: { username: string; score: number }[];
+			type: "casual" | "tournament";
+			date: string;
 		};
 	});
+
+	console.log(games);
 </script>
 
 <div class="row h-100 m-0 gap-3">
@@ -42,10 +50,7 @@
 			<img src={$user.profile_image} class="rounded-circle" style="width: 100px; height: 100px;" alt="Avatar" />
 			<h3 class="m-0 mt-2 fw-bold">{$user.display_name}</h3>
 			<p class="m-0 text-muted">@{$user.username}</p>
-			<p class="m-0 text-muted">
-				<span class="rounded-circle bg-success p-1"></span>
-				Offline
-			</p>
+			<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
 		</div>
 		<hr class="m-0" />
 		<div class="d-flex flex-column gap-2">
@@ -80,16 +85,16 @@
 			</div>
 		</div>
 		<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
-			<button class="btn btn-success w-100"><Fa icon={faUserPlus} class="me-1" /> Add friend</button>
-			<button class="btn btn-primary w-100"><Fa icon={faMessage} class="me-1" /> Message</button>
-			<button class="btn btn-danger w-100"><Fa icon={faBan} class="me-1" /> Block</button>
+			<button class="btn btn-success w-100"><Fa icon={faUserPlus} class="me-1" />Add friend</button>
+			<button class="btn btn-primary w-100"><Fa icon={faMessage} class="me-1" />Message</button>
+			<button class="btn btn-danger w-100"><Fa icon={faBan} class="me-1" />Block</button>
 		</div>
 	</div>
 	<div class="col card border-2 h-100 p-0">
-		<h1 class="h3 fw-bold p-3 m-0">Games</h1>
+		<h1 class="h3 fw-bold p-3 m-0">Games History</h1>
 		<div class="container-fluid overflow-y-scroll d-flex flex-column gap-1">
 			{#each games as game}
-				<MatchSummary scores={game.scores} date={new Date(game.date)} />
+				<MatchSummary scores={game.scores} date={new Date(game.date)} type={game.type} />
 			{/each}
 		</div>
 	</div>
