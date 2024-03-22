@@ -62,7 +62,7 @@ async def Handler(websocket):
         # Client wanting to queue
         if client.token in TOKEN_TO_CURRENTLY_QUEUING:
             await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
-            raise Exception("Client already present in a lobby.")
+            raise Exception("Client already present in a lobby. (from handler)")
         await connected_clients.put(client)
         TOKEN_TO_CURRENTLY_QUEUING[client.token] = True
 
@@ -104,7 +104,7 @@ async def Reconnection(reconnecting_client, event):
                 else:
                     room_lock.release()
                     game.reconnection_lock.release()
-                    await reconnecting_client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
+                    await reconnecting_client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby. (from reco)"}));
                     raise Exception("Client already present in a lobby.")
             room_lock.release()
             game.reconnection_lock.release()

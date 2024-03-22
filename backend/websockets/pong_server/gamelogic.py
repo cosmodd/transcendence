@@ -7,20 +7,25 @@ from class_client import *
 from constants import *
 from class_vec2 import Vec2
 from constants import *
+import logging
+logger = logging.getLogger('websockets')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
+
 
 async def ClientLoop(client: Client, game: Game, current_player):
-    # waiting for ready state
-    if client.ready == False:
+    # Client is ready ?
+    try:
+        if client.ready == False:
+            async for message in client.ws:
+                event = json.loads(message)
+                assert event[METHOD] == FROM_CLIENT
+                if DATA_PLAYER_STATE in event:
+                    if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
+                        client.ready = True
+                        break 
+        # Client game loop
         async for message in client.ws:
-            event = json.loads(message)
-            assert event[METHOD] == FROM_CLIENT
-            if DATA_PLAYER_STATE in event:
-                if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
-                    client.ready = True
-                    break 
-
-    async for message in client.ws:
-        try:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
 
@@ -32,13 +37,9 @@ async def ClientLoop(client: Client, game: Game, current_player):
             if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
                 return
 
-
-        except json.JSONDecodeError:
-            print("Error decoding JSON message.")
-        except KeyError as e:
-            print(f"KeyError: {e}")
-        except Exception as e:
-            print(f"An unexpected Error occurred: {e}")
+    except Exception as e:
+        logger.debug("checkdisco from clientloop")
+        await CheckDisconnection(game)
 
 async def ServerLoop(game: Game):
     while game.ClientsAreReady() == False:

@@ -14,9 +14,7 @@ Les clients:
 #### Specific
 - Server
   - Game types to GameModel (duel, tournament, casual)
-  - Ready State (for pre-created rooms)
-    - Ready bool
-    - Ready button
+  - Ready State behavior in pre-created rooms
   - [bug] ball reset inconsistent
   - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
@@ -27,6 +25,7 @@ Les clients:
 
 - Client
   - UI - print username
+  - UI - ready button
   - [bug] Local score 0 - 1
   - [bug] Score/Time not loading (sometimes)
 

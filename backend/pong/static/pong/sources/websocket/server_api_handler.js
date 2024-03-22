@@ -159,8 +159,6 @@ ServerAPI.UpdateLobbyState = function(event)
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
 	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
-	// ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
-	// ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
 	SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
 	let response_create = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
@@ -171,13 +169,10 @@ ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_create));
 	PrintInfo(event);
-	// ready_element.classList.toggle('opacity-0');
-	// Timer.Start(k.GameDuration);
 }
 
 ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 {
-	DeleteCookie("pong-uuid");
 	DeleteCookie("pong-roomid");
 	let response_end = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
