@@ -1,26 +1,26 @@
 from django.db import models
 from users.models import Account
 
-class Conversation(models.Model):
-    CONVERSATION_TYPE_CHOICES = ['direct', 'group']
+class RoomName(models.Model):
+    Conversation_Choices = [
+        ('group', 'group'),
+        ('private', 'private')
+    ]
 
-    type = models.CharField(max_length=10, choices=CONVERSATION_TYPE_CHOICES)
-    created_at = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=100)
+    members = models.ManyToManyField(Account, related_name='rooms')
+    conversation_type = models.CharField(max_length=10, choices=Conversation_Choices)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-class Message(models.Model):
-    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.name
 
-class UserConversation(models.Model):
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE)
+class RoomMessages(models.Model):
+    room = models.ForeignKey(RoomName, on_delete=models.CASCADE)
+    sender = models.ForeignKey(Account, on_delete=models.CASCADE)
+    message = models.TextField()
+    unread = models.BooleanField(default=False, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('user', 'conversation')
-
-
-class WebsocketToken(models.Model):
-    user = models.ForeignKey(Account, on_delete=models.CASCADE)
-    identifier = models.CharField(max_length=36)
+    def __str__(self):
+        return self.message
