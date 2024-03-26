@@ -1,4 +1,7 @@
+import { GameLoop } from "../main.js";
 import ServerAPI from "../websocket/server_api.js";
+import * as k from "../utils/constants_objects.js";
+import Timer  from "../utils/timer.js";
 
 // Score
 let score_element1 = document.getElementById("score1");
@@ -18,15 +21,31 @@ export let ready_element = document.getElementById('ready')
 let ready_node = document.createTextNode('Searching...')
 ready_element.appendChild(ready_node)
 
-ready_element.addEventListener('click', () => {
-	if (ready_node.nodeValue === "Searching...")
-		return ;
+export function ReadyButtonOnlineListener()
+{
+	ready_element.addEventListener('click', () => {
+		if (ready_node.nodeValue === "Searching...")
+			return ;
 
-	ready_element.classList.remove("btn-warning");
-	ready_element.classList.add("btn-success");
-	ServerAPI.SendReadyState()
-	ReadyButtonHide();
-});
+		ready_element.classList.remove("btn-warning");
+		ready_element.classList.add("btn-success");
+		ServerAPI.SendReadyState()
+		ReadyButtonHide();
+	});
+	GameLoop();
+}
+
+export function ReadyButtonLocalListener()
+{
+	ReadyButtonShow()
+	ready_element.addEventListener('click', () => {
+		ready_element.classList.remove("btn-warning");
+		ready_element.classList.add("btn-success");
+		ReadyButtonHide();
+		Timer.Start(k.GameDuration);
+		GameLoop();
+	});
+}
 
 export function ReadyButtonHide()
 {

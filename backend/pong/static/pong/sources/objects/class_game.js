@@ -27,10 +27,6 @@ class Game {
 			ServerAPI.InitConnection();
 			Timer.DisplayTimer();
 		}
-
-		if (this.game_type === GameType.Local) {
-			Timer.Start(k.GameDuration);
-		}
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
@@ -118,7 +114,7 @@ class Game {
 	EndGame()
 	{
 		if (typeof this.EndGame.first_call === "undefined") {
-			this.winner = this.score[0] > this.score[1] ? D.PLAYER : D.OPPONENT;
+			this.winner = this.score[0] > this.score[1] ? "Blue" : "Red";
 			PrintInfoMessage(this.winner + " won.");
 			this.EndGame.first_call = false;
 		}
