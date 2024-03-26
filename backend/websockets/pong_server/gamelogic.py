@@ -43,7 +43,8 @@ async def ClientLoop(client: Client, game: Game, current_player):
 async def ServerLoop(game: Game):
     while game.ClientsAreReady() == False:
         await asyncio.sleep(1)
-    await sender.ToAll(game.MessageBuilder.ClientsAreReady(), game.connected);
+    for i in range(len(game.clients)):
+        await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
 
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))

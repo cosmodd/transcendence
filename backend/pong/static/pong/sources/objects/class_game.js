@@ -81,11 +81,11 @@ class Game {
 
 	Draw()
 	{
+		score_node1.nodeValue = this.score[0];
+		score_node2.nodeValue = this.score[1];
 		this.player.Draw();
 		this.opponent.Draw();
 		this.ball.Draw();
-		score_node1.nodeValue = this.score[0];
-		score_node2.nodeValue = this.score[1];
 	}
 
 	async UpdateScore()

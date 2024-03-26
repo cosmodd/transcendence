@@ -24,13 +24,12 @@ Les clients:
   - Refactor
 
 - Client
-  - ready color after reco
   - Local - not working
   - UI - print username
-  - UI - ready button
   - UI - lobby infos (gametype, who is ready)
+  - Remove room-uuid cookie
   - [bug] Local score 0 - 1
-  - [bug] Score/Time not loading (sometimes)
+  - [bug?] Score/Time not loading (sometimes)
 
 #### General
 - WSS

@@ -65,13 +65,14 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: "Match paused."
 		})
 
-	def Reconnection(self):
+	def Reconnection(self, client_ready_state):
 		return json.dumps({
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
 			DATA_INFO_TYPE_MESSAGE: "Reconnection...",
+			DATA_PLAYER_STATE: DATA_PLAYER_READY if client_ready_state == True else DATA_PLAYER_NOT_READY,
 			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if self.attached_game.ClientsAreReady() else 0
 		})
 	
@@ -106,11 +107,12 @@ class MessageBuilder:
             DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token
 		})
 	
-	def ClientsAreReady(self):
+	def ClientsAreReady(self, client_index):
 		return json.dumps({
             METHOD: FROM_SERVER,
             OBJECT: OBJECT_LOBBY,
             DATA_LOBBY_STATE: DATA_PLAYER_READY,
+            DATA_PLAYER: self.attached_game.connected[client_index].name,
             DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
             DATA_INFO_TYPE_MESSAGE: "Game is on!"
 		})
