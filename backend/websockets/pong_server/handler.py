@@ -25,7 +25,6 @@ TOKEN_TO_GAME = {}
 TOKEN_TO_CURRENTLY_QUEUING = {}
 room_lock = asyncio.Lock()
 connected_clients = asyncio.Queue()
-# disconnected_clients = asyncio.Queue()
 
 async def main():
     asyncio.ensure_future(Matchmaking())
@@ -52,9 +51,6 @@ async def Handler(websocket):
     assert event[METHOD] == FROM_CLIENT
     client = Client(websocket, event[DATA_PLAYER_TOKEN], event[DATA_PLAYER_USERNAME])
 
-    # Expected for a tournament ?
-    # Expected for a duel ?
-
     try:
         # Reconnection (or connection, for duel/tournament)
         await Reconnection(client, event)
@@ -74,12 +70,12 @@ async def Handler(websocket):
         async with room_lock: game = TOKEN_TO_GAME[client.token]
         try:
             del TOKEN_TO_CURRENTLY_QUEUING[client.token]
-        except KeyError as e:
-            print(f"KeyError: {e}")
-        await ClientLoop(client, game, event[DATA_PLAYER])
+            await ClientLoop(client, game, event[DATA_PLAYER])
+        except Exception as e:
+            logger.debug(f"An exception occurred: {e}")
 
 	# Client left 
-    except Exception as e:
+    except:
         await RemoveClientFromQueue(client)
 
 async def Reconnection(reconnecting_client, event):
@@ -90,17 +86,23 @@ async def Reconnection(reconnecting_client, event):
                 if len(game.disconnected):
                     for c in game.disconnected:
                         if (reconnecting_client.token == c.token):
-                            logger.debug("DEBUG:: found room, ready to reconnect")
                             game.disconnected.remove(c)
                             c.ws = reconnecting_client.ws 
                             game.connected.append(c)
-                            await sender.ToAll(game.MessageBuilder.OpponentReconnected(), game.connected)
-                            await c.ws.send(game.MessageBuilder.Reconnection())
-                            game.match_is_paused = False
-                            game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
-                            game.reconnection_lock.release()
-                            room_lock.release()
-                            await ClientLoop(c, game, c.name)
+                            try:
+                                # logger.debug("DEBUG:: len(connected) -> " + len(game.connected))
+                                await sender.ToAll(game.MessageBuilder.OpponentReconnected(), game.connected)
+                                logger.debug("DEBUG:: found room, ready to reconnect")
+                                await c.ws.send(game.MessageBuilder.Reconnection())
+                                game.match_is_paused = False
+                                if game.ClientsAreReady():
+                                    game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
+                                game.reconnection_lock.release()
+                                room_lock.release()
+                                await ClientLoop(c, game, c.name)
+                            except Exception as e:
+                                logger.debug(f"An exception occurred: {e}")
+
                 else:
                     room_lock.release()
                     game.reconnection_lock.release()

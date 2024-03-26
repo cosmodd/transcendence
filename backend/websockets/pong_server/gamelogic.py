@@ -7,44 +7,42 @@ from class_client import *
 from constants import *
 from class_vec2 import Vec2
 from constants import *
-import logging
-logger = logging.getLogger('websockets')
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
-
 
 async def ClientLoop(client: Client, game: Game, current_player):
-    # Client is ready ?
-    try:
-        if client.ready == False:
-            async for message in client.ws:
-                event = json.loads(message)
-                assert event[METHOD] == FROM_CLIENT
-                if DATA_PLAYER_STATE in event:
-                    if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
-                        client.ready = True
-                        break 
-        # Client game loop
+    # Client lobby ready loop
+    if client.ready == False:
         async for message in client.ws:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
+            if DATA_PLAYER_STATE in event:
+                if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
+                    client.ready = True
+                    break 
 
-            # Receive key from player
-            if event[OBJECT] == OBJECT_PADDLE:
-                game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
+    if client.ws.closed:
+        async with game.reconnection_lock: await HandleDisconnection(game)
+        return
 
-            # Game ended
+    # Client game loop
+    async for message in client.ws:
+        event = json.loads(message)
+        assert event[METHOD] == FROM_CLIENT
+
+        # Receive key from player
+        if event[OBJECT] == OBJECT_PADDLE:
+            game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
+
+        # Game ended
+        if event[OBJECT] == OBJECT_LOBBY:
             if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
                 return
 
-    except Exception as e:
-        logger.debug("checkdisco from clientloop")
-        await CheckDisconnection(game)
+    if client.ws.closed:
+        async with game.reconnection_lock: await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
     while game.ClientsAreReady() == False:
         await asyncio.sleep(1)
-
     await sender.ToAll(game.MessageBuilder.ClientsAreReady(), game.connected);
 
     last_update_time = datetime.now()
@@ -92,9 +90,6 @@ async def ServerLoop(game: Game):
             if (game.match_is_running == False):
                 game.match_is_running = ScoreIsEven(game)
 
-        # Check disconnection
-        await CheckDisconnection(game);
-
         # Game paused
         while game.IsMatchPaused() or game.ClientsAreReady == False:
             async with game.reconnection_lock: await LastPlayerDisconnection(game);
@@ -108,7 +103,7 @@ async def ServerLoop(game: Game):
     await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
     await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
  
-async def CheckDisconnection(game: Game):
+async def HandleDisconnection(game: Game):
     # Check if any client has disconnected
     newly_disconnected = [c for c in game.connected if c.ws.closed]
     for c in newly_disconnected:

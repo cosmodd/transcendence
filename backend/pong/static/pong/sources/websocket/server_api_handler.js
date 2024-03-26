@@ -4,7 +4,6 @@ import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 import Timer from "../utils/timer.js";
 import * as k from "../utils/constants_objects.js"
-import { ready_element } from '../ui/overlay.js';
 
 let ServerAPI = {};
 
@@ -132,10 +131,9 @@ ServerAPI.UpdateLobbyState = function(event)
 		case ServerAPI.DATA_LOBBY_ROOM_CREATED:
 			ServerAPI.UpdateLobbyStateRoomCreated(event);
 			break ;
+		// Both players are ready
 		case ServerAPI.DATA_PLAYER_READY:
-			ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
-			ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
-			Timer.Start(k.GameDuration);
+			ServerAPI.UpdateLobbyStateRoomStarted(event);
 			break;
 		// Room ended
 		case ServerAPI.DATA_LOBBY_ROOM_ENDED:
@@ -168,6 +166,15 @@ ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 		[ServerAPI.DATA_LOBBY_ROOM_ID]: event[ServerAPI.DATA_LOBBY_ROOM_ID]
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_create));
+	PrintInfo(event);
+}
+
+
+ServerAPI.UpdateLobbyStateRoomStarted = function(event)
+{
+	ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+	ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+	Timer.Start(k.GameDuration);
 	PrintInfo(event);
 }
 

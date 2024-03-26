@@ -14,8 +14,8 @@ Les clients:
 #### Specific
 - Server
   - Game types to GameModel (duel, tournament, casual)
-  - Ready State behavior in pre-created rooms
   - [bug] ball reset inconsistent
+  - [bug?] ready-lobby well implemented ?
   - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
 
@@ -24,12 +24,16 @@ Les clients:
   - Refactor
 
 - Client
+  - ready color after reco
+  - Local - not working
   - UI - print username
   - UI - ready button
+  - UI - lobby infos (gametype, who is ready)
   - [bug] Local score 0 - 1
   - [bug] Score/Time not loading (sometimes)
 
 #### General
+- WSS
 - Tournaments
 - Invitations (Duel)
 - Local Game in Database ?
