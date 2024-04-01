@@ -10,6 +10,27 @@ export function login(accessToken: string, refreshToken: string): void {
 	localStorage.setItem('auth', JSON.stringify({ accessToken, refreshToken }));
 }
 
+export async function refreshAccessToken(): Promise<boolean> {
+	const response = await fetch('/api/token/refresh/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			refresh: get(authStore)?.refreshToken
+		})
+	});
+
+	if (!response.ok) {
+		logout();
+		return false;
+	}
+
+	const data = await response.json();
+	login(data.access, get(authStore)?.refreshToken);
+	return true;
+}
+
 export function logout(): void {
 	authStore.set(null);
 	localStorage.removeItem('auth');

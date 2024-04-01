@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit";
-import { authToken, isAuthed } from "$lib/stores/auth.js";
+import { authToken, isAuthed, refreshAccessToken } from "$lib/stores/auth.js";
 import { user } from "$lib/stores/user.js";
 
 async function loadUser(fetch: Function) {
@@ -9,7 +9,9 @@ async function loadUser(fetch: Function) {
 		}
 	});
 
-	if (!response.ok) return;
+	if (!response.ok && !refreshAccessToken()) {
+		throw redirect(302, '/login');
+	}
 
 	const data = await response.json();
 	user.set(data);
