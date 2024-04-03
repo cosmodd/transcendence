@@ -11,10 +11,10 @@
 		<h2 class="card-title fw-bold text-light">Tournaments</h2>
 		<p class="card-text text-light">Play or create a new tournament</p>
 		<div class="d-flex flex-row gap-2">
-			<button class="btn btn-dark flex-fill">
+			<a class="btn btn-dark flex-fill" href="/tournaments">
 				<Fa icon={faPlay} class="me-1" />
 				Play
-			</button>
+			</a>
 			<button class="btn btn-dark flex-fill">
 				<Fa icon={faSquarePlus} class="me-1" />
 				Create

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TournamentCard from "$lib/components/TournamentCard.svelte";
+	import TournamentCard from "$lib/components/tournament/TournamentCard.svelte";
 
 	const names = [
 		"Battle Bash",
