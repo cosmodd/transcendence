@@ -10,7 +10,7 @@
 			style="width: 24px; height: 24px;"
 		/>
 		<span class="displayname fw-bold me-1">Cosmo</span>
-		<span class="score badge bg-success ms-auto">5</span>
+		<span class="score badge bg-success ms-auto">50</span>
 	</div>
 	<hr class="m-0 border-2" />
 	<div class="player p-2 d-flex flex-row gap-2 align-items-center">

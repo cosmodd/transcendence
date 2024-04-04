@@ -74,7 +74,7 @@
 			</div>
 		</div>
 	</nav>
-	<main id="root" class="container overflow-y-auto p-0 mb-3 h-100">
+	<main id="root" class="container overflow-y-auto p-0 mb-3 h-100 d-flex flex-column">
 		<slot />
 	</main>
 </div>

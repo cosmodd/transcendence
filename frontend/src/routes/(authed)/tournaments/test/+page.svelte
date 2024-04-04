@@ -4,7 +4,7 @@
 	const playerCount: number = 2 << 2;
 </script>
 
-<div class="bracket d-flex flex-row justify-content-center h-100">
+<div class="bracket d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
 	{#if playerCount >= 8}
 		<div class="round quarter d-flex flex-column justify-content-between">
 			{#each Array(4) as i}
@@ -40,6 +40,10 @@
 			<Matchup />
 		</div>
 	</div>
+</div>
+
+<div class="buttons d-flex flex-row">
+	<button type="button" class="btn btn-primary">Submit</button>
 </div>
 
 <style>
