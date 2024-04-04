@@ -24,10 +24,8 @@ Les clients:
   - Refactor
 
 - Client
-  - Local - not working
   - UI - print username
   - UI - lobby infos (gametype, who is ready)
-  - Remove room-uuid cookie
   - [bug] Local score 0 - 1
   - [bug?] Score/Time not loading (sometimes)
 

@@ -10,13 +10,13 @@ from constants import *
 
 async def ClientLoop(client: Client, game: Game, current_player):
     # Client lobby ready loop
-    if client.ready == False:
+    if await client.IsReady() == False:
         async for message in client.ws:
             event = json.loads(message)
             assert event[METHOD] == FROM_CLIENT
             if DATA_PLAYER_STATE in event:
                 if event[DATA_PLAYER_STATE] == DATA_PLAYER_READY:
-                    client.ready = True
+                    await client.SetReadyState(True)
                     break 
 
     if client.ws.closed:
@@ -29,27 +29,28 @@ async def ClientLoop(client: Client, game: Game, current_player):
         assert event[METHOD] == FROM_CLIENT
 
         # Receive key from player
-        if event[OBJECT] == OBJECT_PADDLE:
-            game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
-
-        # Game ended
-        if event[OBJECT] == OBJECT_LOBBY:
-            if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
-                return
+        if OBJECT in event:
+            if event[OBJECT] == OBJECT_PADDLE:
+                game.RegisterKeyInput(current_player, event.get(DATA_INPUT))
+            # Game ended
+            if event[OBJECT] == OBJECT_LOBBY:
+                if event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_ENDED:
+                    return
 
     if client.ws.closed:
         async with game.reconnection_lock: await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
-    while game.ClientsAreReady() == False:
+    while await game.ClientsAreReady() == False:
         await asyncio.sleep(1)
-    for i in range(len(game.clients)):
-        await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
 
     last_update_time = datetime.now()
     game.ball.Reset(Vec2(-1., 0.))
     game.ball.collided = True
     game.start_time = datetime.now()
+
+    for i in range(len(game.clients)):
+        await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
     while (game.IsMatchRunning()):
         # Delta time
         current_time = datetime.now()

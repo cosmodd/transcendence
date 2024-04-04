@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="/static/pong/style/style.css">
 </svelte:head>
 
-<div class="wrapper position-relative">
+<div class="wrapper position-relative h-100">
 	<canvas class="position-relative card border-2 mx-auto w-100 blur-5" id="glcanvas">
 	</canvas>
 	<div class="position-absolute top-0 start-50 translate-middle-x text-center d-flex flex-row">

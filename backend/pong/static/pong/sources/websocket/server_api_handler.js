@@ -27,7 +27,6 @@ ServerAPI._InitGame = function()
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
 			[ServerAPI.DATA_PLAYER_TOKEN]: token,
-			[ServerAPI.DATA_LOBBY_ROOM_ID]: GetCookie("pong-roomid"),
 			[ServerAPI.DATA_PLAYER_USERNAME]: await fetch("/api/user/", {
 				headers: {
 					"Authorization": `Bearer ${token}`
@@ -159,7 +158,6 @@ ServerAPI.UpdateLobbyState = function(event)
 
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
-	SetCookie("pong-roomid", event[ServerAPI.DATA_LOBBY_ROOM_ID]);
 	ReadyButtonShow();
 	let response_create = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
@@ -184,7 +182,6 @@ ServerAPI.UpdateLobbyStateRoomStarted = function(event)
 
 ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 {
-	DeleteCookie("pong-roomid");
 	let response_end = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,

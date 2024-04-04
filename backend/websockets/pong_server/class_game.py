@@ -80,8 +80,10 @@ class Game:
 	def IsMatchPaused(self):
 		return self.match_is_paused
 
-	def ClientsAreReady(self):
-		return self.clients[0].ready == True and self.clients[1].ready == True
+	async def ClientsAreReady(self):
+		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
+			return True
+		return False
 
 	async def CreateModel(self):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)

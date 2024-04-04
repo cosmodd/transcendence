@@ -65,7 +65,7 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: "Match paused."
 		})
 
-	def Reconnection(self, client_ready_state):
+	async def Reconnection(self, client_ready_state):
 		return json.dumps({
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
@@ -73,17 +73,17 @@ class MessageBuilder:
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
 			DATA_INFO_TYPE_MESSAGE: "Reconnection...",
 			DATA_PLAYER_STATE: DATA_PLAYER_READY if client_ready_state == True else DATA_PLAYER_NOT_READY,
-			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if self.attached_game.ClientsAreReady() else 0
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
 	
-	def OpponentReconnected(self):
+	async def OpponentReconnected(self):
 		return json.dumps({
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
 			DATA_INFO_TYPE_MESSAGE: "Opponent reconnected.",
-			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if self.attached_game.ClientsAreReady() else 0
+			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
 	
 	def EndGame(self):

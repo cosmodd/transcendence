@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger('websockets')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
+import traceback
 import os
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
@@ -72,7 +73,8 @@ async def Handler(websocket):
             del TOKEN_TO_CURRENTLY_QUEUING[client.token]
             await ClientLoop(client, game, event[DATA_PLAYER])
         except Exception as e:
-            logger.debug(f"An exception occurred: {e}")
+            logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
+            traceback.print_exc()
 
 	# Client left 
     except:
@@ -90,17 +92,17 @@ async def Reconnection(reconnecting_client, event):
                             c.ws = reconnecting_client.ws 
                             game.connected.append(c)
                             try:
-                                await sender.ToAll(game.MessageBuilder.OpponentReconnected(), game.connected)
+                                await sender.ToAll(await game.MessageBuilder.OpponentReconnected(), game.connected)
                                 logger.debug("DEBUG:: found room, ready to reconnect")
-                                await c.ws.send(game.MessageBuilder.Reconnection(c.ready))
+                                await c.ws.send(await game.MessageBuilder.Reconnection(c.ready))
                                 game.match_is_paused = False
-                                if game.ClientsAreReady():
+                                if await game.ClientsAreReady():
                                     game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
                                 game.reconnection_lock.release()
                                 room_lock.release()
                                 await ClientLoop(c, game, c.name)
                             except Exception as e:
-                                logger.debug(f"An exception occurred: {e}")
+                                logger.debug(f"An exception occurred (in reconnection): {e}")
 
                 else:
                     room_lock.release()
