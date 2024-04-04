@@ -124,6 +124,7 @@ async def NewRoom(clients):
         await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i))
 
     await ServerLoop(game)
+
     for i in range(len(clients_tokens)):
         async with room_lock: del TOKEN_TO_GAME[clients_tokens[i]]
         logger.debug("DEBUG:: removed a client from TOKEN_TO_GAME")

@@ -159,6 +159,7 @@ ServerAPI.UpdateLobbyState = function(event)
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
 	ReadyButtonShow();
+	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 	let response_create = {
 		[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 		[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
@@ -173,7 +174,6 @@ ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 
 ServerAPI.UpdateLobbyStateRoomStarted = function(event)
 {
-	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 	ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 	ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
 	Timer.Start(k.GameDuration);
