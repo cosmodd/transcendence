@@ -38,12 +38,9 @@ async def Matchmaking():
     while True:
         await asyncio.sleep(1)
         if connected_clients.qsize() >= 2:
-            # todo : une ligne
-            client1 = await connected_clients.get()
-            client1.name = PLAYER1
-            client2 = await connected_clients.get()
-            client2.name = PLAYER2
-            asyncio.create_task(NewRoom([client1, client2]))
+            client1, client2 = await connected_clients.get(), await connected_clients.get()
+            client1.name, client2.name = PLAYER1, PLAYER2
+            asyncio.create_task(NewRoom([client1, client2], 'duel'))
 
 async def Handler(websocket):
     global connected_clients
@@ -54,12 +51,11 @@ async def Handler(websocket):
 
     try:
         # Reconnection (or connection, for duel/tournament)
-        await Reconnection(client, event)
+        await ConnectExpectedClient(client, event)
 
         # Client wanting to queue
         if client.token in TOKEN_TO_CURRENTLY_QUEUING:
-            await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
-            raise Exception("Client already present in a lobby. (from handler)")
+            await AlreadyConnectedException(client)
         await connected_clients.put(client)
         TOKEN_TO_CURRENTLY_QUEUING[client.token] = True
 
@@ -80,7 +76,7 @@ async def Handler(websocket):
     except:
         await RemoveClientFromQueue(client)
 
-async def Reconnection(reconnecting_client, event):
+async def ConnectExpectedClient(reconnecting_client, event):
     async with room_lock:
         if reconnecting_client.token and reconnecting_client.token in TOKEN_TO_GAME:
             game = TOKEN_TO_GAME[reconnecting_client.token]
@@ -103,19 +99,19 @@ async def Reconnection(reconnecting_client, event):
                                 await ClientLoop(c, game, c.name)
                             except Exception as e:
                                 logger.debug(f"An exception occurred (in reconnection): {e}")
+                                traceback.print_exc()
 
                 else:
                     room_lock.release()
                     game.reconnection_lock.release()
-                    await reconnecting_client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby. (from reco)"}));
-                    raise Exception("Client already present in a lobby.")
+                    await AlreadyConnectedException(reconnecting_client)
             room_lock.release()
             game.reconnection_lock.release()
  
-async def NewRoom(clients):
+async def NewRoom(clients, game_type):
     room_id = secrets.token_urlsafe(3)
     game = Game(room_id, clients)
-    await game.CreateModel()
+    await game.CreateModel(game_type)
     clients_tokens = [clients[0].token, clients[1].token]
 
     for i in range(len(clients)):
@@ -143,6 +139,9 @@ async def RemoveClientFromQueue(client):
             await tmp_connected_clients.put(curr_client)
     connected_clients = tmp_connected_clients
 
+async def AlreadyConnectedException(client):
+    await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
+    raise Exception("Client already present in a lobby.")
 
 if __name__ == "__main__":
     asyncio.run(main())

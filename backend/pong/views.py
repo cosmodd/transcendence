@@ -28,9 +28,10 @@ class UserGameList(generics.RetrieveAPIView):
             games_list.append(
                 {
 					"players": players_names,
+                    "type": game.type,
                     "status": game.status,
                     "scores": scores_str,
-                    "winner": game.winner.username,
+                    # "winner": game.winner.username,
                     "date_begin": game.date_begin
                 }
             )

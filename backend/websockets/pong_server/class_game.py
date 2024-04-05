@@ -85,10 +85,11 @@ class Game:
 			return True
 		return False
 
-	async def CreateModel(self):
+	async def CreateModel(self, game_type: str):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)
 		account_list = [await AccountModel.objects.aget(username=self.clients[0].username), await AccountModel.objects.aget(username=self.clients[1].username)]
 		await self.model.players.aadd(*account_list)
+		self.model.type = game_type
 		await self.model.asave()
 		self.score[PLAYER1] = await ScoreModel.objects.acreate(game=self.model, score=0)
 		self.score[PLAYER2] = await ScoreModel.objects.acreate(game=self.model, score=0)

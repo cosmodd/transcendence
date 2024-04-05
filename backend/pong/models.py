@@ -7,13 +7,17 @@ class Game(models.Model):
 			('terminee', 'Terminée'),
 			('annulee', 'Annulée'),
 	)
+	TYPE_CHOICES = (
+		('duel', 'Duel'),
+		('tournament', 'Tournament'),
+	)
 
 	players = models.ManyToManyField(Account, related_name='games')
 	date_begin = models.DateTimeField(auto_now_add=True)
 	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_cours')
 	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
 	room_id = models.CharField(max_length=5, null=True)
-	#game_type (duel, tournament, casual, local)
+	type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='duel')
 
 	def __str__(self):
 		scores = self.scores.all()

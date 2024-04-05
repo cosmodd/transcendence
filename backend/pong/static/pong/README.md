@@ -13,7 +13,8 @@ Les clients:
 
 #### Specific
 - Server
-  - Game types to GameModel (duel, tournament, casual)
+  - [bug] in view, winner.username 'NoneType'
+  - Change handler logic (accept chat server messages)
   - [bug] ball reset inconsistent
   - [bug?] ready-lobby well implemented ?
   - [bug?] paddle reset inconsistent
@@ -21,7 +22,6 @@ Les clients:
 
   - Create room duel
   - Tournament
-  - Refactor
 
 - Client
   - UI - print username
@@ -31,13 +31,9 @@ Les clients:
 
 #### General
 - WSS
-- Tournaments
-- Invitations (Duel)
-- Local Game in Database ?
-- Stacking toasters
-- Casual Elo ?
 
 ### Maybe
+- Stacking toasters
 - Customization (minor)
 - Lobby constantes modifiables (score, time limit, etc)
 
