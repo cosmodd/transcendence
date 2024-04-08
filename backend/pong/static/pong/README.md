@@ -26,8 +26,7 @@ Les clients:
 - Client
   - UI - print username
   - UI - lobby infos (gametype, who is ready)
-  - [bug] Local score 0 - 1
-  - [bug?] Score/Time not loading (sometimes)
+  - [bug?] Score/Time not loading
 
 #### General
 - WSS

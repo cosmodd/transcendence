@@ -5,10 +5,10 @@ import Timer  from "../utils/timer.js";
 
 // Score
 let score_element1 = document.getElementById("score1");
-export let score_node1 = document.createTextNode("");
+export let score_node1 = document.createTextNode("0");
 score_element1.appendChild(score_node1);
 let score_element2 = document.getElementById("score2");
-export let score_node2 = document.createTextNode("");
+export let score_node2 = document.createTextNode("0");
 score_element2.appendChild(score_node2);
 
 // Time
@@ -20,6 +20,14 @@ time_element.appendChild(time_node)
 export let ready_element = document.getElementById('ready')
 let ready_node = document.createTextNode('Searching...')
 ready_element.appendChild(ready_node)
+
+export function InitOverlay()
+{
+	score_node1.nodeValue = 0;
+	score_node2.nodeValue = 0;
+	Timer.DisplayTimer();
+	ready_node.nodeValue = 'Searching...'
+}
 
 export function ReadyButtonOnlineListener()
 {
