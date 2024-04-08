@@ -31,7 +31,8 @@ class UserGameList(generics.RetrieveAPIView):
                     "type": game.type,
                     "status": game.status,
                     "scores": scores_str,
-                    # "winner": game.winner.username,
+                    "winner": game.winner.username if game.winner else None,
+                    "timeout": game.ended_with_timeout,
                     "date_begin": game.date_begin
                 }
             )

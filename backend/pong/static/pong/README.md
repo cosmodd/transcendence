@@ -13,15 +13,18 @@ Les clients:
 
 #### Specific
 - Server
-  - [bug] in view, winner.username 'NoneType'
   - Change handler logic (accept chat server messages)
+  - token_to_queue not working ?
+  - [bug] paddle badly placed (iam in reco ?)
   - [bug] ball reset inconsistent
-  - [bug?] ready-lobby well implemented ?
   - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
 
   - Create room duel
   - Tournament
+
+- View
+  - Wrong username error
 
 - Client
   - UI - print username

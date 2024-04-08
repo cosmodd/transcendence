@@ -102,5 +102,6 @@ class Game:
 		else:
 			self.winner = self.clients[0].username if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else self.clients[1].username
 		self.model.status = 'terminee'
+		self.model.ended_with_timeout = self.game_ended_with_timeout
 		self.model.winner = await AccountModel.objects.aget(username=self.winner)
 		await self.model.asave()
