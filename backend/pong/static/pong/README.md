@@ -14,12 +14,10 @@ Les clients:
 #### Specific
 - Server
   - Change handler logic (accept chat server messages)
-  - token_to_queue not working ?
+  - Both players disconnect (canceled state ?)
   - [bug] paddle badly placed (iam in reco ?)
   - [bug] ball reset inconsistent
-  - [bug?] paddle reset inconsistent
   - [bug?] pause time inconsistent
-
   - Create room duel
   - Tournament
 
@@ -27,7 +25,7 @@ Les clients:
   - Wrong username error
 
 - Client
-  - UI - print username
+  - UI - usernames
   - UI - lobby infos (gametype, who is ready)
   - [bug?] Score/Time not loading
 

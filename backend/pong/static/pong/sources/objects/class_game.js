@@ -1,7 +1,7 @@
 import { Vec2 } from "../utils/class_vec.js";
 import * as k from "../utils/constants_objects.js";
 import * as D from "../utils/defines.js"
-import { InitOverlay, score_node1, score_node2 } from '../ui/overlay.js';
+import { OverlayInit, score_node1, score_node2 } from '../ui/overlay.js';
 import Paddle from "./class_paddle.js";
 import Ball from "./class_ball.js"
 import DataOrigin from "../utils/data_origin.js";
@@ -27,7 +27,7 @@ class Game {
 			ServerAPI.InitConnection();
 			Timer.DisplayTimer();
 		}
-		InitOverlay();
+		OverlayInit();
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))

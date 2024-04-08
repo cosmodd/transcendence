@@ -12,16 +12,36 @@ export let score_node2 = document.createTextNode("0");
 score_element2.appendChild(score_node2);
 
 // Time
-let time_element = document.getElementById('time')
-export let time_node = document.createTextNode("00:00")
-time_element.appendChild(time_node)
+let time_element = document.getElementById('time');
+export let time_node = document.createTextNode("00:00");
+time_element.appendChild(time_node);
 
 // Ready button
-export let ready_element = document.getElementById('ready')
-let ready_node = document.createTextNode('Searching...')
-ready_element.appendChild(ready_node)
+export let ready_element = document.getElementById('ready');
+let ready_node = document.createTextNode('Searching...');
+ready_element.appendChild(ready_node);
 
-export function InitOverlay()
+// Usernames
+let left_username_element = document.getElementById('left_username');
+let left_username_node = document.createTextNode("");
+left_username_element.appendChild(left_username_node);
+let right_username_element = document.getElementById('right_username');
+let right_username_node = document.createTextNode("");
+right_username_element.appendChild(right_username_node);
+
+export function OverlayChangeUsernames(opponent_username, side)
+{
+	if (side == ServerAPI.DATA_PLAYER_PLAYER1) {
+		right_username_node.nodeValue = opponent_username;
+		left_username_node.nodeValue = "You";
+	}
+	else {
+		left_username_node.nodeValue = opponent_username;
+		right_username_node.nodeValue = "You";
+	}
+}
+
+export function OverlayInit()
 {
 	score_node1.nodeValue = 0;
 	score_node2.nodeValue = 0;

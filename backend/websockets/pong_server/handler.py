@@ -90,7 +90,7 @@ async def ConnectExpectedClient(reconnecting_client, event):
                             try:
                                 await sender.ToAll(await game.MessageBuilder.OpponentReconnected(), game.connected)
                                 logger.debug("DEBUG:: found room, ready to reconnect")
-                                await c.ws.send(await game.MessageBuilder.Reconnection(c.ready))
+                                await c.ws.send(await game.MessageBuilder.Reconnection(c))
                                 game.match_is_paused = False
                                 if await game.ClientsAreReady():
                                     game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
@@ -117,7 +117,7 @@ async def NewRoom(clients, game_type):
     for i in range(len(clients)):
         async with room_lock: TOKEN_TO_GAME[clients[i].token] = game
         logger.debug("DEBUG:: added a client to TOKEN_TO_GAME")
-        await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i))
+        await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i, clients[i]))
 
     await ServerLoop(game)
 

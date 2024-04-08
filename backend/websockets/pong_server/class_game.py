@@ -84,6 +84,9 @@ class Game:
 		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
 			return True
 		return False
+	
+	def OpponentUsernameOf(self, username: str):
+		return self.clients[0].username if username != self.clients[0].username else self.clients[1].username
 
 	async def CreateModel(self, game_type: str):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)

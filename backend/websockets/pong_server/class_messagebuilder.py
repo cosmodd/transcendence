@@ -65,14 +65,15 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: "Match paused."
 		})
 
-	async def Reconnection(self, client_ready_state):
+	async def Reconnection(self, client):
 		return json.dumps({
 			METHOD: FROM_SERVER,
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
 			DATA_INFO_TYPE_MESSAGE: "Reconnection...",
-			DATA_PLAYER_STATE: DATA_PLAYER_READY if client_ready_state == True else DATA_PLAYER_NOT_READY,
+			DATA_PLAYER_STATE: DATA_PLAYER_READY if await client.IsReady() == True else DATA_PLAYER_NOT_READY,
+			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username),
 			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
 	
@@ -95,7 +96,7 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: ("Timeout. " if self.attached_game.game_ended_with_timeout else "") + self.attached_game.winner + " won."
 		})
 
-	def NewRoomInfoFor(self, client_index):
+	def NewRoomInfoFor(self, client_index, client):
 		return json.dumps({
             METHOD: FROM_SERVER,
             OBJECT: OBJECT_LOBBY,
@@ -104,7 +105,8 @@ class MessageBuilder:
             DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
             DATA_PLAYER: self.attached_game.connected[client_index].name,
-            DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token
+            DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token,
+			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username)
 		})
 	
 	def ClientsAreReady(self, client_index):
