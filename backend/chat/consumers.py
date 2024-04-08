@@ -5,6 +5,7 @@ from rest_framework_simplejwt.exceptions import InvalidTokenError, TokenError
 from rest_framework_simplejwt.tokens import AccessToken
 from .models import RoomName, RoomMessages
 import json
+import asyncio
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -13,18 +14,47 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user = await self.get_user_from_token()
         if user.username == "":
             await self.close()
-        else:
-            await self.accept()
-
-
-    async def disconnect(self, close_code):
-        pass
+            return 
+        self.user = user
+        self.room_group_name = f'chat_{self.user.id}'
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
 
     async def receive(self, text_data):
-        pass
+        data_json = json.loads(text_data)
+        message = data_json['message']
+        room_name = data_json['room_name']
+        room = RoomName.objects.get(name=room_name)
+        if self.user not in room.members.all():
+            return
+        receivers = room.members.all()
+        for receiver in receivers:
+            await self.channel_layer.group_send(
+                f'chat_{receiver.id}',
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'sender': self.user.username,
+                    'room_name': room_name
+                }
+            )
+        sender = self.user
+        room = RoomName.objects.get(name=room_name)
+        message = RoomMessages(room=room, sender=sender, message=message)
+        message.save()
 
     async def chat_message(self, event):
-        pass
+        message = event['message']
+        sender = event['sender']
+        room_name = event['room_name']
+        await self.send(text_data=json.dumps({
+            'message': message,
+            'sender': sender,
+            'room_name': room_name
+        }))
 
     async def get_user_from_token(self):
         # extract the token from the headers
