@@ -24,10 +24,12 @@ ready_element.appendChild(ready_node);
 // Usernames
 let left_username_element = document.getElementById('left_username');
 let left_username_node = document.createTextNode("");
-left_username_element.appendChild(left_username_node);
+if (left_username_element != null)
+	left_username_element.appendChild(left_username_node);
 let right_username_element = document.getElementById('right_username');
 let right_username_node = document.createTextNode("");
-right_username_element.appendChild(right_username_node);
+if (right_username_element != null)
+	right_username_element.appendChild(right_username_node);
 
 export function OverlayChangeUsernames(opponent_username, side)
 {

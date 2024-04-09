@@ -14,9 +14,7 @@ Les clients:
 #### Specific
 - Server
   - Change handler logic (accept chat server messages)
-  - Both players disconnect (canceled state ?)
   - [bug] paddle badly placed (iam in reco ?)
-  - [bug] ball reset inconsistent
   - [bug?] pause time inconsistent
   - Create room duel
   - Tournament
@@ -27,6 +25,7 @@ Les clients:
 - Client
   - UI - usernames
   - UI - lobby infos (gametype, who is ready)
+  - [bug] local score 0 - 1
   - [bug?] Score/Time not loading
 
 #### General

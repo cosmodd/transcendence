@@ -102,8 +102,11 @@ class Game:
 
 	async def TerminateModel(self):
 		if (self.canceled):
-			self.model.status = 'annulee'
-			await self.model.asave()
+			if (self.model.type == 'tournament'):
+				self.model.status = 'annulee'
+				await self.model.asave()
+			else:
+				await self.model.delete()
 			return
 
 		if (self.game_ended_with_timeout):

@@ -46,7 +46,13 @@ async def Handler(websocket):
     global connected_clients
     message = await websocket.recv()
     event = json.loads(message)
-    assert event[METHOD] == FROM_CLIENT
+
+    if event[METHOD] == FROM_CLIENT:
+        await HandlerClient(websocket, event)
+
+    # if from chat_server
+
+async def HandlerClient(websocket, event):
     client = Client(websocket, event[DATA_PLAYER_TOKEN], event[DATA_PLAYER_USERNAME])
 
     try:
@@ -75,6 +81,8 @@ async def Handler(websocket):
 	# Client left 
     except:
         await RemoveClientFromQueue(client)
+
+
 
 async def ConnectExpectedClient(reconnecting_client, event):
     async with room_lock:
