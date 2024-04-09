@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.exceptions import InvalidTokenError, TokenError
 from rest_framework_simplejwt.tokens import AccessToken
-from .models import RoomName, RoomMessages
+from .models import Rooms, RoomMessages
 import json
 import asyncio
 
@@ -27,7 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data_json = json.loads(text_data)
         message = data_json['message']
         room_name = data_json['room_name']
-        room = RoomName.objects.get(name=room_name)
+        room = Rooms.objects.get(name=room_name)
         if self.user not in room.members.all():
             return
         receivers = room.members.all()
@@ -42,7 +42,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         sender = self.user
-        room = RoomName.objects.get(name=room_name)
+        room = Rooms.objects.get(name=room_name)
         message = RoomMessages(room=room, sender=sender, message=message)
         message.save()
 

@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import Account
 
-class RoomName(models.Model):
+class Rooms(models.Model):
     Conversation_Choices = [
         ('group', 'group'),
         ('private', 'private')
@@ -21,9 +21,16 @@ class RoomName(models.Model):
     def get_messages(self):
         return RoomMessages.objects.filter(room=self)
     
+    def get_last_message(self):
+        return self.get_messages().last()
+    
+    def get_last_message_sender(self):
+        return self.get_last_message().sender
+    
+    
 
 class RoomMessages(models.Model):
-    room = models.ForeignKey(RoomName, on_delete=models.CASCADE)
+    room = models.ForeignKey(Rooms, on_delete=models.CASCADE)
     sender = models.ForeignKey(Account, on_delete=models.CASCADE)
     message = models.TextField()
     # unread = models.BooleanField(default=False, blank=True, null=True)
