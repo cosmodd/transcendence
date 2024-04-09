@@ -121,8 +121,6 @@ async def NewRoom(clients, game_type):
 
     await ServerLoop(game)
 
-    logger.debug("DEBUG:: winner is " + game.model.winner.username)
-
     for i in range(len(clients_tokens)):
         async with room_lock: del TOKEN_TO_GAME[clients_tokens[i]]
         logger.debug("DEBUG:: removed a client from TOKEN_TO_GAME")

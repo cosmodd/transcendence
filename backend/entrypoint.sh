@@ -10,7 +10,7 @@ echo "PostgreSQL started"
 # Migration
 echo "Making migrations..."
 python manage.py makemigrations --noinput # --noinput is used to avoid the prompt
-python manage.py migrate users zero
+# python manage.py migrate users zero
 echo "Migrating..."
 python manage.py migrate
 echo "Migrations done"

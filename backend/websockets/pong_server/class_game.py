@@ -36,6 +36,7 @@ class Game:
 		self.match_is_running = True
 		self.match_is_paused = False
 		self.someone_scored = False
+		self.canceled = False
 
 
 	# Players
@@ -100,6 +101,11 @@ class Game:
 		await self.score[PLAYER2].asave()
 
 	async def TerminateModel(self):
+		if (self.canceled):
+			self.model.status = 'annulee'
+			await self.model.asave()
+			return
+
 		if (self.game_ended_with_timeout):
 			self.winner = self.connected[0].username
 		else:
