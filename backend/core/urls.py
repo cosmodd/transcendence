@@ -22,4 +22,5 @@ urlpatterns = [
 	# path('api/', include('example_api.urls')),
 	path('api/', include('users.urls')),
     path('api/', include('pong.urls')),
+    path('api/', include('chat.urls')),
 ]

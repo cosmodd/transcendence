@@ -21,7 +21,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        await self.channel_layer.group_add(
+            "users",
+            self.channel_name
+        )
         await self.accept()
+        await self.channel_layer.group_send(
+            "users",
+            {
+                'type': 'user_status',
+                'user': self.user.username,
+                'status': 'online'
+            }
+        )
+
+    async def disconnect(self, close_code):
+        #TODO: check if the user has open multiple tabs
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.channel_layer.group_discard(
+            "users",
+            self.channel_name
+        )
+        await self.channel_layer.group_send(
+            "users",
+            {
+                'type': 'user_status',
+                'user': self.user.username,
+                'status': 'offline'
+            }
+        )
 
     async def receive(self, text_data):
         data_json = json.loads(text_data)
