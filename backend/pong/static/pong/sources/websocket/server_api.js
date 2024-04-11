@@ -34,6 +34,7 @@ ServerAPI.DATA_LOBBY_SCORE = "Score"; // - Join key
 ServerAPI.DATA_PLAYER_STATE = "PlayerState";
 /**/ServerAPI.DATA_PLAYER_READY = "Ready";
 /**/ServerAPI.DATA_PLAYER_NOT_READY = "NotReady";
+ServerAPI.DATA_LOBBY_BOTH_ARE_READY = "AreClientsReady";
 ServerAPI.DATA_PLAYER_TOKEN = "Token";
 ServerAPI.DATA_PLAYER_USERNAME = "Username";
 ServerAPI.DATA_OPPONENT_USERNAME = "Opponent_Username";

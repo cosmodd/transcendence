@@ -14,8 +14,6 @@ Les clients:
 #### Specific
 - Server
   - Change handler logic (accept chat server messages)
-  - [bug] paddle badly placed (iam in reco ?)
-  - [bug?] pause time inconsistent
   - Create room duel
   - Tournament
 
@@ -23,7 +21,6 @@ Les clients:
   - Wrong username error
 
 - Client
-  - UI - usernames
   - UI - lobby infos (gametype, who is ready)
   - [bug] local score 0 - 1
   - [bug?] Score/Time not loading

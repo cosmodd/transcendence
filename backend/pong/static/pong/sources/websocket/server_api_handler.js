@@ -4,7 +4,7 @@ import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
 import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 import Timer from "../utils/timer.js";
 import * as k from "../utils/constants_objects.js"
-import { ReadyButtonShow, ReadyButtonHide, OverlayChangeUsernames } from '../ui/overlay.js';
+import { OverlayReadyButtonShow, OverlayReadyButtonHide, OverlayChangeUsernames } from '../ui/overlay.js';
 
 let ServerAPI = {};
 
@@ -146,10 +146,11 @@ ServerAPI.UpdateLobbyState = function(event)
 			break ;
 		// Reconnection
 		case ServerAPI.DATA_LOBBY_ROOM_RECONNECTED:
-			event[ServerAPI.DATA_PLAYER_STATE] == ServerAPI.DATA_PLAYER_READY ? ReadyButtonHide() : ReadyButtonShow();
+			event[ServerAPI.DATA_PLAYER_STATE] == ServerAPI.DATA_PLAYER_READY ? OverlayReadyButtonHide() : OverlayReadyButtonShow();
+			if (event[ServerAPI.DATA_LOBBY_BOTH_ARE_READY] === true)
+				Timer.Start();
 			if (event.hasOwnProperty(ServerAPI.DATA_OPPONENT_USERNAME))
 				OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
-			Timer.Start()
 			PrintInfo(event);
 			break ;
 		default:
@@ -161,7 +162,7 @@ ServerAPI.UpdateLobbyState = function(event)
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
 	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
-	ReadyButtonShow();
+	OverlayReadyButtonShow();
 	console.log(event[ServerAPI.DATA_OPPONENT_USERNAME]);
 	OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
 	let response_create = {

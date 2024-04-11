@@ -6,7 +6,7 @@ import { ResizeCanvas } from './events/resize.js';
 import Timer from './utils/timer.js'
 import { DebugDraw, DebugSetup } from './utils/debug.js';
 import * as k from './utils/constants_objects.js'
-import { ReadyButtonLocalListener, ReadyButtonOnlineListener, ready_element } from './ui/overlay.js';
+import { OverlayReadyButtonLocalListener, OverlayReadyButtonOnlineListener, ready_element } from './ui/overlay.js';
 
 let gl = null;
 let gl_canvas = null;
@@ -27,10 +27,10 @@ async function Init(game_type) {
     // await DebugSetup();
 
     if (game_type === GameType.Online)
-        ReadyButtonOnlineListener();
+        OverlayReadyButtonOnlineListener();
 
     if (game_type === GameType.Local)
-        ReadyButtonLocalListener();
+        OverlayReadyButtonLocalListener();
 }
 
 export function GameLoop() {

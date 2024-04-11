@@ -37,6 +37,7 @@ __all__ = [
 	"DATA_PLAYER_STATE",
 	"DATA_PLAYER_READY",
 	"DATA_PLAYER_NOT_READY",
+	"DATA_LOBBY_BOTH_ARE_READY",
 
 	"DATA_INFO_TYPE",
 	"DATA_INFO_TYPE_ERROR",
@@ -88,13 +89,14 @@ DATA_OPPONENT_USERNAME = "Opponent_Username"
 DATA_PLAYER_STATE = "PlayerState"
 DATA_PLAYER_READY = "Ready"
 DATA_PLAYER_NOT_READY = "NotReady"
+DATA_LOBBY_BOTH_ARE_READY = "AreClientsReady"
+
 DATA_POSITION = "Position"
 DATA_DIRECTION = "Direction"
 DATA_ACCELERATION = "Acceleration"
 DATA_INFO_TYPE = "Info_Type"
 DATA_INFO_TYPE_ERROR = "Error"
 DATA_INFO_TYPE_MESSAGE = "Message"
-
 
 kBallSpeed = 1.0 
 kBallAccelerationStep = 0.1 

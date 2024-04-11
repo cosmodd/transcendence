@@ -51,7 +51,7 @@ export function OverlayInit()
 	ready_node.nodeValue = 'Searching...'
 }
 
-export function ReadyButtonOnlineListener()
+export function OverlayReadyButtonOnlineListener()
 {
 	ready_element.addEventListener('click', () => {
 		if (ready_node.nodeValue === "Searching...")
@@ -60,24 +60,24 @@ export function ReadyButtonOnlineListener()
 		ready_element.classList.remove("btn-warning");
 		ready_element.classList.add("btn-success");
 		ServerAPI.SendReadyState()
-		ReadyButtonHide();
+		OverlayReadyButtonHide();
 	});
 	GameLoop();
 }
 
-export function ReadyButtonLocalListener()
+export function OverlayReadyButtonLocalListener()
 {
-	ReadyButtonShow()
+	OverlayReadyButtonShow()
 	ready_element.addEventListener('click', () => {
 		ready_element.classList.remove("btn-warning");
 		ready_element.classList.add("btn-success");
-		ReadyButtonHide();
+		OverlayReadyButtonHide();
 		Timer.Start(k.GameDuration);
 		GameLoop();
 	});
 }
 
-export function ReadyButtonHide()
+export function OverlayReadyButtonHide()
 {
 	document.getElementById('glcanvas').classList.remove('blur-5');
 	time_element.classList.remove('blur-5');
@@ -86,7 +86,7 @@ export function ReadyButtonHide()
 	ready_element.classList.add("opacity-0");
 }
 
-export function ReadyButtonShow()
+export function OverlayReadyButtonShow()
 {
 	ready_node.nodeValue = "Press when ready.";
 	ready_element.classList.remove("btn-primary");

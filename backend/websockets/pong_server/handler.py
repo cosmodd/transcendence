@@ -96,9 +96,9 @@ async def ConnectExpectedClient(reconnecting_client, event):
                             c.ws = reconnecting_client.ws 
                             game.connected.append(c)
                             try:
-                                await sender.ToAll(await game.MessageBuilder.OpponentReconnected(), game.connected)
+                                await sender.ToAll(await game.MessageBuilder.OpponentReconnected(await game.ClientsAreReady()), game.connected)
                                 logger.debug("DEBUG:: found room, ready to reconnect")
-                                await c.ws.send(await game.MessageBuilder.Reconnection(c))
+                                await c.ws.send(await game.MessageBuilder.Reconnection(c, await game.ClientsAreReady()))
                                 game.match_is_paused = False
                                 if await game.ClientsAreReady():
                                     game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
