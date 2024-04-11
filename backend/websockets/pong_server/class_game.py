@@ -103,7 +103,7 @@ class Game:
 	async def TerminateModel(self):
 		if (self.canceled):
 			if (self.model.type == 'tournament'):
-				self.model.status = 'annulee'
+				self.model.status = 'canceled'
 				await self.model.asave()
 			else:
 				await self.model.delete()
@@ -113,7 +113,7 @@ class Game:
 			self.winner = self.connected[0].username
 		else:
 			self.winner = self.clients[0].username if (self.score[PLAYER1].score >= self.score[PLAYER2].score) else self.clients[1].username
-		self.model.status = 'terminee'
+		self.model.status = 'over'
 		self.model.ended_with_timeout = self.game_ended_with_timeout
 		self.model.winner = await AccountModel.objects.aget(username=self.winner)
 		await self.model.asave()

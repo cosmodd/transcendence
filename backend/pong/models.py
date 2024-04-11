@@ -3,9 +3,9 @@ from users.models import Account
 
 class Game(models.Model):
 	STATUS_CHOICES = (
-			('en_cours', 'En cours'),
-			('terminee', 'Terminée'),
-			('annulee', 'Annulée'),
+			('in_progress', 'In progress'),
+			('over', 'Over'),
+			('canceled', 'Canceled'),
 	)
 	TYPE_CHOICES = (
 		('duel', 'Duel'),
@@ -14,7 +14,7 @@ class Game(models.Model):
 
 	players = models.ManyToManyField(Account, related_name='games')
 	date_begin = models.DateTimeField(auto_now_add=True)
-	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_cours')
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
 	winner = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='games_won', null=True, blank=True)
 	ended_with_timeout = models.BooleanField(default=False)
 	room_id = models.CharField(max_length=5, null=True)
@@ -25,7 +25,6 @@ class Game(models.Model):
 		scores_str = ' - '.join([f"{score.score}" for score in scores])
 		winner_username = self.winner.username if self.winner else None
 		return f"Partie ({self.id}), {self.status}, Room_ID: {self.room_id}, {scores_str}, Winner: {winner_username}"
-
 	class Meta:
 		verbose_name = "Game"
 		verbose_name_plural = "Games"
