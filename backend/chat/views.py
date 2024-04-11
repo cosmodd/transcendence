@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Rooms, RoomMessages
-from .serializers import  RoomsSerializer, MessageSerializer
+from .serializers import  RoomsSerializer, RoomMessagesSerializer
 from users.models import Account
 
 class RoomView(APIView):
@@ -24,7 +24,7 @@ class RoomView(APIView):
 
 class RoomMessagesView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = MessageSerializer # useless
+    serializer_class = RoomMessagesSerializer # useless
 
     def get(self, request, room):
         if not Rooms.objects.filter(name=room, members=request.user).exists():
