@@ -11,11 +11,11 @@
 	<canvas class="position-relative card border-2 mx-auto w-100 blur-5" id="glcanvas">
 	</canvas>
 	<div class="position-absolute top-0 start-50 translate-middle-x text-center d-flex flex-row">
-		<span id="left_username" ></span>
+		<span id="left_username" class="px-3 py-2"></span>
 		<span id="score1" class="bg-secondary px-3 py-2 rounded-start blur-5"></span>
 		<span id="time" class="bg-light px-3 py-2 text-dark blur-5"></span>
 		<span id="score2" class="bg-secondary px-3 py-2 rounded-end blur-5"></span>
-		<span id="right_username" ></span>
+		<span id="right_username" class="px-3 py-2"></span>
 	</div>
 	<button class="position-absolute start-50 top-50 translate-middle btn btn-primary" id="ready" ></button>
 </div>

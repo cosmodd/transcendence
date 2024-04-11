@@ -7,6 +7,7 @@ from class_client import *
 from constants import *
 from class_vec2 import Vec2
 from constants import *
+import traceback
 
 async def ClientLoop(client: Client, game: Game, current_player):
     # Client lobby ready loop
@@ -41,69 +42,76 @@ async def ClientLoop(client: Client, game: Game, current_player):
         async with game.reconnection_lock: await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
-    while await game.ClientsAreReady() == False:
-        await asyncio.sleep(1)
-
-    last_update_time = datetime.now()
-    game.ball.Reset(Vec2(-1., 0.))
-    game.ball.collided = True
-    game.start_time = datetime.now()
-
-    for i in range(len(game.clients)):
-        await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
-    while (game.IsMatchRunning()):
-        # Delta time
-        current_time = datetime.now()
-        delta_time = (current_time - last_update_time).total_seconds()
-        last_update_time = current_time
-
-        # Update positions
-        game.UpdatePaddlePosition(PLAYER1, delta_time)
-        game.UpdatePaddlePosition(PLAYER2, delta_time)
-        game.UpdateBallPosition(delta_time)
-
-        # Collisions
-        game.Collision.PaddleWall(game.players[PLAYER1])
-        game.Collision.PaddleWall(game.players[PLAYER2])
-        game.Collision.BallPaddle(game.ball, game.players[PLAYER1])
-        game.Collision.BallPaddle(game.ball, game.players[PLAYER2])
-        if game.ball.collided == False:
-            await game.Collision.BallWall(game.ball)
-
-        # Send game state to clients [only if:]
-        if  (game.players[PLAYER1].key_has_changed):
-            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
-            game.players[PLAYER1].key_has_changed = False
-
-        if  (game.players[PLAYER2].key_has_changed):
-            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
-            game.players[PLAYER2].key_has_changed = False
-
-        if (game.ball.collided):
-            await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
-            game.ball.collided = False
-
-        if (game.someone_scored):
-            await sender.ToAll(game.MessageBuilder.Score(), game.connected)
-            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
-            await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
-            game.someone_scored = False
-            game.match_is_running = IsScoreLimitNotReached(game) and IsTimeNotExpired(game)
-            if (game.match_is_running == False):
-                game.match_is_running = ScoreIsEven(game)
-
-        # Game paused
-        while game.IsMatchPaused() or game.ClientsAreReady == False:
-            async with game.reconnection_lock: await LastPlayerDisconnection(game);
-            await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
-            await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
+    try :
+        while await game.ClientsAreReady() == False:
             await asyncio.sleep(1)
 
-        await asyncio.sleep(1 / 60) 
-    await game.TerminateModel()
-    game.StopBall()
-    await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
-    await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
+        last_update_time = datetime.now()
+        game.ball.Reset(Vec2(-1., 0.))
+        game.ball.collided = True
+        game.start_time = datetime.now()
+
+        for i in range(len(game.clients)):
+            await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
+        while (game.IsMatchRunning()):
+            # Delta time
+            current_time = datetime.now()
+            delta_time = (current_time - last_update_time).total_seconds()
+            last_update_time = current_time
+
+            # Update positions
+            game.UpdatePaddlePosition(PLAYER1, delta_time)
+            game.UpdatePaddlePosition(PLAYER2, delta_time)
+            game.UpdateBallPosition(delta_time)
+
+            # Collisions
+            game.Collision.PaddleWall(game.players[PLAYER1])
+            game.Collision.PaddleWall(game.players[PLAYER2])
+            game.Collision.BallPaddle(game.ball, game.players[PLAYER1])
+            game.Collision.BallPaddle(game.ball, game.players[PLAYER2])
+            if game.ball.collided == False:
+                await game.Collision.BallWall(game.ball)
+
+            # Send game state to clients [only if:]
+            if  (game.players[PLAYER1].key_has_changed):
+                await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
+                game.players[PLAYER1].key_has_changed = False
+
+            if  (game.players[PLAYER2].key_has_changed):
+                await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
+                game.players[PLAYER2].key_has_changed = False
+
+            if (game.ball.collided):
+                await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
+                game.ball.collided = False
+
+            if (game.someone_scored):
+                await sender.ToAll(game.MessageBuilder.Score(), game.connected)
+                await sender.ToAll(game.MessageBuilder.Paddle(PLAYER1), game.connected)
+                await sender.ToAll(game.MessageBuilder.Paddle(PLAYER2), game.connected)
+                game.someone_scored = False
+                game.match_is_running = IsScoreLimitNotReached(game) and IsTimeNotExpired(game)
+                if (game.match_is_running == False):
+                    game.match_is_running = ScoreIsEven(game)
+
+            # Game paused
+            while game.IsMatchPaused() or game.ClientsAreReady == False:
+                async with game.reconnection_lock: await LastPlayerDisconnection(game);
+                await sender.ToAll(game.MessageBuilder.PausedGame(), game.connected)
+                await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
+                await asyncio.sleep(1)
+
+            await asyncio.sleep(1 / 60) 
+        await game.TerminateModel()
+        game.StopBall()
+        await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
+        await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
+
+    except Exception as e:
+        game.canceled = True
+        await game.TerminateModel()
+        traceback.print_exc()
+
  
 async def HandleDisconnection(game: Game):
     # Check if any client has disconnected
