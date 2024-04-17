@@ -145,7 +145,7 @@ class ProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-    
+
     def get(self, request, *args, **kwargs):
         user = self.get_object()
         #remove /users from the url path of profile_image and qrcode_2FA
@@ -161,7 +161,7 @@ class ProfileView(generics.RetrieveAPIView):
             "enabled_2FA": user.enabled_2FA,
             "qrcode_2FA": user.qrcode_2FA.url
         })
-        
+
 
 # return user info by username, eg: /user/rookie/ will return user info of user with username rookie
 class UserProfile(generics.RetrieveAPIView):
@@ -189,6 +189,14 @@ class UpdateProfileView(generics.UpdateAPIView):
         except:
             return Response({"message": "Unauthorized"}, status=401)
         return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.validated_data)
 
 
 
