@@ -86,9 +86,13 @@ export function OverlayReadyButtonHide()
 	ready_element.classList.add("opacity-0");
 }
 
-export function OverlayReadyButtonShow()
+export function OverlayReadyButtonShow(game_type = "", opponent_username = "")
 {
-	ready_node.nodeValue = "Press when ready.";
+	let new_nodevalue = "Press when ready.\n";
+
+	if (game_type.length)
+		new_nodevalue += `\n ${game_type} game against ${opponent_username}`
 	ready_element.classList.remove("btn-primary");
 	ready_element.classList.add("btn-warning");
+	ready_node.nodeValue = new_nodevalue;
 }

@@ -21,7 +21,7 @@ Les clients:
   - Wrong username error
 
 - Client
-  - UI - lobby infos (gametype, who is ready)
+  - UI - lobby info 
   - [bug] local score 0 - 1
   - [bug?] Score/Time not loading
 
@@ -30,8 +30,6 @@ Les clients:
 
 ### Maybe
 - Stacking toasters
-- Customization (minor)
-- Lobby constantes modifiables (score, time limit, etc)
 
 #### Guidelines
 - ES.22

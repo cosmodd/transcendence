@@ -146,12 +146,7 @@ ServerAPI.UpdateLobbyState = function(event)
 			break ;
 		// Reconnection
 		case ServerAPI.DATA_LOBBY_ROOM_RECONNECTED:
-			event[ServerAPI.DATA_PLAYER_STATE] == ServerAPI.DATA_PLAYER_READY ? OverlayReadyButtonHide() : OverlayReadyButtonShow();
-			if (event[ServerAPI.DATA_LOBBY_BOTH_ARE_READY] === true)
-				Timer.Start();
-			if (event.hasOwnProperty(ServerAPI.DATA_OPPONENT_USERNAME))
-				OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
-			PrintInfo(event);
+			ServerAPI.UpdateLobbyStateRoomReconnected(event);
 			break ;
 		default:
 			PrintInfo(event);
@@ -162,7 +157,7 @@ ServerAPI.UpdateLobbyState = function(event)
 ServerAPI.UpdateLobbyStateRoomCreated = function(event)
 {
 	ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
-	OverlayReadyButtonShow();
+	OverlayReadyButtonShow(event[ServerAPI.DATA_LOBBY_GAME_TYPE], event[ServerAPI.DATA_OPPONENT_USERNAME]);
 	console.log(event[ServerAPI.DATA_OPPONENT_USERNAME]);
 	OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
 	let response_create = {
@@ -193,6 +188,26 @@ ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 		[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_ROOM_ENDED,
 	}
 	ServerAPI.websocket.send(JSON.stringify(response_end));
+	PrintInfo(event);
+}
+
+ServerAPI.UpdateLobbyStateRoomReconnected = function(event)
+{
+	if (event[ServerAPI.DATA_LOBBY_BOTH_ARE_READY] === true)
+		Timer.Start();
+
+
+	if (event[ServerAPI.DATA_PLAYER_STATE] == ServerAPI.DATA_PLAYER_READY) {
+
+		OverlayReadyButtonHide()
+	}
+	else {
+		if (event.hasOwnProperty(ServerAPI.DATA_LOBBY_GAME_TYPE)) {
+			OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
+			OverlayReadyButtonShow(event[ServerAPI.DATA_LOBBY_GAME_TYPE], event[ServerAPI.DATA_OPPONENT_USERNAME]);
+		}
+	}
+
 	PrintInfo(event);
 }
 

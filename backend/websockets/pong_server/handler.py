@@ -40,7 +40,7 @@ async def Matchmaking():
         if connected_clients.qsize() >= 2:
             client1, client2 = await connected_clients.get(), await connected_clients.get()
             client1.name, client2.name = PLAYER1, PLAYER2
-            asyncio.create_task(NewRoom([client1, client2], 'duel'))
+            asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_DUEL))
 
 async def Handler(websocket):
     global connected_clients
