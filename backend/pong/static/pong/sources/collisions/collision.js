@@ -131,6 +131,7 @@ Collision.BallWall = function(game, ball) {
         game.opponent.Reset();
         ball.Reset(new Vec2(-1.0, 0.));
         game.score[1] += 1;
+        console.log("added score");
         this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_right >= 1.) {
@@ -138,6 +139,7 @@ Collision.BallWall = function(game, ball) {
         game.opponent.Reset();
         ball.Reset(new Vec2(1.0, 0.));
         game.score[0] += 1;
+        console.log("added score");
         this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_top >= 1.) {

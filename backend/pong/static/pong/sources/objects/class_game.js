@@ -21,7 +21,7 @@ class Game {
 		this.score = [0, 0]
 		this.delta_time;
 		this.current_time;
-		this.previous_time = 0.0;
+		this.previous_time = -1;
 
 		if (this.game_type === GameType.Online) {
 			ServerAPI.InitConnection();
@@ -49,13 +49,12 @@ class Game {
 		let data_origin = this.game_type === GameType.Online ? DataOrigin.WebSocket : DataOrigin.Client;
 		this.ball = new Ball(k.BallRadius, k.BallResolution, color, this.current_scale, data_origin);
 		await this.ball.Setup()
-
-	    if (this.game_type === GameType.Local)
-			this.ball.Reset(new Vec2(-0.2, 0.));
 	}
 
 	ComputeDeltatime()
 	{
+		if (this.previous_time === -1)
+			this.previous_time = performance.now();
 		this.current_time = performance.now();
 		this.delta_time = (this.current_time - this.previous_time) / 1000.0;
 		this.previous_time = this.current_time;

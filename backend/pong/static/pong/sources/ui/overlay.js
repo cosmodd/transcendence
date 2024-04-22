@@ -2,6 +2,7 @@ import { GameLoop } from "../main.js";
 import ServerAPI from "../websocket/server_api.js";
 import * as k from "../utils/constants_objects.js";
 import Timer  from "../utils/timer.js";
+import { Vec2 } from "../utils/class_vec.js";
 
 // Score
 let score_element1 = document.getElementById("score1");
@@ -65,7 +66,7 @@ export function OverlayReadyButtonOnlineListener()
 	GameLoop();
 }
 
-export function OverlayReadyButtonLocalListener()
+export function OverlayReadyButtonLocalListener(game)
 {
 	OverlayReadyButtonShow()
 	ready_element.addEventListener('click', () => {
@@ -73,6 +74,7 @@ export function OverlayReadyButtonLocalListener()
 		ready_element.classList.add("btn-success");
 		OverlayReadyButtonHide();
 		Timer.Start(k.GameDuration);
+        game.ball.Reset(new Vec2(1.0, 0.));
 		GameLoop();
 	});
 }

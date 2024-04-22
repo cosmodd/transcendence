@@ -24,18 +24,14 @@ async function Init(game_type) {
     await game.SetupOpponent(new Vec3(220 / 255, 53 / 255, 69 / 255), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
 
-    // await DebugSetup();
-
     if (game_type === GameType.Online)
         OverlayReadyButtonOnlineListener();
 
     if (game_type === GameType.Local)
-        OverlayReadyButtonLocalListener();
+        OverlayReadyButtonLocalListener(game);
 }
 
 export function GameLoop() {
-
-
     gl.viewport(0, 0, gl_canvas.width, gl_canvas.height);
     gl.clearColor(0., 0., 0., 0.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -75,8 +71,6 @@ export function GameLoop() {
 
     // Draw
     game.Draw();
-
-    // DebugDraw(game.player._uEntityPosition);
 
     requestAnimationFrame(GameLoop);
 }

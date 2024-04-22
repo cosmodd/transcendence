@@ -22,8 +22,6 @@ Les clients:
 
 - Client
   - UI - lobby info 
-  - [bug] local score 0 - 1
-  - [bug?] Score/Time not loading
 
 #### General
 - WSS

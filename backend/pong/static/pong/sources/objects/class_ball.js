@@ -41,10 +41,10 @@ class Ball extends Mesh {
 		super(vertices, indices, (color == null), shader_infos, current_scale);
 
 		this.radius = radius;
-		this._uEntityPosition = new Vec2(0., 0.);
+		this._uEntityPosition = new Vec2(0, 0);
 		this.speed = k.BallSpeed;
-		this.acceleration = 0.;
-		this.direction = new Vec2(0., 0.);
+		this.acceleration = 0;
+		this.direction = new Vec2(0, 0);
 		this.data_origin = data_origin;
 	}
 
