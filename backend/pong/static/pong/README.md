@@ -13,11 +13,9 @@ Les clients:
 
 #### Specific
 - Server
-  - Change token by username (+ encapsulate with try)
   - Change handler logic (accept multi type messages)
   - Create room duel
   - Tournament logic
-  - [bug] both disconnected at same time (canceled game ?)
 
 - View
   - Wrong username error

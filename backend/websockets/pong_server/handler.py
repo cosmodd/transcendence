@@ -108,6 +108,10 @@ async def ConnectExpectedClient(reconnecting_client):
                                 game.reconnection_lock.release()
                                 room_lock.release()
                                 await ClientLoop(c, game, c.name)
+                            except IndexError as e :
+                                logger.debug(f"List index error (in reconnection): behavior: game is canceled")
+                                game.canceled = True
+                                await game.TerminateModel()
                             except Exception as e:
                                 logger.debug(f"An exception occurred (in reconnection): {e}")
                                 traceback.print_exc()

@@ -83,7 +83,7 @@ class Game:
 
 	async def ClientsAreReady(self):
 		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
-			return True
+				return True
 		return False
 	
 	def OpponentUsernameOf(self, username: str):
@@ -102,11 +102,8 @@ class Game:
 
 	async def TerminateModel(self):
 		if (self.canceled):
-			if (self.model.type == 'tournament'):
-				self.model.status = 'canceled'
-				await self.model.asave()
-			else:
-				await self.model.delete()
+			self.model.status = 'canceled'
+			await self.model.asave()
 			return
 
 		if (self.game_ended_with_timeout):
