@@ -19,11 +19,14 @@ from gamelogic import ClientLoop, ServerLoop
 from class_client import Client
 from class_game import *
 from constants import *
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import AccessToken
+from asgiref.sync import sync_to_async
 #from websockets.frames import CloseCode
 #from django.core.management import call_command
 
-TOKEN_TO_GAME = {}
-TOKEN_TO_CURRENTLY_QUEUING = {}
+USERNAME_TO_GAME = {}
+USERNAME_TO_CURRENTLY_QUEUING = {}
 room_lock = asyncio.Lock()
 connected_clients = asyncio.Queue()
 
@@ -53,26 +56,28 @@ async def Handler(websocket):
     # if from chat_server
 
 async def HandlerClient(websocket, event):
-    client = Client(websocket, event[DATA_PLAYER_TOKEN], event[DATA_PLAYER_USERNAME])
+    #try :
+    client = Client(websocket, await GetUserFromToken(event[DATA_PLAYER_TOKEN]))
+    logger.debug("DEBUG:: GetUserFromToken : " + str(client.username))
 
     try:
         # Reconnection (or connection, for duel/tournament)
-        await ConnectExpectedClient(client, event)
+        await ConnectExpectedClient(client)
 
         # Client wanting to queue
-        if client.token in TOKEN_TO_CURRENTLY_QUEUING:
+        if client.username in USERNAME_TO_CURRENTLY_QUEUING:
             await AlreadyConnectedException(client)
         await connected_clients.put(client)
-        TOKEN_TO_CURRENTLY_QUEUING[client.token] = True
+        USERNAME_TO_CURRENTLY_QUEUING[client.username] = True
 
         # Searching match
         async for message in websocket:
             event = json.loads(message)
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
-        async with room_lock: game = TOKEN_TO_GAME[client.token]
+        async with room_lock: game = USERNAME_TO_GAME[client.username]
         try:
-            del TOKEN_TO_CURRENTLY_QUEUING[client.token]
+            del USERNAME_TO_CURRENTLY_QUEUING[client.username]
             await ClientLoop(client, game, event[DATA_PLAYER])
         except Exception as e:
             logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
@@ -82,16 +87,14 @@ async def HandlerClient(websocket, event):
     except:
         await RemoveClientFromQueue(client)
 
-
-
-async def ConnectExpectedClient(reconnecting_client, event):
+async def ConnectExpectedClient(reconnecting_client):
     async with room_lock:
-        if reconnecting_client.token and reconnecting_client.token in TOKEN_TO_GAME:
-            game = TOKEN_TO_GAME[reconnecting_client.token]
+        if reconnecting_client.username and reconnecting_client.username in USERNAME_TO_GAME:
+            game = USERNAME_TO_GAME[reconnecting_client.username]
             async with game.reconnection_lock:
                 if len(game.disconnected):
                     for c in game.disconnected:
-                        if (reconnecting_client.token == c.token):
+                        if (reconnecting_client.username == c.username):
                             game.disconnected.remove(c)
                             c.ws = reconnecting_client.ws 
                             game.connected.append(c)
@@ -120,22 +123,22 @@ async def NewRoom(clients, game_type):
     room_id = secrets.token_urlsafe(3)
     game = Game(room_id, clients)
     await game.CreateModel(game_type)
-    clients_tokens = [clients[0].token, clients[1].token]
+    clients_usernames = [clients[0].username, clients[1].username]
 
     for i in range(len(clients)):
-        async with room_lock: TOKEN_TO_GAME[clients[i].token] = game
-        logger.debug("DEBUG:: added a client to TOKEN_TO_GAME")
+        async with room_lock: USERNAME_TO_GAME[clients[i].username] = game
+        logger.debug("DEBUG:: added a client to USERNAME_TO_GAME")
         await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i, clients[i]))
 
     await ServerLoop(game)
 
-    for i in range(len(clients_tokens)):
-        async with room_lock: del TOKEN_TO_GAME[clients_tokens[i]]
-        logger.debug("DEBUG:: removed a client from TOKEN_TO_GAME")
+    for i in range(len(clients_usernames)):
+        async with room_lock: del USERNAME_TO_GAME[clients_usernames[i]]
+        logger.debug("DEBUG:: removed a client from USERNAME_TO_GAME")
 
 async def RemoveClientFromQueue(client):
     try:
-        del TOKEN_TO_CURRENTLY_QUEUING[client.token]
+        del USERNAME_TO_CURRENTLY_QUEUING[client.username]
     except KeyError as e:
         print(f"KeyError: {e}")
     global connected_clients
@@ -150,6 +153,12 @@ async def RemoveClientFromQueue(client):
 async def AlreadyConnectedException(client):
     await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
     raise Exception("Client already present in a lobby.")
+
+async def GetUserFromToken(token):
+    access_token = AccessToken(token)
+    jwt_authentication = JWTAuthentication()
+    user = await sync_to_async(jwt_authentication.get_user)(access_token) 
+    return user.username
 
 if __name__ == "__main__":
     asyncio.run(main())

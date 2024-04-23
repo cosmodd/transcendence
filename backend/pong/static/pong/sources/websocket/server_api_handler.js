@@ -26,12 +26,7 @@ ServerAPI._InitGame = function()
 			[ServerAPI.METHOD]: ServerAPI.FROM_CLIENT,
 			[ServerAPI.OBJECT]: ServerAPI.OBJECT_LOBBY,
 			[ServerAPI.DATA_LOBBY_STATE]: ServerAPI.DATA_LOBBY_SEARCH,
-			[ServerAPI.DATA_PLAYER_TOKEN]: token,
-			[ServerAPI.DATA_PLAYER_USERNAME]: await fetch("/api/user/", {
-				headers: {
-					"Authorization": `Bearer ${token}`
-				}
-			}).then(r => r.json()).then(j => j.username)
+			[ServerAPI.DATA_PLAYER_TOKEN]: token
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")

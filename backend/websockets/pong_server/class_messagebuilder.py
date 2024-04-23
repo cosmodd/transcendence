@@ -109,7 +109,6 @@ class MessageBuilder:
 			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
             DATA_PLAYER: self.attached_game.connected[client_index].name,
-            DATA_PLAYER_TOKEN: self.attached_game.connected[client_index].token,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username)
 		})
 	

@@ -13,22 +13,24 @@ Les clients:
 
 #### Specific
 - Server
-  - Change handler logic (accept chat server messages)
+  - Change token by username (+ encapsulate with try)
+  - Change handler logic (accept multi type messages)
   - Create room duel
-  - Tournament
+  - Tournament logic
+  - [bug] both disconnected at same time (canceled game ?)
 
 - View
   - Wrong username error
 
+- Models
+  - Tournament
+
 - Client
   - UI - lobby info 
+  - [bug] score missing at reconnection
 
 #### General
 - WSS
 
 ### Maybe
 - Stacking toasters
-
-#### Guidelines
-- ES.22
-- NL.17
