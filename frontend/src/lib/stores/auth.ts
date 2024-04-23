@@ -10,6 +10,15 @@ export function login(accessToken: string, refreshToken: string): void {
 	localStorage.setItem('auth', JSON.stringify({ accessToken, refreshToken }));
 }
 
+export function authedFetch(url: RequestInfo | URL, options?: RequestInit): Promise<Response> {
+	return fetch(url, Object.assign({
+		headers: {
+			'Authorization': `Bearer ${get(authStore)?.accessToken}`,
+			'Content-Type': 'application/json'
+		}
+	}, options));
+}
+
 export async function refreshAccessToken(): Promise<boolean> {
 	const response = await fetch('/api/token/refresh/', {
 		method: 'POST',

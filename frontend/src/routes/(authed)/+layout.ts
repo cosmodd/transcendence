@@ -1,16 +1,24 @@
 import { redirect } from "@sveltejs/kit";
-import { authToken, isAuthed, refreshAccessToken } from "$lib/stores/auth.js";
+import { authToken, isAuthed, logout, refreshAccessToken } from "$lib/stores/auth.js";
 import { user } from "$lib/stores/user.js";
 
 async function loadUser(fetch: Function) {
-	const response = await fetch('/api/user/', {
+	let response = await fetch('/api/user/', {
 		headers: {
 			'Authorization': `Bearer ${authToken()}`
 		}
 	});
 
-	if (!response.ok && !refreshAccessToken()) {
-		throw redirect(302, '/login');
+	if (!response.ok) {
+		if (!refreshAccessToken()) {
+			logout();
+			throw redirect(302, '/login');
+		}
+		response = await fetch('/api/user/', {
+			headers: {
+				'Authorization': `Bearer ${authToken()}`
+			}
+		});
 	}
 
 	const data = await response.json();

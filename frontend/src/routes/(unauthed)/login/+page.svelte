@@ -34,7 +34,6 @@
 		if (!loginResponse.ok) {
 			feedbacks.username = responseData["username"] ?? [];
 			feedbacks.password = responseData["password"] ?? [];
-			console.log(feedbacks);
 			return;
 		}
 

@@ -3,27 +3,35 @@
 	import { faEye, faEyeSlash, faSquareCheck, faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 	import { onMount } from "svelte";
 
+	export let askOld: boolean = false;
+
+	const fieldTypes = ["text", "password"];
+
 	interface PasswordField {
-		type: "password" | "text";
+		type: boolean;
 		value: string;
 		input: HTMLInputElement | null;
 	}
 
-	let focused: boolean = false;
+	let oldPasswordField: PasswordField = {
+		type: true,
+		value: "",
+		input: null,
+	};
 	let passwordField: PasswordField = {
-		type: "password",
+		type: true,
 		value: "",
 		input: null,
 	};
 	let confirmField: PasswordField = {
-		type: "password",
+		type: true,
 		value: "",
 		input: null,
 	};
 
 	$: samePassword = passwordField.value === confirmField.value && confirmField.value.length > 0;
 
-	const requirements = [
+	let requirements = [
 		{
 			matches: (value: string): boolean => value.length >= 8,
 			message: "Be at least 8 characters long",
@@ -45,6 +53,13 @@
 			message: "Contain at least one special character",
 		},
 	];
+
+	if (askOld) {
+		requirements.push({
+			matches: (value: string): boolean => value !== oldPasswordField.value,
+			message: "New password must be different from old password",
+		});
+	}
 
 	onMount(() => {
 		passwordField.input = document.querySelector("#passwordField input");
@@ -81,11 +96,36 @@
 	}
 </script>
 
+{#if askOld}
+	<div id="oldPasswordField">
+		<label for="oldPassword" class="visually-hidden">Old Password</label>
+		<div class="input-group">
+			<input
+				{...{ type: fieldTypes[+oldPasswordField.type] }}
+				id="oldPassword"
+				name="oldPassword"
+				class="form-control"
+				placeholder="Old Password"
+				minlength="8"
+				required
+				bind:value={oldPasswordField.value}
+			/>
+			<button
+				type="button"
+				class="btn btn-outline-secondary"
+				on:click={() => (oldPasswordField.type = !oldPasswordField.type)}
+			>
+				<Fa icon={oldPasswordField.type ? faEye : faEyeSlash} />
+			</button>
+		</div>
+	</div>
+{/if}
+
 <div id="passwordField">
 	<label for="password" class="visually-hidden">Password</label>
 	<div class="input-group">
 		<input
-			{...{ type: passwordField.type }}
+			{...{ type: fieldTypes[+passwordField.type] }}
 			id="password"
 			name="password"
 			class="form-control"
@@ -93,17 +133,15 @@
 			aria-labelledby="passwordHelpBlock"
 			minlength="8"
 			required
-			on:focus={() => (focused = true)}
-			on:blur={() => (focused = false)}
 			bind:value={passwordField.value}
 			on:input={passwordCustomValidity}
 		/>
 		<button
 			type="button"
 			class="btn btn-outline-secondary"
-			on:click={() => (passwordField.type = passwordField.type === "password" ? "text" : "password")}
+			on:click={() => (passwordField.type = !passwordField.type)}
 		>
-			<Fa icon={passwordField.type === "password" ? faEye : faEyeSlash} />
+			<Fa icon={passwordField.type ? faEye : faEyeSlash} />
 		</button>
 	</div>
 	<div id="passwordHelpBlock" class="form-text">
@@ -126,7 +164,7 @@
 	<label for="confirmPassword" class="visually-hidden">Confirm Password</label>
 	<div class="input-group">
 		<input
-			{...{ type: confirmField.type }}
+			{...{ type: fieldTypes[+confirmField.type] }}
 			id="confirmPassword"
 			name="confirmPassword"
 			class="form-control"
@@ -139,9 +177,9 @@
 		<button
 			type="button"
 			class="btn btn-outline-secondary"
-			on:click={() => (confirmField.type = confirmField.type === "password" ? "text" : "password")}
+			on:click={() => (confirmField.type = !confirmField.type)}
 		>
-			<Fa icon={confirmField.type === "password" ? faEye : faEyeSlash} />
+			<Fa icon={confirmField.type ? faEye : faEyeSlash} />
 		</button>
 	</div>
 	<div id="confirmPasswordHelpBlock" class="form-text">
