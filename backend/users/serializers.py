@@ -45,6 +45,25 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'display_name', 'username', 'profile_image']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(max_length=32, required=False, write_only=True)
+
     class Meta:
         model = Account
-        fields = ['display_name', 'profile_image', 'email', 'password', 'enabled_2FA', 'username']
+        fields = ['display_name', 'profile_image', 'email', 'enabled_2FA', 'username', 'old_password', 'password']
+
+    def validate(self, data):
+        user = self.context['request'].user
+
+        # Check if field old_password and password are present
+        if 'old_password' in data and 'password' in data:
+            # Check if old_password is correct
+            if not user.check_password(data['old_password']):
+                raise serializers.ValidationError({"old_password": "Wrong password"})
+
+            # Check if password is different from old_password
+            if data['old_password'] == data['password']:
+                raise serializers.ValidationError({"password": "New password must be different from old password"})
+        elif 'old_password' in data or 'password' in data:
+            raise serializers.ValidationError({"password": "Both fields old_password and password are required"})
+
+        return data
