@@ -45,7 +45,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'display_name', 'username', 'profile_image']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
-    old_password = serializers.CharField(max_length=32, required=False, write_only=True)
+    old_password = serializers.CharField(min_length=8, max_length=32, required=False, write_only=True)
+    password = serializers.CharField(min_length=8, max_length=32, required=False, write_only=True)
 
     class Meta:
         model = Account
