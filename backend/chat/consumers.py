@@ -2,7 +2,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.exceptions import InvalidTokenError, TokenError
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Rooms, RoomMessages
 import json
 import asyncio
@@ -95,7 +95,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return AnonymousUser()
         try:
             token = auth_header.split(' ')[1]
-            access_token = AccessToken(token)
-            return access_token.user
+            jwt_authentication = JWTAuthentication()
+            user = await jwt_authentication.authenticate(token)
+            # return the user if authenticated, otherwise return AnonymousUser
+            if user is not None:
+                return user[0]
+            else:
+                return AnonymousUser()
+            
         except (InvalidTokenError, TokenError, IndexError):
             return AnonymousUser()
