@@ -19,8 +19,8 @@
 			message: "Do not start or end with a dot or underscore",
 		},
 		{
-			matches: (value: string): boolean => !/\.{2}/g.test(value),
-			message: "Do not use double dots",
+			matches: (value: string): boolean => !/\.{2}|_{2}/g.test(value),
+			message: "Do not use double dots or double underscores",
 		},
 	];
 
