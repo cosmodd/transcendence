@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { login } from "$lib/stores/auth"
 	import Logo42 from "$lib/assets/icons/42.svelte";
-	import UsernameField from "$lib/components/register/UsernameField.svelte";
-	import PasswordField from "$lib/components/register/PasswordField.svelte";
+	import UsernameField from "$lib/components/auth/UsernameField.svelte";
+	import PasswordField from "$lib/components/auth/PasswordField.svelte";
 	import Fa from "svelte-fa";
 	import { faRightToBracket, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 	import { goto } from "$app/navigation";

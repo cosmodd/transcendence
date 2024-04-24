@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
+import { user } from "./user";
 
 const _auth = browser ? localStorage.getItem('auth') : null;
 
@@ -41,6 +42,7 @@ export async function refreshAccessToken(): Promise<boolean> {
 }
 
 export function logout(): void {
+	user.set({});
 	authStore.set(null);
 	localStorage.removeItem('auth');
 }

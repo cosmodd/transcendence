@@ -1,24 +1,20 @@
 import { redirect } from "@sveltejs/kit";
-import { authToken, isAuthed, logout, refreshAccessToken } from "$lib/stores/auth.js";
+import { authToken, authedFetch, isAuthed, logout, refreshAccessToken } from "$lib/stores/auth.js";
 import { user } from "$lib/stores/user.js";
 
 async function loadUser(fetch: Function) {
-	let response = await fetch('/api/user/', {
-		headers: {
-			'Authorization': `Bearer ${authToken()}`
-		}
-	});
+	let response = await authedFetch('/api/user/');
 
 	if (!response.ok) {
-		if (!refreshAccessToken()) {
+		const tokenRefreshed = await refreshAccessToken();
+
+		if (!tokenRefreshed) {
+			console.log("Couldn't fetch a new token. Logging out.");
 			logout();
 			throw redirect(302, '/login');
 		}
-		response = await fetch('/api/user/', {
-			headers: {
-				'Authorization': `Bearer ${authToken()}`
-			}
-		});
+
+		response = await authedFetch('/api/user/');
 	}
 
 	const data = await response.json();
@@ -27,7 +23,7 @@ async function loadUser(fetch: Function) {
 
 export async function load({ fetch, url }) {
 	if (!isAuthed()) throw redirect(302, '/login');
-	loadUser(fetch);
+	await loadUser(fetch);
 
 	if (url.pathname === '/') throw redirect(302, '/play');
 }

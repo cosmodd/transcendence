@@ -24,7 +24,7 @@ class MyAccountManager(BaseUserManager):
         user.qrcode_2FA = path
         user.save(using=self._db)
         return user
-    
+
     def create_superuser(self, email, username, password=None):
         user = self.create_user(email, username, password)
         user.is_admin = True
@@ -64,7 +64,7 @@ class Account(AbstractBaseUser):
     is_active       = models.BooleanField(default=True)
     is_staff        = models.BooleanField(default=False)
     is_superuser    = models.BooleanField(default=False)
-    
+
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
@@ -72,20 +72,20 @@ class Account(AbstractBaseUser):
 
     # This is what it returns when you don't access to a specific field
     def __str__(self):
-        return self.username
+        return f"{self.username} <Account>"
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
-    
+
     def has_module_perms(self, app_label):
         return True
-    
+
     def get_authentification_setup_uri(self):
         return pyotp.totp.TOTP(self.secret_2FA).provisioning_uri(self.username, issuer_name="Transcendence")
-    
+
     def is_otp_valid(self, otp):
         return pyotp.TOTP(self.secret_2FA).verify(otp)
-    
+
     def set_2FA(self, val: bool):
         self.enabled_2FA = val
         self.save()

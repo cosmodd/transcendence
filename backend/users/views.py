@@ -83,9 +83,11 @@ class LoginView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)
 
         user = Account.objects.get(username=request.data['username'])
+
         if user.enabled_2FA:
             user.set_date_2FA()
             return Response({"id": user.id}, status=200)
+
         refresh = RefreshToken.for_user(user)
         return Response(
         {
@@ -120,6 +122,9 @@ class Check_two_factor_code(TokenObtainPairView):
             user.set_date_2FA()
         if user.is_otp_valid(request.data['code']) and user.waiting_2FA is not None:
             refresh = RefreshToken.for_user(user)
+            # Reset the waiting_2FA field
+            user.waiting_2FA = None
+            user.save()
             return Response(
             {
                 "refresh": str(refresh),

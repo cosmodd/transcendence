@@ -37,6 +37,13 @@
 			return;
 		}
 
+		// Handle 2FA auth
+		if (responseData["id"]) {
+			console.log(responseData);
+			goto(`/login/otp?id=${responseData["id"]}`);
+			return;
+		}
+
 		login(responseData["access"], responseData["refresh"]);
 		goto("/play");
 	}

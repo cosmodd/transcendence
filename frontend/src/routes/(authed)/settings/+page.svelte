@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PasswordField from "$lib/components/register/PasswordField.svelte";
+	import PasswordField from "$lib/components/auth/PasswordField.svelte";
 	import { authedFetch } from "$lib/stores/auth";
 	import { user } from "$lib/stores/user";
 	import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -8,10 +8,6 @@
 	let displayNameAlert: string = "";
 	let passwordAlert: string = "";
 	let processing: boolean = false;
-
-	function wait(ms: number) {
-		return new Promise((res) => setTimeout(res, ms));
-	}
 
 	function handleUpdateDisplayName(event: SubmitEvent) {
 		const target = event.target as HTMLFormElement;
@@ -78,7 +74,6 @@
 			body: JSON.stringify({ enabled_2FA: !$user.enabled_2FA }),
 		}).then(async (response) => {
 			const json = await response.json();
-			await wait(1000);
 			processing = false;
 
 			if (!response.ok) {
@@ -125,7 +120,7 @@
 				<p class="text-muted m-0">Enable or disable 2FA via applications.</p>
 			</div>
 			{#if processing}
-				<div class="spinner-border" role="status" style="width: 1rem; height: 1rem; border-width: 0.125rem">
+				<div class="spinner-border spinner-grow-sm spinner-border-sm" role="status">
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			{/if}
@@ -161,9 +156,8 @@
 					>
 						{#if processing}
 							<div
-								class="spinner-border"
+								class="spinner-border spinner-border-sm spinner-grow-sm"
 								role="status"
-								style="width: 1rem; height: 1rem; border-width: 0.125rem"
 							>
 								<span class="visually-hidden">Loading...</span>
 							</div>
@@ -210,9 +204,8 @@
 					>
 						{#if processing}
 							<div
-								class="spinner-border"
+								class="spinner-border spinner-border-sm spinner-grow-sm"
 								role="status"
-								style="width: 1rem; height: 1rem; border-width: 0.125rem"
 							>
 								<span class="visually-hidden">Loading...</span>
 							</div>
@@ -247,9 +240,8 @@
 					>
 						{#if processing}
 							<div
-								class="spinner-border"
+								class="spinner-border spinner-border-sm spinner-grow-sm"
 								role="status"
-								style="width: 1rem; height: 1rem; border-width: 0.125rem"
 							>
 								<span class="visually-hidden">Loading...</span>
 							</div>
@@ -278,7 +270,7 @@
 						<img
 							src={$user.qrcode_2FA}
 							alt="qrcode"
-							class="img-fluid rounded "
+							class="img-fluid rounded"
 							style="width: 256px; height: 256px;"
 						/>
 					</div>
