@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'pong',
     'core',
     'users',
+    'tournament',
 	'rest_framework',
     'rest_framework_simplejwt',
 	'example_api',

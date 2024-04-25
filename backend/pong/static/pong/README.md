@@ -15,6 +15,7 @@ Les clients:
 - Server
   - [feature] Lobby time limit (5 minutes)
   - Tournament logic
+  - [error] signed in a tournament 
 
 - View
   - Wrong username error
@@ -27,13 +28,13 @@ Les clients:
   - [bug] score missing at reconnection
 
 ### Tournament
-- Create view
-- Get view
+- [view] add player (fill)
+  - is_full not working
+- [view] get
 
 - Game
-  - (huitieme, quart, demi, final)
+  - [field] (huitieme, quart, demi, final)
 
-- [error] signed in a tournament 
 
 - Logique
   - 1ere etape 
