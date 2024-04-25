@@ -13,8 +13,7 @@ Les clients:
 
 #### Specific
 - Server
-  - Change handler logic (accept multi type messages)
-  - Create room duel
+  - [feature] Lobby time limit (5 minutes)
   - Tournament logic
 
 - View
@@ -26,6 +25,21 @@ Les clients:
 - Client
   - UI - lobby info 
   - [bug] score missing at reconnection
+
+### Tournament
+- Create view
+- Get view
+
+- Game
+  - (huitieme, quart, demi, final)
+
+- [error] signed in a tournament 
+
+- Logique
+  - 1ere etape 
+   - Crees a la premiere connexion
+  - Autres etapes
+   - Crees au dernier match d’un bracket
 
 #### General
 - WSS
