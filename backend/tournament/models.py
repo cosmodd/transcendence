@@ -3,36 +3,58 @@ from users.models import Account
 from pong.models import Game
 
 class TournamentManager(models.Manager):
-	def FillTournament(self, name, size, username):
+	def FillTournament(self, id, name, username):
+		if not id:
+			raise ValueError("Tournament must have an id.")
 		if not name:
 			raise ValueError("Tournament must have a name.")
 		if not username:
 			raise ValueError("User must have a name.")
 
+		# User already signed somewhere
 		user = Account.objects.get(username=username)
 		if user.active_tournaments.exists():
 			raise ValueError("An user is already signed in a tournament.")
 		
-		tournament = None
 		# Existing tournament
-		if self.filter(name=name).exists():
-			tournament = self.filter(name=name).first()
-			if (tournament.is_full):
-				raise ValueError("Tournament is full")
-		# New tournament
-		else:
-			tournament = Tournament.objects.create(name=name, size=size)
+		tournament = self.get(id=id)
+		if (tournament.is_full):
+			raise ValueError("Tournament is full")
+		if (tournament.name != name):
+			raise ValueError("Tournament name not matching")
 
 		tournament.active_players.add(user)
 
-		if (tournament.size == 'four') and tournament.active_players.count() >= 4:
-				tournament.is_full = True
-		if (tournament.size == 'height') and tournament.active_players.count() >= 8:
-				tournament.is_full = True
+		if (tournament.size == 'four' and tournament.active_players.count() >= 4) or \
+		(tournament.size == 'height' and tournament.active_players.count() >= 8):
+			tournament.is_full = True
+			tournament.status = 'in_progress'
 
 		tournament.save()
 
 		return tournament
+
+	def CreateTournament(self, name, size, username):
+		if not size:
+			raise ValueError("Tournament must have a size.")
+		if not name:
+			raise ValueError("Tournament must have a name.")
+		if not username:
+			raise ValueError("User must have a name.")
+
+		# User already signed somewhere
+		user = Account.objects.get(username=username)
+		if user.active_tournaments.exists():
+			raise ValueError("An user is already signed in a tournament.")
+		
+		tournament = Tournament.objects.create(name=name, size=size)
+
+		tournament.active_players.add(user)
+
+		tournament.save()
+
+		return tournament
+
 
 class Tournament(models.Model):
 	STATUS_CHOICES = (
