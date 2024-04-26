@@ -28,16 +28,8 @@ Les clients:
   - [bug] score missing at reconnection
 
 ### Tournament
-- [view] create
-  - only authorized (self)
-- [view] add player (fill)
-  - is_full not working
-- [view] get all
-- [view] get specific
-
-- Game
-  - [field] (huitieme, quart, demi, final)
-
+- [view] create && add
+  - only authorized
 
 - Logique
   - 1ere etape 

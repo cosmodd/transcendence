@@ -11,6 +11,13 @@ class Game(models.Model):
 		('duel', 'Duel'),
 		('tournament', 'Tournament'),
 	)
+	ROUND_CHOICES = (
+		('none', 'None'),
+		('eighth', 'Eighth Final'),
+		('quarter', 'Quarter Final'),
+		('semi', 'Semi Final'),
+		('final', 'Final'),
+	) 
 
 	players = models.ManyToManyField(Account, related_name='games')
 	date_begin = models.DateTimeField(auto_now_add=True)
@@ -19,12 +26,28 @@ class Game(models.Model):
 	ended_with_timeout = models.BooleanField(default=False)
 	room_id = models.CharField(max_length=5, null=True)
 	type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='duel')
+	round = models.CharField(max_length=20, choices=ROUND_CHOICES, null=True)
 
 	def __str__(self):
 		scores = self.scores.all()
 		scores_str = ' - '.join([f"{score.score}" for score in scores])
 		winner_username = self.winner.username if self.winner else None
 		return f"Partie ({self.id}), {self.status}, Room_ID: {self.room_id}, {scores_str}, Winner: {winner_username}"
+	
+	def tournament_output(self) -> dict:
+		players_names = [player.username for player in self.players.all()]
+		scores = [score.score for score in self.scores.all()]
+		return {
+			"players": players_names,
+			"type": self.type,
+			"round": self.round,
+			"status": self.status,
+			"scores": scores,
+			"winner": self.winner.username if self.winner else None,
+			"timeout": self.ended_with_timeout,
+			"date_begin": self.date_begin
+		}
+
 	class Meta:
 		verbose_name = "Game"
 		verbose_name_plural = "Games"

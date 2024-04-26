@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import CreateTournamentSerializer, FillTournamentSerializer
+from .models import Tournament
 import traceback
 import logging
 logger = logging.getLogger('django')
@@ -53,3 +54,40 @@ class CreateTournamentView(generics.CreateAPIView):
 			logger.debug(f"An exception of type {type(e).__name__} occurred (in tournament.views)")
 			traceback.print_exc()
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class ActiveTournamentsListView(generics.RetrieveAPIView):
+	queryset = Tournament.objects.all()
+
+	def get(self, request, *args, **kwargs):
+		tournaments = Tournament.objects.filter(status__in=['in_progress', 'looking_for_players'])
+		tournaments_list = []
+		for t in tournaments:
+			tournaments_list.append(
+				{
+					'name': t.name,
+					'id': t.id,
+					'status': t.status,
+					'size': t.size,
+					'active_players': [user.username for user in t.active_players.all()],
+					# 'games': [game.tournament_output() for game in t.games.all()]
+				}
+			)
+		return Response({"tournaments": tournaments_list})
+
+class SpecificTournamentView(generics.RetrieveAPIView):
+	queryset = Tournament.objects.all()
+	lookup_field = 'pk'
+
+	def get_object(self):
+		return Tournament.objects.get(id=self.kwargs['pk'])
+
+	def get(self, request, *args, **kwargs):
+		tournament = self.get_object()
+		return Response({
+			'name': tournament.name,
+			'id': tournament.id,
+			'status': tournament.status,
+			'size': tournament.size,
+			'active_players': [user.username for user in tournament.active_players.all()],
+			'games': [game.tournament_output() for game in tournament.games.all()]
+		})
