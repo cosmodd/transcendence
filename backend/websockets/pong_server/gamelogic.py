@@ -42,7 +42,7 @@ async def ClientLoop(client: Client, game: Game, current_player):
         async with game.reconnection_lock: await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
-    try :
+    try:
         while await game.ClientsAreReady() == False:
             await asyncio.sleep(1)
 

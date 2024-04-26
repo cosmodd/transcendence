@@ -68,7 +68,8 @@ class ActiveTournamentsListView(generics.RetrieveAPIView):
 					'id': t.id,
 					'status': t.status,
 					'size': t.size,
-					'active_players': [user.username for user in t.active_players.all()],
+					'players_count' : t.active_players.count() + t.past_players.count()
+					# 'active_players': [user.username for user in t.active_players.all()]
 					# 'games': [game.tournament_output() for game in t.games.all()]
 				}
 			)
@@ -89,5 +90,6 @@ class SpecificTournamentView(generics.RetrieveAPIView):
 			'status': tournament.status,
 			'size': tournament.size,
 			'active_players': [user.username for user in tournament.active_players.all()],
+			'past_players': [user.username for user in tournament.past_players.all()],
 			'games': [game.tournament_output() for game in tournament.games.all()]
 		})

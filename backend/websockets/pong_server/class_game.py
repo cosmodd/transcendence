@@ -7,6 +7,7 @@ from class_vec2 import Vec2
 from pong.models import Game as GameModel 
 from pong.models import Score as ScoreModel
 from users.models import Account as AccountModel
+from class_tournament import ROUND_QUARTER, ROUND_SEMI, ROUND_FINAL
 from asgiref.sync import sync_to_async
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
@@ -14,7 +15,9 @@ __all__ = ["PLAYER1", "PLAYER2", "Game"]
 PLAYER1, PLAYER2 = DATA_PLAYER_PLAYER1, DATA_PLAYER_PLAYER2
 
 class Game:
-	def __init__(self, room_id, clients):
+	def __init__(self, room_id, clients, tournament = None):
+		self.InitClients(clients)
+		self.InitAttachedTournament(tournament)
 		self.MessageBuilder = MessageBuilder(self)
 		self.Collision = Collision(self)
 		self.players = {}
@@ -25,9 +28,6 @@ class Game:
 		self.model = {}
 		self.start_time = 0
 		self.room_id = room_id
-		self.clients = clients
-		self.connected = clients
-		self.disconnected = []
 		self.reconnection_lock = asyncio.Lock()
 		self.winner = ""
 		self.pause_timer = 0
@@ -37,7 +37,6 @@ class Game:
 		self.match_is_paused = False
 		self.someone_scored = False
 		self.canceled = False
-
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -79,7 +78,7 @@ class Game:
 		return self.match_is_running
 
 	def IsMatchPaused(self):
-		return self.match_is_paused
+		r	eturn self.match_is_paused
 
 	async def ClientsAreReady(self):
 		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
@@ -89,11 +88,34 @@ class Game:
 	def OpponentUsernameOf(self, username: str):
 		return self.clients[0].username if username != self.clients[0].username else self.clients[1].username
 
+
+	def InitClients(self, clients):
+		self.clients = clients
+		self.connected = []
+		self.disconnected = []
+		for client in clients:
+			if client.ws != None:
+				self.connected.append(client)
+			else:
+				self.disconnected.append(client)
+
+	def InitAttachedTournament(self, tournament):
+		self.attached_tournament = tournament
+		if (self.attached_tournament == None):
+			return
+		self.attached_tournament.games.append(self)
+
 	async def CreateModel(self, game_type: str):
 		self.model = await GameModel.objects.acreate(room_id=self.room_id)
 		account_list = [await AccountModel.objects.aget(username=self.clients[0].username), await AccountModel.objects.aget(username=self.clients[1].username)]
 		await self.model.players.aadd(*account_list)
 		self.model.type = game_type
+
+		# Tournament stuff
+		if self.attached_tournament != None:
+			self.model.round = self.attached_tournament.round
+			await self.attached_tournament.model.games.aadd(self.model)
+
 		await self.model.asave()
 		self.score[PLAYER1] = await ScoreModel.objects.acreate(game=self.model, score=0)
 		self.score[PLAYER2] = await ScoreModel.objects.acreate(game=self.model, score=0)
@@ -114,3 +136,8 @@ class Game:
 		self.model.ended_with_timeout = self.game_ended_with_timeout
 		self.model.winner = await AccountModel.objects.aget(username=self.winner)
 		await self.model.asave()
+
+		if (self.model.type == DATA_LOBBY_GAME_TYPE_TOURNAMENT):
+			self.attached_tournament.LaunchNextRoundIfNecessary()
+			loser = self.clients[0] if (self.score[PLAYER1].score < self.score[PLAYER2].score) else self.clients[1]
+			self.attached_tournament.RemoveClient(loser)

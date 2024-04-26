@@ -11,7 +11,6 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 django.setup()
 import asyncio
 import websockets
-import secrets
 import json
 from datetime import datetime
 import sender
@@ -19,9 +18,12 @@ from gamelogic import ClientLoop, ServerLoop
 from class_client import Client
 from class_game import *
 from constants import *
+from class_tournament import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import AccessToken
 from asgiref.sync import sync_to_async
+import secrets
+
 #from websockets.frames import CloseCode
 #from django.core.management import call_command
 
@@ -56,15 +58,18 @@ async def Handler(websocket):
     # if from chat_server
 
 async def HandlerClient(websocket, event):
-    #try :
     client = Client(websocket, await GetUserFromToken(event[DATA_PLAYER_TOKEN]))
-    logger.debug("DEBUG:: GetUserFromToken : " + str(client.username))
+    # logger.debug("DEBUG:: GetUserFromToken : " + str(client.username))
 
     try:
-        # Reconnection (or connection, for duel/tournament)
+        # Reconnection (or connection)
         await ConnectExpectedClient(client)
+    
+    	# Tournament creation?
+        if (IsUserActiveInTournament(client.username)):
+            await TournamentCreatorHandler(client)
 
-        # Client wanting to queue
+        # Normal queue
         if client.username in USERNAME_TO_CURRENTLY_QUEUING:
             await AlreadyConnectedException(client)
         await connected_clients.put(client)
@@ -122,24 +127,25 @@ async def ConnectExpectedClient(reconnecting_client):
                     await AlreadyConnectedException(reconnecting_client)
             room_lock.release()
             game.reconnection_lock.release()
- 
-async def NewRoom(clients, game_type):
+
+async def NewRoom(clients, game_type, tournament = None):
     room_id = secrets.token_urlsafe(3)
-    game = Game(room_id, clients)
+    game = Game(room_id, clients, tournament)
     await game.CreateModel(game_type)
     clients_usernames = [clients[0].username, clients[1].username]
 
     for i in range(len(clients)):
         async with room_lock: USERNAME_TO_GAME[clients[i].username] = game
-        logger.debug("DEBUG:: added a client to USERNAME_TO_GAME")
-        await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i, clients[i]))
+        logger.debug("DEBUG:: added a client to USERNAME_TO_GAME\n")
+        if clients[i].ws != None:
+            await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i, clients[i]))
 
     await ServerLoop(game)
 
     for i in range(len(clients_usernames)):
         async with room_lock: del USERNAME_TO_GAME[clients_usernames[i]]
-        logger.debug("DEBUG:: removed a client from USERNAME_TO_GAME")
-
+        sys.stderr.write("DEBUG:: removed a client to USERNAME_TO_GAME\n")
+ 
 async def RemoveClientFromQueue(client):
     try:
         del USERNAME_TO_CURRENTLY_QUEUING[client.username]
@@ -163,6 +169,10 @@ async def GetUserFromToken(token):
     jwt_authentication = JWTAuthentication()
     user = await sync_to_async(jwt_authentication.get_user)(access_token) 
     return user.username
+
+await def TournamentCreatorHandler(client):
+    new_tournament = Tournament(client) 
+    await ClientLoop(client, USERNAME_TO_GAME[client.username], client.name)
 
 if __name__ == "__main__":
     asyncio.run(main())

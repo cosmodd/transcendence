@@ -3,9 +3,9 @@ from users.models import Account
 
 class Game(models.Model):
 	STATUS_CHOICES = (
-			('in_progress', 'In progress'),
-			('over', 'Over'),
-			('canceled', 'Canceled'),
+		('in_progress', 'In progress'),
+		('over', 'Over'),
+		('canceled', 'Canceled'),
 	)
 	TYPE_CHOICES = (
 		('duel', 'Duel'),
@@ -13,7 +13,6 @@ class Game(models.Model):
 	)
 	ROUND_CHOICES = (
 		('none', 'None'),
-		('eighth', 'Eighth Final'),
 		('quarter', 'Quarter Final'),
 		('semi', 'Semi Final'),
 		('final', 'Final'),
