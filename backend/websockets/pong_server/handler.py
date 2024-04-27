@@ -66,7 +66,8 @@ async def HandlerClient(websocket, event):
         await ConnectExpectedClient(client)
     
     	# Tournament creation?
-        if (IsUserActiveInTournament(client.username)):
+        if (await IsUserActiveInTournament(client.username)):
+            logger.debug("DEBUG:: IsUserActiveInTournament: True")
             await TournamentCreatorHandler(client)
 
         # Normal queue
@@ -170,8 +171,9 @@ async def GetUserFromToken(token):
     user = await sync_to_async(jwt_authentication.get_user)(access_token) 
     return user.username
 
-await def TournamentCreatorHandler(client):
-    new_tournament = Tournament(client) 
+async def TournamentCreatorHandler(client):
+    new_tournament = Tournament() 
+    await new_tournament.Init(client)
     await ClientLoop(client, USERNAME_TO_GAME[client.username], client.name)
 
 if __name__ == "__main__":

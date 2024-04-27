@@ -78,7 +78,7 @@ class Game:
 		return self.match_is_running
 
 	def IsMatchPaused(self):
-		r	eturn self.match_is_paused
+		return self.match_is_paused
 
 	async def ClientsAreReady(self):
 		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
@@ -138,6 +138,6 @@ class Game:
 		await self.model.asave()
 
 		if (self.model.type == DATA_LOBBY_GAME_TYPE_TOURNAMENT):
-			self.attached_tournament.LaunchNextRoundIfNecessary()
+			await self.attached_tournament.LaunchNextRoundIfNecessary()
 			loser = self.clients[0] if (self.score[PLAYER1].score < self.score[PLAYER2].score) else self.clients[1]
-			self.attached_tournament.RemoveClient(loser)
+			await self.attached_tournament.RemoveClient(loser)
