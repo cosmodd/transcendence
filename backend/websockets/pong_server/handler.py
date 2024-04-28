@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #debug
 import logging
-logger = logging.getLogger('websockets')
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 import traceback
@@ -31,6 +31,7 @@ USERNAME_TO_GAME = {}
 USERNAME_TO_CURRENTLY_QUEUING = {}
 room_lock = asyncio.Lock()
 connected_clients = asyncio.Queue()
+background_rooms = set()
 
 async def main():
     asyncio.ensure_future(Matchmaking())
@@ -45,7 +46,9 @@ async def Matchmaking():
         if connected_clients.qsize() >= 2:
             client1, client2 = await connected_clients.get(), await connected_clients.get()
             client1.name, client2.name = PLAYER1, PLAYER2
-            asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_DUEL))
+            room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_DUEL, None))
+            background_rooms.add(room)
+            room.add_done_callback(background_rooms.discard)
 
 async def Handler(websocket):
     global connected_clients
@@ -67,8 +70,21 @@ async def HandlerClient(websocket, event):
     
     	# Tournament creation?
         if (await IsUserActiveInTournament(client.username)):
-            logger.debug("DEBUG:: IsUserActiveInTournament: True")
             await TournamentCreatorHandler(client)
+            async for message in websocket:
+                event = json.loads(message)
+                if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
+                    break 
+            async with room_lock: game = USERNAME_TO_GAME[client.username]
+            try:
+                await ClientLoop(client, game, event[DATA_PLAYER])
+            except Exception as e:
+                logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
+                traceback.print_exc()
+
+
+            
+        logger.debug("HERE I CUM BACK")
 
         # Normal queue
         if client.username in USERNAME_TO_CURRENTLY_QUEUING:
@@ -129,7 +145,8 @@ async def ConnectExpectedClient(reconnecting_client):
             room_lock.release()
             game.reconnection_lock.release()
 
-async def NewRoom(clients, game_type, tournament = None):
+async def NewRoom(clients, game_type, tournament):
+    logger.debug("DEBUG:: NewRoom() called\n")
     room_id = secrets.token_urlsafe(3)
     game = Game(room_id, clients, tournament)
     await game.CreateModel(game_type)
@@ -174,7 +191,7 @@ async def GetUserFromToken(token):
 async def TournamentCreatorHandler(client):
     new_tournament = Tournament() 
     await new_tournament.Init(client)
-    await ClientLoop(client, USERNAME_TO_GAME[client.username], client.name)
+    # await ClientLoop(client, USERNAME_TO_GAME[client.username], client.name)
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -4,9 +4,6 @@ from rest_framework import status
 from .serializers import CreateTournamentSerializer, FillTournamentSerializer
 from .models import Tournament
 import traceback
-import logging
-logger = logging.getLogger('django')
-
 
 class FillTournamentView(generics.CreateAPIView):
 	serializer_class = FillTournamentSerializer

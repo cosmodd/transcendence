@@ -2,7 +2,9 @@ import asyncio
 from tournament.models import Tournament as TournamentModel
 from users.models import Account as AccountModel
 from class_client import Client
+from constants import *
 import sys
+import traceback
 from asgiref.sync import async_to_sync
 
 ROUND_QUARTER = "quarter"
@@ -29,13 +31,14 @@ class Tournament:
 	async def Init(self, original_client: Client):
 		# Find model in database
 		self.model = await TournamentModel.objects.filter(active_players__username=original_client.username).aget()
-		sys.stderr.write("DEBUG:: TournamentModel found\n")
+		sys.stderr.write("DEBUG:: TournamentModel found : " + str(self.model.name) + "\n")
 		self.round = self.InitRound()
 		sys.stderr.write("DEBUG:: Tournament round :" + str(self.round) + "\n")
 		self.clients = await self.InitClients(original_client)
 		sys.stderr.write("DEBUG:: Tournament clients created\n")
 		self.games = []
-		self.LaunchGamesForRound()
+		self.rooms_tasks = set()
+		await self.LaunchGamesForRound(original_client)
 
 
 	def InitRound(self):
@@ -45,20 +48,15 @@ class Tournament:
 
 	async def InitClients(self, original_client):
 		clients = []
-		users = []
-		try:
-			users = await sync_to_async(list)(self.model.active_players.all())
-		except Exception as e:
-			print("Une erreur s'est produite :", e)
 
-		sys.stderr.write("DEBUG:: after retrieve\n")
-		for user in users:
+		async for user in AccountModel.objects.filter(active_tournaments__id=self.model.id).all():
 			# User that initiated the tournament creation
-			sys.stderr.write("DEBUG:: in loop\n")
+			sys.stderr.write(str(user.username) + "\n")
 			if user.username == original_client.username:
 				clients.append(original_client)
 			else:
 				clients.append(Client(None, user.username))
+		
 		return clients
 
 	async def RemoveClient(self, loser):
@@ -69,18 +67,28 @@ class Tournament:
 		self.model.active_players.remove(to_remove)
 		self.model.past_players.add(to_remove)
 	
-	def LaunchGamesForRound(self):
+	async def LaunchGamesForRound(self, original_client = None):
 		from handler import NewRoom
 		from class_game import PLAYER1, PLAYER2
 
 		games_count = ROUNDS_TO_COUNT[self.round]
+
+		sys.stderr.write("DEBUG:: gamescount: " + str(games_count) + "\n")
 
 		for i in range(games_count):
 			client1 = self.clients[i*2]
 			client1.name = PLAYER1
 			client2 = self.clients[i*2+1]
 			client2.name = PLAYER2
-			asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, self))
+			try:
+				await NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, self)
+				# room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, self))
+				# self.rooms_tasks.add(room)
+				# room.add_done_callback(self.rooms_tasks.discard)
+			except Exception as e:
+				sys.stderr.write(f"An exception of type {type(e).__name__} occurred")
+				traceback.print_exc()
+
 
 		sys.stderr.write("DEBUG:: Tournament games launched for round : " + str(self.round))
 	
