@@ -22,12 +22,14 @@ async def ClientLoop(client: Client, game: Game, current_player):
                     break 
 
     if client.ws.closed:
-        async with game.reconnection_lock: await HandleDisconnection(game)
+        # async with game.reconnection_lock: await HandleDisconnection(game)
+        await HandleDisconnection(game)
         return
 
     # Client game loop
     async for message in client.ws:
         event = json.loads(message)
+        # sys.stderr.write("Receive in ClientLoop: " + message + "\n")
         assert event[METHOD] == FROM_CLIENT
 
         # Receive key from player
@@ -40,7 +42,8 @@ async def ClientLoop(client: Client, game: Game, current_player):
                     return
 
     if client.ws.closed:
-        async with game.reconnection_lock: await HandleDisconnection(game)
+        # async with game.reconnection_lock: await HandleDisconnection(game)
+        await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
     sys.stderr.write("DEBUG:: ServerLoop created\n")
@@ -116,6 +119,7 @@ async def ServerLoop(game: Game):
 
  
 async def HandleDisconnection(game: Game):
+    sys.stderr.write("IN HANDLE DISCONNECTION")
     # Check if any client has disconnected
     newly_disconnected = [c for c in game.connected if c.ws.closed]
     for c in newly_disconnected:

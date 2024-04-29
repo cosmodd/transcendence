@@ -188,12 +188,16 @@ ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 
 ServerAPI.UpdateLobbyStateRoomReconnected = function(event)
 {
+	if (event.hasOwnProperty(ServerAPI.DATA_PLAYER)) {
+		ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
+		ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
+		ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+	}
+
 	if (event[ServerAPI.DATA_LOBBY_BOTH_ARE_READY] === true)
 		Timer.Start();
 
-
 	if (event[ServerAPI.DATA_PLAYER_STATE] == ServerAPI.DATA_PLAYER_READY) {
-
 		OverlayReadyButtonHide()
 	}
 	else {

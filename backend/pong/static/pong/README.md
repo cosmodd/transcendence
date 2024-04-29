@@ -25,17 +25,13 @@ Les clients:
 
 - Client
   - UI - lobby info 
+  - [bug] paddle wrong side
   - [bug] score missing at reconnection
 
 ### Tournament
 - [view] create && add
   - only authorized
-
-- Logique
-  - 1ere etape 
-   - Crees a la premiere connexion
-  - Autres etapes
-   - Crees au dernier match d’un bracket
+  - only 'looking_for_players'
 
 #### General
 - WSS

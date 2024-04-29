@@ -76,6 +76,7 @@ class MessageBuilder:
 			DATA_LOBBY_BOTH_ARE_READY: are_clients_ready,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username),
 			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
+			DATA_PLAYER: client.name,
 			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
 	
@@ -99,7 +100,7 @@ class MessageBuilder:
 			DATA_INFO_TYPE_MESSAGE: ("Timeout. " if self.attached_game.game_ended_with_timeout else "") + self.attached_game.winner + " won."
 		})
 
-	def NewRoomInfoFor(self, client_index, client):
+	def NewRoomInfoFor(self, client):
 		return json.dumps({
             METHOD: FROM_SERVER,
             OBJECT: OBJECT_LOBBY,
@@ -108,7 +109,7 @@ class MessageBuilder:
             DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
 			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
-            DATA_PLAYER: self.attached_game.clients[client_index].name,
+            DATA_PLAYER: client.name,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username)
 		})
 	

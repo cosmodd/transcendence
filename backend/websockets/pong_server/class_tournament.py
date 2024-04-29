@@ -28,6 +28,8 @@ async def TournamentNeedsToBeCreated(username) -> bool:
 	active_players_count = 0
 	async for user in AccountModel.objects.filter(active_tournaments__id=tournament.id).all():
 		active_players_count += 1
+
+	sys.stderr.write("TOURNAMENT NEEDS TO BE CREATED: " + str(active_players_count) + " " + tournament.size)
 	
 	if (active_players_count == 8 and tournament.size == 'eight'):
 		return True

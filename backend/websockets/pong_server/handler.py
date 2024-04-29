@@ -73,10 +73,10 @@ async def Handler(websocket):
 async def HandlerClient(websocket, event):
     global UsernameToRoomInstance
     client = Client(websocket, await GetUserFromToken(event[DATA_PLAYER_TOKEN]))
-    # logger.debug("DEBUG:: GetUserFromToken : " + str(client.username))
+    logger.debug("DEBUG:: GetUserFromToken : " + str(client.username))
 
     try:
-        # Reconnection (or connection)
+        # Connection to existing lobby
         await ConnectExpectedClient(client)
     
     	# Tournament - player is active but not in a game
@@ -86,14 +86,12 @@ async def HandlerClient(websocket, event):
             #   - terminate model
 
             tournament = None
-            # Creation
-            if (await TournamentNeedsToBeCreated(client.username))
-                tournament = await TournamentCreatorHandler(client)
-            # Waiting for next round exceptions
-            else:
+            # Waiting room
+            if (await TournamentNeedsToBeCreated(client.username) == False):
                 await AlreadyConnectedException(client)
                 #TODO
 
+            tournament = await TournamentCreatorHandler(client)
             await TournamentLaunchGamesForRound(tournament)
 
             async for message in websocket:
@@ -103,10 +101,13 @@ async def HandlerClient(websocket, event):
             game = await UsernameToRoomInstance.GetFromDict(client.username)
             try:
                 await ClientLoop(client, game, event[DATA_PLAYER])
+                await client.ws.close()
+                raise websockets.ConnectionClosed(1000, 'Normal closure')
+            except websockets.ConnectionClosed as e:
+                raise websockets.ConnectionClosed(1000, 'Normal closure')
             except Exception as e:
                 logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
                 traceback.print_exc()
-            return 
 
         # Normal queue
         if client.username in USERNAME_TO_CURRENTLY_QUEUING:
@@ -123,6 +124,10 @@ async def HandlerClient(websocket, event):
         try:
             del USERNAME_TO_CURRENTLY_QUEUING[client.username]
             await ClientLoop(client, game, event[DATA_PLAYER])
+            await client.ws.close()
+            raise websockets.ConnectionClosed(1000, 'Normal closure')
+        except websockets.ConnectionClosed as e:
+            raise websockets.ConnectionClosed(1000, 'Normal closure')
         except Exception as e:
             logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
             traceback.print_exc()
@@ -136,35 +141,40 @@ async def HandlerClient(websocket, event):
 async def ConnectExpectedClient(reconnecting_client):
     global UsernameToRoomInstance
 
+    sys.stderr.write("ID in Reco: " + str(id(UsernameToRoomInstance)) + "\n")
     if reconnecting_client.username and await UsernameToRoomInstance.HasInDict(reconnecting_client.username):
         game = await UsernameToRoomInstance.GetFromDict(reconnecting_client.username)
-        async with game.reconnection_lock:
-            if len(game.disconnected):
-                for c in game.disconnected:
-                    if (reconnecting_client.username == c.username):
-                        game.disconnected.remove(c)
-                        c.ws = reconnecting_client.ws 
-                        game.connected.append(c)
-                        try:
-                            await sender.ToAll(await game.MessageBuilder.OpponentReconnected(await game.ClientsAreReady()), game.connected)
-                            logger.debug("DEBUG:: found room, ready to reconnect")
-                            await c.ws.send(await game.MessageBuilder.Reconnection(c, await game.ClientsAreReady()))
-                            game.match_is_paused = False
-                            if await game.ClientsAreReady():
-                                game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
-                            await ClientLoop(c, game, c.name)
-                        except IndexError as e :
-                            logger.debug(f"List index error (in reconnection): behavior: game is canceled")
-                            game.canceled = True
-                            await game.TerminateModel()
-                        except Exception as e:
-                            logger.debug(f"An exception occurred (in reconnection): {e}")
-                            traceback.print_exc()
+        logger.debug("DEBUG:: found room MAYBE RECONNECT")
+        # async with game.reconnection_lock:
+        if len(game.disconnected) == 0:
+            await AlreadyConnectedException(reconnecting_client)
+        for c in game.disconnected:
+            if (reconnecting_client.username == c.username):
+                game.disconnected.remove(c)
+                c.ws = reconnecting_client.ws 
+                game.connected.append(c)
+                try:
+                    await sender.ToAll(await game.MessageBuilder.OpponentReconnected(await game.ClientsAreReady()), game.connected)
+                    logger.debug("DEBUG:: found room, ready to reconnect")
+                    await c.ws.send(await game.MessageBuilder.Reconnection(c, await game.ClientsAreReady()))
+                    game.match_is_paused = False
+                    if await game.ClientsAreReady():
+                        game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
+                    await ClientLoop(c, game, c.name)
+                    await c.ws.close()
+                    raise websockets.ConnectionClosed(1000, 'Normal closure')
 
-            else:
-                await AlreadyConnectedException(reconnecting_client)
+                except websockets.ConnectionClosed as e:
+                    raise websockets.ConnectionClosed(1000, 'Normal closure')
+                except IndexError as e :
+                    logger.debug(f"List index error (in reconnection): behavior: game is canceled")
+                    game.canceled = True
+                    await game.TerminateModel()
+                except Exception as e:
+                    logger.debug(f"An exception occurred (in reconnection): {e}")
+                    traceback.print_exc()
 
-async def NewRoom(clients, game_type, tournament):
+async def NewRoom(clients, game_type, tournament = None):
     global UsernameToRoomInstance
     try:
         sys.stderr.write("DEBUG:: NewRoom() called\n")
@@ -177,7 +187,10 @@ async def NewRoom(clients, game_type, tournament):
             sys.stderr.write("DEBUG:: adding a client to USERNAME_TO_GAME :" + clients[i].username + "\n")
             await UsernameToRoomInstance.AddToDict(clients[i].username, game)
             if clients[i].ws != None:
-                await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(i, clients[i]))
+                await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(clients[i]))
+
+
+        sys.stderr.write("ID in NewRoom: " + str(id(UsernameToRoomInstance)))
 
         await ServerLoop(game)
 
@@ -186,10 +199,10 @@ async def NewRoom(clients, game_type, tournament):
             sys.stderr.write("DEBUG:: removed a client to USERNAME_TO_GAME\n")
 
 		# Launch next round
-        # TODO: terminal model
-        if (tournament != None and tournament.IsLaunchingNextRoundNecessary()):
-		    self.round += 1
-			await TournamentLaunchGamesForRound(tournament)
+        # TODO: terminate model
+        if (tournament != None and await tournament.IsLaunchingNextRoundNecessary()):
+            tournament.round += 1
+            await TournamentLaunchGamesForRound(tournament)
 
 
     except Exception as e:
