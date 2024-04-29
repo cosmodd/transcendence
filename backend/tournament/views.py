@@ -24,7 +24,7 @@ class FillTournamentView(generics.CreateAPIView):
 			else:
 				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 		except Exception as e:
-			logger.debug(f"An exception of type {type(e).__name__} occurred (in tournament.views)")
+			# logger.debug(f"An exception of type {type(e).__name__} occurred (in tournament.views)")
 			traceback.print_exc()
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,7 +48,6 @@ class CreateTournamentView(generics.CreateAPIView):
 			else:
 				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 		except Exception as e:
-			logger.debug(f"An exception of type {type(e).__name__} occurred (in tournament.views)")
 			traceback.print_exc()
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

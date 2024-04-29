@@ -23,9 +23,24 @@ ROUNDS = {
 	ROUND_FINAL: ROUND_FINAL
 }
 
-async def IsUserActiveInTournament(username) -> bool:
+async def TournamentNeedsToBeCreated(username) -> bool:
 	tournament = await TournamentModel.objects.filter(active_players__username=username).aget()
-	return tournament is not None
+	active_players_count = 0
+	async for user in AccountModel.objects.filter(active_tournaments__id=tournament.id).all():
+		active_players_count += 1
+	
+	if (active_players_count == 8 and tournament.size == 'eight'):
+		return True
+	if (active_players_count == 4 and tournament.size == 'four'):
+		return True
+	return False	
+
+async def IsUserActiveInTournament(username) -> bool:
+	try:
+		tournament = await TournamentModel.objects.filter(active_players__username=username).aget()
+		return tournament is not None
+	except:
+		return False
 
 class Tournament:
 	async def Init(self, original_client: Client):
@@ -38,8 +53,6 @@ class Tournament:
 		sys.stderr.write("DEBUG:: Tournament clients created\n")
 		self.games = []
 		self.rooms_tasks = set()
-		await self.LaunchGamesForRound(original_client)
-
 
 	def InitRound(self):
 		if (self.model.size == 'eight'):
@@ -55,7 +68,7 @@ class Tournament:
 			if user.username == original_client.username:
 				clients.append(original_client)
 			else:
-				clients.append(Client(None, user.username))
+				clients.append(Client(None, str(user.username)))
 		
 		return clients
 
@@ -64,36 +77,19 @@ class Tournament:
 			if client.username == loser.username:
 				self.clients.remove(client)
 		to_remove = await self.model.active_players.aget(username=loser.username)
-		self.model.active_players.remove(to_remove)
-		self.model.past_players.add(to_remove)
+		await self.model.active_players.aremove(to_remove)
+		await self.model.past_players.aadd(to_remove)
 	
-	async def LaunchGamesForRound(self, original_client = None):
-		from handler import NewRoom
-		from class_game import PLAYER1, PLAYER2
+	async def IsLaunchingNextRoundNecessary(self):
+		current_round_ended_games = 0 
+		async for i in self.model.games.filter(status='over', round=self.round).all():
+			current_round_ended_games += 1
+		return (current_round_ended_games == ROUNDS_TO_COUNT[self.round])
 
-		games_count = ROUNDS_TO_COUNT[self.round]
-
-		sys.stderr.write("DEBUG:: gamescount: " + str(games_count) + "\n")
-
-		for i in range(games_count):
-			client1 = self.clients[i*2]
-			client1.name = PLAYER1
-			client2 = self.clients[i*2+1]
-			client2.name = PLAYER2
-			try:
-				await NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, self)
-				# room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, self))
-				# self.rooms_tasks.add(room)
-				# room.add_done_callback(self.rooms_tasks.discard)
-			except Exception as e:
-				sys.stderr.write(f"An exception of type {type(e).__name__} occurred")
-				traceback.print_exc()
-
-
-		sys.stderr.write("DEBUG:: Tournament games launched for round : " + str(self.round))
-	
 	async def LaunchNextRoundIfNecessary(self):
-		current_round_ended_games = await self.model.games.filter(status='over', round=self.round).count()
+		current_round_ended_games = 0 
+		async for i in self.model.games.filter(status='over', round=self.round).all():
+			current_round_ended_games += 1
 		if (current_round_ended_games != ROUNDS_TO_COUNT[self.round]):
 			return
 		
@@ -102,8 +98,9 @@ class Tournament:
 			sys.stderr.write("DEBUG:: Tournament over, terminating model")
 			#self.TerminateModel()
 			return
+
+
 		
-		self.LaunchGamesForRound()
 
 
 

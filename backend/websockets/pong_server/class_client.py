@@ -7,6 +7,7 @@ class Client:
 		self.username = username
 		self.ready = False
 		self.ready_lock = asyncio.Lock()
+		self.game = None
 	
 	async def IsReady(self):
 		async with self.ready_lock: return self.ready == True

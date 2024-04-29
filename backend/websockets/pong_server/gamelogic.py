@@ -8,6 +8,7 @@ from constants import *
 from class_vec2 import Vec2
 from constants import *
 import traceback
+import sys
 
 async def ClientLoop(client: Client, game: Game, current_player):
     # Client lobby ready loop
@@ -42,6 +43,7 @@ async def ClientLoop(client: Client, game: Game, current_player):
         async with game.reconnection_lock: await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
+    sys.stderr.write("DEBUG:: ServerLoop created\n")
     try:
         while await game.ClientsAreReady() == False:
             await asyncio.sleep(1)

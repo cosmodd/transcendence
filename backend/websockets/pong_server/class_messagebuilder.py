@@ -71,7 +71,7 @@ class MessageBuilder:
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-			DATA_INFO_TYPE_MESSAGE: "Reconnection...",
+			DATA_INFO_TYPE_MESSAGE: "Connection...",
 			DATA_PLAYER_STATE: DATA_PLAYER_READY if await client.IsReady() == True else DATA_PLAYER_NOT_READY,
 			DATA_LOBBY_BOTH_ARE_READY: are_clients_ready,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username),
@@ -85,7 +85,7 @@ class MessageBuilder:
 			OBJECT: OBJECT_LOBBY,
 			DATA_LOBBY_STATE: DATA_LOBBY_ROOM_RECONNECTED,
 			DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
-			DATA_INFO_TYPE_MESSAGE: "Opponent reconnected.",
+			DATA_INFO_TYPE_MESSAGE: "Opponent connected.",
 			DATA_LOBBY_BOTH_ARE_READY: are_clients_ready,
 			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
@@ -108,7 +108,7 @@ class MessageBuilder:
             DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
 			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
-            DATA_PLAYER: self.attached_game.connected[client_index].name,
+            DATA_PLAYER: self.attached_game.clients[client_index].name,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username)
 		})
 	
