@@ -39,7 +39,6 @@ ROUNDS_TO_COUNT = {
 #from django.core.management import call_command
 
 UsernameToRoomInstance = UsernameToRoom()
-UsernameToTournamentInstance = UsernameToRoom()
 USERNAME_TO_CURRENTLY_QUEUING = {}
 connected_clients = asyncio.Queue()
 background_rooms = set()
@@ -83,21 +82,17 @@ async def HandlerClient(websocket, event):
     	# Tournament - player is active but not in a game
         if (await IsUserActiveInTournament(client.username)):
             # TODO:
-            #   - BETTER TOURNAMENT CREATION HANDLER 
+            #   - Launch next round
             #   - terminate model
-            #   - and del UsernameToTournamentInstance[username]
 
             tournament = None
             # Creation
-            if (await UsernameToTournamentInstance.HasInDict(client.username) == False):
+            if (await TournamentNeedsToBeCreated(client.username))
                 tournament = await TournamentCreatorHandler(client)
-                await UsernameToTournamentInstance.AddToDict(client.username, tournament)
-            # Launch next round
+            # Waiting for next round exceptions
             else:
-                tournament = await UsernameToTournamentInstance.GetFromDict(client.username)
-                if (await tournament.IsLauchingNextRoundNecessary() == False):
-                    await AlreadyConnectedException(client)
-                    # WAITING FOR NEXT TOURNAMENT ROUND EXCEPTION 
+                await AlreadyConnectedException(client)
+                #TODO
 
             await TournamentLaunchGamesForRound(tournament)
 
@@ -189,6 +184,14 @@ async def NewRoom(clients, game_type, tournament):
         for i in range(len(clients_usernames)):
             await UsernameToRoomInstance.DeleteInDict(clients[i].username)
             sys.stderr.write("DEBUG:: removed a client to USERNAME_TO_GAME\n")
+
+		# Launch next round
+        # TODO: terminal model
+        if (tournament != None and tournament.IsLaunchingNextRoundNecessary()):
+		    self.round += 1
+			await TournamentLaunchGamesForRound(tournament)
+
+
     except Exception as e:
         logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
         traceback.print_exc()

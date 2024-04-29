@@ -138,6 +138,5 @@ class Game:
 		await self.model.asave()
 
 		if (self.model.type == DATA_LOBBY_GAME_TYPE_TOURNAMENT):
-			await self.attached_tournament.LaunchNextRoundIfNecessary()
 			loser = self.clients[0] if (self.score[PLAYER1].score < self.score[PLAYER2].score) else self.clients[1]
 			await self.attached_tournament.RemoveClient(loser)
