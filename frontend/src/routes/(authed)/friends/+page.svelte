@@ -4,9 +4,27 @@
 	import GameInvite from "$lib/components/chat/GameInvite.svelte";
 	import { user } from "$lib/stores/user";
 	import { onMount } from "svelte";
+    import { authedFetch } from "$lib/stores/auth";
+	
+	let list_conversation = {};
+	let selected_conversation : string = "";
 
-	const usernames = ["difool", "rookie", "n00b", "papafrita"];
-	let selected = usernames[0];
+	async function loadConversationList() {
+		console.log("Loading conversation list");
+		const response = await authedFetch("/api/list_conversation/").catch(_ => null);
+		const data = await response?.json().catch(_ => null);
+		console.log(data);
+		if (data) {
+			list_conversation = data;
+		} else {
+			console.log("Failed to load conversation list");
+		}
+	}
+	loadConversationList();
+
+	const usernames = ["Sarah", "David", "Emma", "Michael"];
+
+	let selected = "";
 
 	$: messages = [
 		{
