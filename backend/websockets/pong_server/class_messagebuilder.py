@@ -53,7 +53,7 @@ class MessageBuilder:
 				self.attached_game.score[DATA_PLAYER_PLAYER1].score,
 				self.attached_game.score[DATA_PLAYER_PLAYER2].score
 			], 
-			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added
+			DATA_TIME: ((datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added) if self.attached_game.start_time != 0 else 0
 		})
 	
 	def PausedGame(self):
@@ -75,7 +75,7 @@ class MessageBuilder:
 			DATA_PLAYER_STATE: DATA_PLAYER_READY if await client.IsReady() == True else DATA_PLAYER_NOT_READY,
 			DATA_LOBBY_BOTH_ARE_READY: are_clients_ready,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username),
-			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
+			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type + " " + self.attached_game.attached_tournament.round if self.attached_game.attached_tournament != None else "",
 			DATA_PLAYER: client.name,
 			DATA_TIME: (datetime.datetime.now() - self.attached_game.start_time).total_seconds() - self.attached_game.pause_time_added if await self.attached_game.ClientsAreReady() else 0
 		})
@@ -107,7 +107,7 @@ class MessageBuilder:
             DATA_LOBBY_STATE: DATA_LOBBY_ROOM_CREATED,
             DATA_INFO_TYPE: DATA_INFO_TYPE_MESSAGE,
             DATA_INFO_TYPE_MESSAGE: "Room found: " + str(self.attached_game.room_id),
-			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type,
+			DATA_LOBBY_GAME_TYPE: self.attached_game.model.type + " " + self.attached_game.attached_tournament.round if self.attached_game.attached_tournament != None else "",
             DATA_LOBBY_ROOM_ID: self.attached_game.room_id,
             DATA_PLAYER: client.name,
 			DATA_OPPONENT_USERNAME: self.attached_game.OpponentUsernameOf(client.username)

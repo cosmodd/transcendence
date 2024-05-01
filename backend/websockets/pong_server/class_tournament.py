@@ -107,6 +107,7 @@ class Tournament:
 		# Remove last active client
 		await self.model.active_players.aremove(winner)
 		await self.model.past_players.aadd(winner)
+		self.model.winner = winner
 		await self.model.asave()
 
 		

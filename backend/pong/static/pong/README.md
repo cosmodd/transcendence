@@ -20,10 +20,6 @@ Les clients:
   - Wrong username error
 
 - Client
-  - UI - lobby info 
-  - [feature] tournament round info
-  - [bug] ui not really showing at connection
-  - [bug] score+names missing at reconnection
 
 ### Tournament
 - [view] create && add

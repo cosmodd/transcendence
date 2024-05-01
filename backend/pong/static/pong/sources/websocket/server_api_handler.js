@@ -8,6 +8,11 @@ import { OverlayReadyButtonShow, OverlayReadyButtonHide, OverlayChangeUsernames 
 
 let ServerAPI = {};
 
+document.addEventListener("DOMContentLoaded", function() {
+    ServerAPI.InitConnection();
+});
+
+
 ServerAPI.InitConnection = function()
 {
 	ServerAPI.websocket = new WebSocket("ws://" + window.location.hostname + ":8888");
@@ -192,6 +197,7 @@ ServerAPI.UpdateLobbyStateRoomReconnected = function(event)
 		ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 		ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));
 		ServerAPI.opponent_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(0.9, 0.)) : NewPaddleState(new Vec2(-0.9, 0.));
+		OverlayChangeUsernames(event[ServerAPI.DATA_OPPONENT_USERNAME], ServerAPI.iam);
 	}
 
 	if (event[ServerAPI.DATA_LOBBY_BOTH_ARE_READY] === true)

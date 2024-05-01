@@ -151,6 +151,7 @@ async def ConnectExpectedClient(reconnecting_client):
                     await sender.ToAll(await game.MessageBuilder.OpponentReconnected(await game.ClientsAreReady()), game.connected)
                     logger.debug("DEBUG:: found room, ready to reconnect")
                     await c.ws.send(await game.MessageBuilder.Reconnection(c, await game.ClientsAreReady()))
+                    await c.ws.send(game.MessageBuilder.Score())
                     game.match_is_paused = False
                     if await game.ClientsAreReady():
                         game.pause_time_added += (datetime.now() - game.pause_timer).total_seconds()
@@ -204,7 +205,7 @@ async def NewRoom(clients, game_type, tournament = None):
                 sys.stderr.write("DEBUG:: terminating tournament model IS necessary\n")
                 await tournament.TerminateModel()
                 return
-            sys.stderr.write("DEBUG:: terminating tournament model IS necessary\n")
+            sys.stderr.write("DEBUG:: terminating tournament model IS NOT necessary\n")
             tournament.SetRoundToNextOne()
             await TournamentLaunchGamesForRound(tournament)
 
