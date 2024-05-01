@@ -14,19 +14,16 @@ Les clients:
 #### Specific
 - Server
   - [feature] Lobby time limit (5 minutes)
-  - Tournament logic
-  - [error] signed in a tournament 
+  - [refactor] Waiting room method
 
 - View
   - Wrong username error
 
-- Models
-  - Tournament
-
 - Client
   - UI - lobby info 
-  - [bug] paddle wrong side
-  - [bug] score missing at reconnection
+  - [feature] tournament round info
+  - [bug] ui not really showing at connection
+  - [bug] score+names missing at reconnection
 
 ### Tournament
 - [view] create && add

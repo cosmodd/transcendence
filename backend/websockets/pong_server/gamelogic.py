@@ -48,6 +48,7 @@ async def ClientLoop(client: Client, game: Game, current_player):
 async def ServerLoop(game: Game):
     sys.stderr.write("DEBUG:: ServerLoop created\n")
     try:
+        sys.stderr.write("DEBUG:: Beginning game\n")
         while await game.ClientsAreReady() == False:
             await asyncio.sleep(1)
 
@@ -55,6 +56,7 @@ async def ServerLoop(game: Game):
         game.ball.Reset(Vec2(-1., 0.))
         game.ball.collided = True
         game.start_time = datetime.now()
+        game.match_is_running = True
 
         for i in range(len(game.clients)):
             await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
@@ -119,12 +121,18 @@ async def ServerLoop(game: Game):
 
  
 async def HandleDisconnection(game: Game):
-    sys.stderr.write("IN HANDLE DISCONNECTION")
     # Check if any client has disconnected
     newly_disconnected = [c for c in game.connected if c.ws.closed]
+
+    # Removing disconnected clients from connected list
     for c in newly_disconnected:
         game.connected.remove(c)
-    game.disconnected = newly_disconnected
+
+	# Keeping clients that didnt connected a single time
+    not_connected_yet = [c for c in game.disconnected if c.ws == None] 
+
+    game.disconnected = newly_disconnected + not_connected_yet
+
     # Both connected
     if (len(game.connected) == 2):
         return 
@@ -141,7 +149,8 @@ async def HandleDisconnection(game: Game):
     # Send disconnection message
     for c in newly_disconnected:
         for cc in game.connected:
-            await sender.Error(cc.ws, "Opponent disconnected.")
+            if not cc.ws.closed:
+                await sender.Error(cc.ws, "Opponent disconnected.")
 
 async def LastPlayerDisconnection(game: Game):
     # Reconnection happened

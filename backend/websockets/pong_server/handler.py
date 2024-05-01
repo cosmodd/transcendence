@@ -81,19 +81,13 @@ async def HandlerClient(websocket, event):
     
     	# Tournament - player is active but not in a game
         if (await IsUserActiveInTournament(client.username)):
-            # TODO:
-            #   - Launch next round
-            #   - terminate model
-
             tournament = None
-            # Waiting room
-            if (await TournamentNeedsToBeCreated(client.username) == False):
-                await AlreadyConnectedException(client)
-                #TODO
-
+            if (await IsItTournamentFirstConnection(client.username) == False):
+                await InATournamentException(client)
             tournament = await TournamentCreatorHandler(client)
             await TournamentLaunchGamesForRound(tournament)
 
+            # Waiting room
             async for message in websocket:
                 event = json.loads(message)
                 if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
@@ -144,7 +138,7 @@ async def ConnectExpectedClient(reconnecting_client):
     sys.stderr.write("ID in Reco: " + str(id(UsernameToRoomInstance)) + "\n")
     if reconnecting_client.username and await UsernameToRoomInstance.HasInDict(reconnecting_client.username):
         game = await UsernameToRoomInstance.GetFromDict(reconnecting_client.username)
-        logger.debug("DEBUG:: found room MAYBE RECONNECT")
+        logger.debug("DEBUG:: found room")
         # async with game.reconnection_lock:
         if len(game.disconnected) == 0:
             await AlreadyConnectedException(reconnecting_client)
@@ -186,11 +180,10 @@ async def NewRoom(clients, game_type, tournament = None):
         for i in range(len(clients)):
             sys.stderr.write("DEBUG:: adding a client to USERNAME_TO_GAME :" + clients[i].username + "\n")
             await UsernameToRoomInstance.AddToDict(clients[i].username, game)
-            if clients[i].ws != None:
+            if clients[i].ws != None and not clients[i].ws.closed:
                 await clients[i].ws.send(game.MessageBuilder.NewRoomInfoFor(clients[i]))
 
-
-        sys.stderr.write("ID in NewRoom: " + str(id(UsernameToRoomInstance)))
+        sys.stderr.write("ID in NewRoom: " + str(id(UsernameToRoomInstance)) + "\n")
 
         await ServerLoop(game)
 
@@ -198,15 +191,25 @@ async def NewRoom(clients, game_type, tournament = None):
             await UsernameToRoomInstance.DeleteInDict(clients[i].username)
             sys.stderr.write("DEBUG:: removed a client to USERNAME_TO_GAME\n")
 
-		# Launch next round
-        # TODO: terminate model
+		# Closing connections and reset clients state
+        for client in clients:
+            if client.ws is not None:
+                await client.ws.close()
+            await client.SetReadyState(False)
+
+        # Tournament - launching next round or terminate model
         if (tournament != None and await tournament.IsLaunchingNextRoundNecessary()):
-            tournament.round += 1
+            sys.stderr.write("DEBUG:: launching next round IS necessary\n")
+            if (tournament.IsTerminatingModelNecessary()):
+                sys.stderr.write("DEBUG:: terminating tournament model IS necessary\n")
+                await tournament.TerminateModel()
+                return
+            sys.stderr.write("DEBUG:: terminating tournament model IS necessary\n")
+            tournament.SetRoundToNextOne()
             await TournamentLaunchGamesForRound(tournament)
 
-
     except Exception as e:
-        logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
+        logger.debug(f"An exception of type {type(e).__name__} occurred (in NewRoom)")
         traceback.print_exc()
  
 async def RemoveClientFromQueue(client):
@@ -225,6 +228,10 @@ async def RemoveClientFromQueue(client):
 
 async def AlreadyConnectedException(client):
     await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "Already present in a lobby."}));
+    raise Exception("Client already present in a lobby.")
+
+async def InATournamentException(client):
+    await client.ws.send(json.dumps({METHOD: FROM_SERVER, OBJECT: OBJECT_INFO, DATA_INFO_TYPE: DATA_INFO_TYPE_ERROR, DATA_INFO_TYPE_ERROR: "You are signed in a tournament. Please wait for other games to finish."}));
     raise Exception("Client already present in a lobby.")
 
 async def GetUserFromToken(token):
@@ -246,14 +253,16 @@ async def TournamentLaunchGamesForRound(tournament):
     for i in range(games_count):
         client1 = tournament.clients[i*2]
         client1.name = PLAYER1
+        sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Added " + client1.username + "\n")
         client2 = tournament.clients[i*2+1]
         client2.name = PLAYER2
+        sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Added " + client2.username + "\n")
         try:
             room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, tournament))
             tournament.rooms_tasks.add(room)
             room.add_done_callback(tournament.rooms_tasks.discard)
         except Exception as e:
-            sys.stderr.write(f"An exception of type {type(e).__name__} occurred")
+            sys.stderr.write(f"An exception of type {type(e).__name__} occurred\n")
             traceback.print_exc()
 
     sys.stderr.write("DEBUG:: Tournament games launched for round : " + str(tournament.round) + "\n")

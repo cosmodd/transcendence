@@ -23,7 +23,7 @@ ROUNDS = {
 	ROUND_FINAL: ROUND_FINAL
 }
 
-async def TournamentNeedsToBeCreated(username) -> bool:
+async def IsItTournamentFirstConnection(username) -> bool:
 	tournament = await TournamentModel.objects.filter(active_players__username=username).aget()
 	active_players_count = 0
 	async for user in AccountModel.objects.filter(active_tournaments__id=tournament.id).all():
@@ -60,6 +60,12 @@ class Tournament:
 		if (self.model.size == 'eight'):
 			return ROUND_QUARTER
 		return ROUND_SEMI
+	
+	def SetRoundToNextOne(self):
+		if (self.round == ROUND_QUARTER):
+			self.round = ROUND_SEMI
+		elif (self.round == ROUND_SEMI):
+			self.round = ROUND_FINAL
 
 	async def InitClients(self, original_client):
 		clients = []
@@ -86,21 +92,22 @@ class Tournament:
 		current_round_ended_games = 0 
 		async for i in self.model.games.filter(status='over', round=self.round).all():
 			current_round_ended_games += 1
+		sys.stderr.write("DEBUG:: current round ended games : " + str(current_round_ended_games) + "\n")
+		sys.stderr.write("DEBUG:: ROUNDS_TO_COUNT : " + str(ROUNDS_TO_COUNT[self.round]) + "\n")
 		return (current_round_ended_games == ROUNDS_TO_COUNT[self.round])
+	
+	def IsTerminatingModelNecessary(self):
+		return (self.round == ROUND_FINAL)
 
-	async def LaunchNextRoundIfNecessary(self):
-		current_round_ended_games = 0 
-		async for i in self.model.games.filter(status='over', round=self.round).all():
-			current_round_ended_games += 1
-		if (current_round_ended_games != ROUNDS_TO_COUNT[self.round]):
-			return
-		
-		self.round += 1
-		if (self.round not in ROUNDS):
-			sys.stderr.write("DEBUG:: Tournament over, terminating model")
-			#self.TerminateModel()
-			return
-
+	async def TerminateModel(self):
+		# Set status
+		self.model.status = 'over'
+		# Set winner
+		winner = await self.model.active_players.aget(username=self.clients[0].username)
+		# Remove last active client
+		await self.model.active_players.aremove(winner)
+		await self.model.past_players.aadd(winner)
+		await self.model.asave()
 
 		
 

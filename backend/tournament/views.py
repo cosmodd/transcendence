@@ -84,6 +84,7 @@ class SpecificTournamentView(generics.RetrieveAPIView):
 			'name': tournament.name,
 			'id': tournament.id,
 			'status': tournament.status,
+			'winner': tournament.winner,
 			'size': tournament.size,
 			'active_players': [user.username for user in tournament.active_players.all()],
 			'past_players': [user.username for user in tournament.past_players.all()],

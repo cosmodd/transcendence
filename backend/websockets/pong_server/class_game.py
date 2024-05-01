@@ -9,6 +9,7 @@ from pong.models import Score as ScoreModel
 from users.models import Account as AccountModel
 from class_tournament import ROUND_QUARTER, ROUND_SEMI, ROUND_FINAL
 from asgiref.sync import sync_to_async
+import sys
 
 __all__ = ["PLAYER1", "PLAYER2", "Game"]
 
@@ -88,16 +89,17 @@ class Game:
 	def OpponentUsernameOf(self, username: str):
 		return self.clients[0].username if username != self.clients[0].username else self.clients[1].username
 
-
 	def InitClients(self, clients):
 		self.clients = clients
 		self.connected = []
 		self.disconnected = []
 		for client in clients:
-			if client.ws != None:
-				self.connected.append(client)
-			else:
+			if client.ws == None or client.ws.closed:
+				sys.stderr.write("DEBUG::" + client.username + " added to disconnected\n")
 				self.disconnected.append(client)
+			else:
+				sys.stderr.write("DEBUG::" + client.username + " added to connected\n")
+				self.connected.append(client)
 
 	def InitAttachedTournament(self, tournament):
 		self.attached_tournament = tournament
