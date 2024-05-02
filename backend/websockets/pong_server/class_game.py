@@ -128,6 +128,9 @@ class Game:
 		if (self.canceled):
 			self.model.status = 'canceled'
 			await self.model.asave()
+			if (self.model.type == DATA_LOBBY_GAME_TYPE_TOURNAMENT):
+				loser = self.clients[0] if (self.score[PLAYER1].score < self.score[PLAYER2].score) else self.clients[1]
+				await self.attached_tournament.RemoveClient(loser)
 			return
 
 		if (self.game_ended_with_timeout):

@@ -65,7 +65,7 @@ class Tournament(models.Model):
 	)
 	SIZE_CHOICES = (
 		('four', 'Four'),
-		('height', 'Height')
+		('eight', 'Eight')
 	)
 
 	name = models.CharField(max_length=100)

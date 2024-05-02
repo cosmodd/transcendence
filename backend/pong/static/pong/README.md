@@ -25,6 +25,7 @@ Les clients:
 - [view] create && add
   - only authorized
   - only 'looking_for_players'
+- [views] rename / refactor
 
 #### General
 - WSS
