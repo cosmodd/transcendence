@@ -14,7 +14,6 @@ Les clients:
 #### Specific
 - Server
   - [feature] Lobby time limit (5 minutes)
-  - [refactor] Waiting room method
   
 Channels
   - [feature][->] warn users expected for next game
@@ -25,6 +24,7 @@ Channels
 
 #### General
 - WSS
+- Clean
 
 ### Maybe
 - Stacking toasters

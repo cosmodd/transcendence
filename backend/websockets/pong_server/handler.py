@@ -2,8 +2,8 @@
 #debug
 import logging
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.DEBUG)
+# logger.addHandler(logging.StreamHandler())
 import traceback
 import os
 import django
@@ -86,22 +86,8 @@ async def HandlerClient(websocket, event):
                 await InATournamentException(client)
             tournament = await TournamentCreatorHandler(client)
             await TournamentLaunchGamesForRound(tournament)
-
             # Waiting room
-            async for message in websocket:
-                event = json.loads(message)
-                if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
-                    break 
-            game = await UsernameToRoomInstance.GetFromDict(client.username)
-            try:
-                await ClientLoop(client, game, event[DATA_PLAYER])
-                await client.ws.close()
-                raise websockets.ConnectionClosed(1000, 'Normal closure')
-            except websockets.ConnectionClosed as e:
-                raise websockets.ConnectionClosed(1000, 'Normal closure')
-            except Exception as e:
-                logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
-                traceback.print_exc()
+            await HandlerClientWaitingRoom(websocket, client, False)
 
         # Normal queue
         if client.username in USERNAME_TO_CURRENTLY_QUEUING:
@@ -109,14 +95,26 @@ async def HandlerClient(websocket, event):
         await connected_clients.put(client)
         USERNAME_TO_CURRENTLY_QUEUING[client.username] = True
 
-        # Searching match
+        # Waiting Room
+        await HandlerClientWaitingRoom(websocket, client, True)
+
+	# Client left 
+    except Exception as e:
+        logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
+        traceback.print_exc()
+        await RemoveClientFromQueue(client)
+
+# Waiting room (waiting for opponent or lobby creation)
+async def HandlerClientWaitingRoom(websocket, client, is_casual_queue: bool):
         async for message in websocket:
             event = json.loads(message)
             if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
+
         game = await UsernameToRoomInstance.GetFromDict(client.username)
         try:
-            del USERNAME_TO_CURRENTLY_QUEUING[client.username]
+            if (is_casual_queue):
+                del USERNAME_TO_CURRENTLY_QUEUING[client.username]
             await ClientLoop(client, game, event[DATA_PLAYER])
             await client.ws.close()
             raise websockets.ConnectionClosed(1000, 'Normal closure')
@@ -126,11 +124,6 @@ async def HandlerClient(websocket, event):
             logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
             traceback.print_exc()
 
-	# Client left 
-    except Exception as e:
-        logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
-        traceback.print_exc()
-        await RemoveClientFromQueue(client)
 
 async def ConnectExpectedClient(reconnecting_client):
     global UsernameToRoomInstance
