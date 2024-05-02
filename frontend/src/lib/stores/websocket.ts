@@ -2,28 +2,41 @@ import { writable } from 'svelte/store';
 import WebSocket from 'ws';
 import { authToken } from './auth';
 
-const socket = new WebSocket(`ws://localhost:8000/ws/chat/`, { headers: {
-    Authorization: `Bearer ${authToken()}`
-} });
+export const wsConnectionStatus = writable<'connected' | 'disconnected' | 'error'>('disconnected');
+export const messages = writable<Array<{ sender: string, message: string, room_name: string }>>([]);
+let socket: WebSocket | null = null;
 
-export const websocket = writable(socket);
+function initWebsocket() {
+	socket = new WebSocket(`ws://localhost:8000/ws/chat/`, { headers: {
+		Authorization: `Bearer ${authToken()}`
+	} });
 
-socket.onopen = () => {
-  console.log('WebSocket connection established');
-};
+	socket.onopen = () => {
+		wsConnectionStatus.set('connected');
+		console.log('Connected to websocket');
+	};
 
-socket.onclose = () => {
-  console.log('WebSocket connection closed');
-};
+	socket.onmessage = (event) => {
+		const data = JSON.parse(event.data.toString());
+		messages.update((msgs) => [...msgs, data]);
+	};
 
-socket.onerror = (error) => {
-  console.error('WebSocket error:', error);
-};
+	socket.onclose = () => {
+		wsConnectionStatus.set('disconnected');
+		console.log('Disconnected from websocket');
+	};
 
-socket.onmessage = (event) => {
-  console.log('WebSocket message:', event.data);
-};
+	socket.onerror = () => {
+		wsConnectionStatus.set('error');
+		console.log('Error in websocket connection');
+	};
+}
+initWebsocket();
 
-export const send = (data: string) => {
-  socket.send(data);
-};
+export function sendMessage(message: string, room_name: string) {
+	if (socket) {
+		socket.send(JSON.stringify({ message, room_name }));
+	} else {
+		console.log('Websocket not connected');
+	}
+}
