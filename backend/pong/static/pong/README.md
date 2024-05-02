@@ -20,6 +20,7 @@ Les clients:
   - Wrong username error
 
 - Client
+  - [bug] ui not loading #anger
 
 ### Tournament
 - [view] create && add
