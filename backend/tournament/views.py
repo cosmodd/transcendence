@@ -7,8 +7,10 @@ import traceback
 
 class FillTournamentView(generics.CreateAPIView):
 	serializer_class = FillTournamentSerializer
-	# permission_classes = [permissions.IsAuthenticated]
-	permission_classes = [permissions.AllowAny]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def perform_create(self, serializer):
+		serializer.save(user=self.request.user)
 
 	def post(self, request, *args, **kwargs):
 		serializer = self.get_serializer(data=request.data)
@@ -17,21 +19,20 @@ class FillTournamentView(generics.CreateAPIView):
 			if serializer.is_valid():
 				serializer.save()
 				return Response({
-					"id": request.data['id'],
-					"name": request.data['name'],
-					"active_player": request.data['active_player']
+					"id": request.data['id']
 				}, status=status.HTTP_201_CREATED)
 			else:
 				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 		except Exception as e:
-			# logger.debug(f"An exception of type {type(e).__name__} occurred (in tournament.views)")
 			traceback.print_exc()
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateTournamentView(generics.CreateAPIView):
 	serializer_class = CreateTournamentSerializer
-	# permission_classes = [permissions.IsAuthenticated]
-	permission_classes = [permissions.AllowAny]
+	permission_classes = [permissions.IsAuthenticated]
+
+	def perform_create(self, serializer):
+		serializer.save(user=self.request.user)
 
 	def post(self, request, *args, **kwargs):
 		serializer = self.get_serializer(data=request.data)
@@ -42,8 +43,7 @@ class CreateTournamentView(generics.CreateAPIView):
 				return Response({
 					"id": tournament.id,
 					"name": tournament.name,
-					"size": tournament.size,
-					"active_player": request.data['active_player']
+					"size": tournament.size
 				}, status=status.HTTP_201_CREATED)
 			else:
 				return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

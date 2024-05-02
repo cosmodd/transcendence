@@ -15,18 +15,13 @@ Les clients:
 - Server
   - [feature] Lobby time limit (5 minutes)
   - [refactor] Waiting room method
-
-- View
-  - Wrong username error
+  
+Channels
+  - [feature][->] warn users expected for next game
+  - [feature][<-] receive NewRoom orders 
 
 - Client
   - [bug] ui not loading #anger
-
-### Tournament
-- [view] create && add
-  - only authorized
-  - only 'looking_for_players'
-- [views] rename / refactor
 
 #### General
 - WSS

@@ -5,6 +5,8 @@ from users.models import Account
 from users.serializers import ProfileSerializer
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework import status
+import traceback
 
 def index(request):
 	return render(request, "pong/index.html")
@@ -18,22 +20,26 @@ class UserGameList(generics.RetrieveAPIView):
         return Account.objects.get(username=self.kwargs['username'])
 
     def get(self, request, *args, **kwargs):
-        user = self.get_object()
-        games = Game.objects.filter(players=user)
-        games_list = []
-        for game in games:
-            players_names = [player.username for player in game.players.all()]
-            scores = game.scores.all()
-            scores_str = [score.score for score in scores]
-            games_list.append(
-                {
-					"players": players_names,
-                    "type": game.type,
-                    "status": game.status,
-                    "scores": scores_str,
-                    "winner": game.winner.username if game.winner else None,
-                    "timeout": game.ended_with_timeout,
-                    "date_begin": game.date_begin
-                }
-            )
-        return Response({"games": games_list})
+        try:
+            user = self.get_object()
+            games = Game.objects.filter(players=user)
+            games_list = []
+            for game in games:
+                players_names = [player.username for player in game.players.all()]
+                scores = game.scores.all()
+                scores_str = [score.score for score in scores]
+                games_list.append(
+                    {
+                        "players": players_names,
+                        "type": game.type,
+                        "status": game.status,
+                        "scores": scores_str,
+                        "winner": game.winner.username if game.winner else None,
+                        "timeout": game.ended_with_timeout,
+                        "date_begin": game.date_begin
+                    }
+                )
+            return Response({"games": games_list}, status=status.HTTP_200_OK)
+        except Exception as e:
+            traceback.print_exc()
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
