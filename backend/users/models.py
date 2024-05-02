@@ -1,9 +1,9 @@
-from typing import Any
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-import pyotp, qrcode
-import sys, os
+from .storage import OverwriteStorage
+import pyotp, qrcode, os
+
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, email, username, password=None, login_intra=None, display_name=None):
@@ -31,10 +31,11 @@ class MyAccountManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
 
-def profile_image(instance):
-    if not os.path.exists(f'./users/static/users/profile_images/{instance.id}/'):
-        os.makedirs(f'./users/static/users/profile_images/{instance.id}/')
-    return f'./users/static/users/profile_images/{instance.id}/'
+def profile_image(instance, filename):
+    # if not os.path.exists(f'./users/static/users/profile_images/{instance.id}/'):
+    #     os.makedirs(f'./users/static/users/profile_images/{instance.id}/')
+    extension = filename.split('.')[-1]
+    return f'./users/static/users/profile_images/{instance.username}.{extension}'
 
 def default_profile_image():
     return './users/static/users/profile_images/default.jpg'
@@ -50,7 +51,7 @@ class Account(AbstractBaseUser):
     username        = models.CharField(max_length=32, unique=True)
     display_name    = models.CharField(max_length=32, unique=False)
     login_intra     = models.CharField(max_length=32, unique=True, null=True, blank=True)
-    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
+    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image, storage=OverwriteStorage())
 
     # 2FA fields
     enabled_2FA     = models.BooleanField(default=False)

@@ -5,9 +5,40 @@
 	import { faPen } from "@fortawesome/free-solid-svg-icons";
 	import { Fa } from "svelte-fa";
 
+	let avatarAlert: string = "";
 	let displayNameAlert: string = "";
 	let passwordAlert: string = "";
 	let processing: boolean = false;
+
+	function handleAvatarUpdate(event: SubmitEvent) {
+		const target = event.target as HTMLFormElement;
+		const data = new FormData(target);
+
+		processing = true;
+		authedFetch("/api/profile/update/", {
+			method: "PATCH",
+			body: data,
+		}).then(async (response) => {
+			const json = await response.json();
+			processing = false;
+
+			if (!response.ok) {
+				for (const [key, value] of Object.entries(json)) {
+					const field = key.replace(/_/g, " ").replace(/(?<=\b)\w/g, (c) => c.toUpperCase());
+					avatarAlert = `${field}: ${value}`;
+				}
+				return;
+			}
+
+			avatarAlert = "";
+			if ($user.profile_image !== json.profile_image) $user.profile_image = json.profile_image;
+			else fetch($user.profile_image as string);
+
+			// Close modal
+			const modalInstance = bootstrap.Modal.getInstance(document.getElementById("avatarModal"));
+			if (modalInstance) modalInstance.hide();
+		});
+	}
 
 	function handleUpdateDisplayName(event: SubmitEvent) {
 		const target = event.target as HTMLFormElement;
@@ -145,20 +176,20 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 			</div>
 			<div class="modal-body p-4">
-				<form action="#">
+				{#if avatarAlert}
+					<div class="alert alert-danger" role="alert">{avatarAlert}</div>
+				{/if}
+				<form action="#" enctype="multipart/form-data" on:submit|preventDefault={handleAvatarUpdate}>
 					<div class="mb-3">
 						<label for="avatar" class="form-label visually-hidden">Upload new avatar</label>
-						<input type="file" class="form-control" id="avatar" />
+						<input type="file" class="form-control" id="avatar" name="profile_image" required />
 					</div>
 					<button
 						type="submit"
 						class="btn btn-primary d-flex flex-row gap-2 align-items-center fw-bold w-100 justify-content-center"
 					>
 						{#if processing}
-							<div
-								class="spinner-border spinner-border-sm spinner-grow-sm"
-								role="status"
-							>
+							<div class="spinner-border spinner-border-sm spinner-grow-sm" role="status">
 								<span class="visually-hidden">Loading...</span>
 							</div>
 						{:else}
@@ -203,10 +234,7 @@
 						class="btn btn-primary d-flex flex-row gap-2 align-items-center fw-bold w-100 justify-content-center"
 					>
 						{#if processing}
-							<div
-								class="spinner-border spinner-border-sm spinner-grow-sm"
-								role="status"
-							>
+							<div class="spinner-border spinner-border-sm spinner-grow-sm" role="status">
 								<span class="visually-hidden">Loading...</span>
 							</div>
 						{:else}
@@ -239,10 +267,7 @@
 						class="btn btn-primary d-flex flex-row gap-2 align-items-center fw-bold w-100 justify-content-center"
 					>
 						{#if processing}
-							<div
-								class="spinner-border spinner-border-sm spinner-grow-sm"
-								role="status"
-							>
+							<div class="spinner-border spinner-border-sm spinner-grow-sm" role="status">
 								<span class="visually-hidden">Loading...</span>
 							</div>
 						{:else}

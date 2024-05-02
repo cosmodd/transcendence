@@ -14,8 +14,7 @@ export function login(accessToken: string, refreshToken: string): void {
 export function authedFetch(url: RequestInfo | URL, options?: RequestInit): Promise<Response> {
 	return fetch(url, Object.assign({
 		headers: {
-			'Authorization': `Bearer ${get(authStore)?.accessToken}`,
-			'Content-Type': 'application/json'
+			'Authorization': `Bearer ${get(authStore)?.accessToken}`
 		}
 	}, options));
 }
