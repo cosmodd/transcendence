@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 ServerAPI.InitConnection = function()
 {
-	ServerAPI.websocket = new WebSocket("ws://" + window.location.hostname + ":8888");
+	ServerAPI.websocket = new WebSocket("wss://" + window.location.hostname + ":8888");
 
 	// Events
 	ServerAPI._InitGame();

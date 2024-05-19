@@ -46,8 +46,9 @@ services:
     networks:
       - transcendence
     ports:
-      - 80:80
-      - 3000:80
+      # - 80:80
+      # - 3000:80
+      - 443:443
     restart: unless-stopped
     depends_on:
       - django

@@ -23,8 +23,4 @@ Channels
   - [bug] ui not loading #anger
 
 #### General
-- WSS
 - Clean
-
-### Maybe
-- Stacking toasters

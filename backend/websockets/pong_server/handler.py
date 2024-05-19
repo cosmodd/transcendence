@@ -2,11 +2,12 @@
 #debug
 import logging
 logger = logging.getLogger()
-# logger.setLevel(logging.DEBUG)
-# logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler())
 import traceback
 import os
 import django
+import ssl
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 django.setup()
 import asyncio
@@ -45,7 +46,9 @@ background_rooms = set()
 
 async def main():
     asyncio.ensure_future(Matchmaking())
-    async with websockets.serve(Handler, "0.0.0.0", 8888):
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_context.load_cert_chain('/cert.pem', '/key.pem')
+    async with websockets.serve(Handler, "0.0.0.0", 8888, ssl=ssl_context):
         await asyncio.Future()  # run forever
 
 # Create room if enough new clients
