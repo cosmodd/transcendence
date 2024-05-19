@@ -68,10 +68,18 @@ async def Handler(websocket):
     message = await websocket.recv()
     event = json.loads(message)
 
+	# Casual
     if event[METHOD] == FROM_CLIENT:
         await HandlerClient(websocket, event)
 
-    # if from chat_server
+    # Invitation
+    if event[METHOD] == "from_backend":
+        client1 = Client(None, event[DATA_PLAYER_PLAYER1])
+        client2 = Client(None, event[DATA_PLAYER_PLAYER2])
+        client1.name, client2.name = PLAYER1, PLAYER2
+        room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_DUEL, None))
+        background_rooms.add(room)
+        room.add_done_callback(background_rooms.discard)
 
 async def HandlerClient(websocket, event):
     global UsernameToRoomInstance
