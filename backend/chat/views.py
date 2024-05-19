@@ -17,13 +17,11 @@ class RoomView(APIView):
         for room in rooms:
             last_message = room.get_last_message()
             data.append({
-                'room': room.name,
+                'room_name': room.name,
                 'last_message': last_message.message if last_message else None,
                 'last_message_sender': last_message.sender.username if last_message else None,
                 'chatting_with': room.get_members().exclude(username=request.user.username).first().username
             })
-        if not data:
-            return Response({'info': 'No rooms found'}, status=200)
         return Response(data)
 
 class RoomMessagesView(APIView):
@@ -40,10 +38,14 @@ class RoomMessagesView(APIView):
             data.append({
                 'sender': message.sender.username,
                 'message': message.message,
-                'timestamp': message.timestamp
+                'timestamp': message.timestamp,
+                'room_name': room.name,
+                'message_type': message.message_type,
+                'is_accepted': True if message.status == 'accepted' else False
             })
-        if not data:
-            return Response({'info': 'No message in this conversation'}, status=200)
+        # print(data, file=sys.stderr)
+        # if not data:
+        #     return Response({'info': 'No message in this conversation'}, status=200)
         return Response(data)
     
 class ChatView(APIView):

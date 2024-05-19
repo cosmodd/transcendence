@@ -35,6 +35,7 @@ APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'channels',
     'pong',
     'core',
@@ -52,8 +53,6 @@ INSTALLED_APPS = [
     'chat',
 ]
 
-ASGI_APPLICATION = 'core.asgi.application'
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -63,7 +62,7 @@ REST_FRAMEWORK = {
 SECRET_KEY = "secret"
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
@@ -179,9 +178,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-FR'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
@@ -205,3 +204,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # model used for User
 AUTH_USER_MODEL = "users.Account"
+
+ASGI_APPLICATION = 'core.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+

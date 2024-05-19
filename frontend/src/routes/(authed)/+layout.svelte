@@ -6,12 +6,16 @@
 	import NavLink from "$lib/components/NavLink.svelte";
 	import Fa from "svelte-fa";
 	import { faBell, faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
+	import "$lib/stores/websocket";
+	import NotificationGame from "$lib/components/notification/NotificationGame.svelte";
 
 	function logoutButton() {
 		logout();
 		goto("/login");
 	}
 </script>
+
+<NotificationGame />
 
 <div class="container-fluid d-flex flex-column vh-100">
 	<nav class="navbar navbar-expand mb-2">

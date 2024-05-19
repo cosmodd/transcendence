@@ -35,7 +35,21 @@ class RoomMessages(models.Model):
     message = models.TextField()
     # unread = models.BooleanField(default=False, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    # add a message type to know if the message is a simple text or an invitation to join a pong party
+    Message_Choices = [
+        ('text', 'text'),
+        ('invitation', 'invitation'),
+        ('tournament', 'tournament'),
+    ]
+    message_type = models.CharField(max_length=10, choices=Message_Choices, default='text')
+    Status_Choices = [
+        ('pending', 'pending'),
+        ('accepted', 'accepted'),
+        ('rejected', 'rejected'),
+        ('expired', 'expired'),
+    ]
+    status = models.CharField(max_length=10, choices=Status_Choices, blank=True, null=True)
+    
 
     def __str__(self):
         return self.message
-    
