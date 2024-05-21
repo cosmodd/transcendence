@@ -34,7 +34,8 @@ class Game:
 		self.pause_timer = 0
 		self.pause_time_added = 0
 		self.game_ended_with_timeout = False
-		self.match_is_running = True
+		# self.match_is_running = True
+		self.match_is_running = False
 		self.match_is_paused = False
 		self.someone_scored = False
 		self.canceled = False
@@ -83,6 +84,19 @@ class Game:
 
 	async def ClientsAreReady(self):
 		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
+			return True
+		return False
+
+	async def ClientsAreReadyAndConnected(self):
+		if (await self.clients[0].IsReady() == True and await self.clients[1].IsReady() == True):
+			if (self.clients[0].ws.open and self.clients[1].ws.open):
+				return True
+		return False
+
+
+	async def OneOfClientsIsConnected(self):
+		for client in self.clients:
+			if client.ws != None and not client.ws.closed:
 				return True
 		return False
 	

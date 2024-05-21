@@ -22,7 +22,6 @@ async def ClientLoop(client: Client, game: Game, current_player):
                     break 
 
     if client.ws.closed:
-        # async with game.reconnection_lock: await HandleDisconnection(game)
         await HandleDisconnection(game)
         return
 
@@ -42,14 +41,18 @@ async def ClientLoop(client: Client, game: Game, current_player):
                     return
 
     if client.ws.closed:
-        # async with game.reconnection_lock: await HandleDisconnection(game)
         await HandleDisconnection(game)
 
 async def ServerLoop(game: Game):
     sys.stderr.write("DEBUG:: ServerLoop created\n")
     try:
         sys.stderr.write("DEBUG:: Beginning game\n")
-        while await game.ClientsAreReady() == False:
+        game.start_time = datetime.now()
+        while await game.ClientsAreReadyAndConnected() == False:
+            if await game.OneOfClientsIsConnected():
+                game.start_time = datetime.now()
+            if (datetime.now() - game.start_time).total_seconds() >= 30:
+                raise Exception("Lobby waiting time expired")
             await asyncio.sleep(1)
 
         last_update_time = datetime.now()
@@ -121,6 +124,8 @@ async def ServerLoop(game: Game):
 
  
 async def HandleDisconnection(game: Game):
+    old_disconnected = game.disconnected
+
     # Check if any client has disconnected
     newly_disconnected = [c for c in game.connected if c.ws.closed]
 
@@ -131,7 +136,7 @@ async def HandleDisconnection(game: Game):
 	# Keeping clients that didnt connected a single time
     not_connected_yet = [c for c in game.disconnected if c.ws == None] 
 
-    game.disconnected = newly_disconnected + not_connected_yet
+    game.disconnected = newly_disconnected + not_connected_yet + old_disconnected
 
     # Both connected
     if (len(game.connected) == 2):
