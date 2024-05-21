@@ -16,12 +16,21 @@ class RoomView(APIView):
         data = []
         for room in rooms:
             last_message = room.get_last_message()
-            data.append({
-                'room_name': room.name,
-                'last_message': last_message.message if last_message else None,
-                'last_message_sender': last_message.sender.username if last_message else None,
-                'chatting_with': room.get_members().exclude(username=request.user.username).first().username
-            })
+            #check if the user is chatting with himself if so, add his username to the chatting_with field
+            if room.members.count() == 1:
+                data.append({
+                    'room_name': room.name,
+                    'last_message': last_message.message if last_message else None,
+                    'last_message_sender': last_message.sender.username if last_message else None,
+                    'chatting_with': request.user.username
+                })
+            else:
+                data.append({
+                    'room_name': room.name,
+                    'last_message': last_message.message if last_message else None,
+                    'last_message_sender': last_message.sender.username if last_message else None,
+                    'chatting_with': room.members.exclude(username=request.user.username).first().username
+                })
         return Response(data)
 
 class RoomMessagesView(APIView):

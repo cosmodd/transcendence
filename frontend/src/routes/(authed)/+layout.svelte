@@ -13,6 +13,7 @@
 		logout();
 		goto("/login");
 	}
+	console.log("user", $user);
 </script>
 
 <NotificationGame />

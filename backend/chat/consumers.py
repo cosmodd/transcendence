@@ -181,6 +181,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'is_accepted': True
                 }
             )
+        #create a new room for the game
+        player1 = room_members[0]
+        player2 = room_members[1]
+        await self.create_game_room(player1, player2)
 
     async def get_user_from_token(self, token):
         try:
@@ -222,3 +226,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message.status = status
                 message.save()
                 return
+            
+    async def create_game_room(self, player1, player2):
+        import websockets
+        import json
+        import ssl
+
+        METHOD = "Method"
+        DATA_PLAYER_PLAYER1 = "p1"
+        DATA_PLAYER_PLAYER2 = "p2"
+        print(f"Player1: {player1}", file=sys.stderr)
+        print(f"Player2: {player2}", file=sys.stderr)
+
+        uri = "wss://localhost:8888"
+        ssl_context = ssl._create_unverified_context()
+        async with websockets.connect(uri, ssl=ssl_context) as websocket:
+            message = json.dumps({
+                METHOD: "from_backend",
+                DATA_PLAYER_PLAYER1: player1.username,
+                DATA_PLAYER_PLAYER2: player2.username,
+            })
+            await websocket.send(message)
+    
+    async def tournament_notification(self, player1, player2):
+        pass

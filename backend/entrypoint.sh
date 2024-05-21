@@ -15,10 +15,14 @@ echo "Migrating..."
 python manage.py migrate
 echo "Migrations done"
 
+# collect static files
+# python manage.py collectstatic
+
 # Websockets servers
-# echo "Starting websocket server in the background..."
-# ./websockets/pong_server/launch_pong_server.sh &
+echo "Starting websocket server in the background..."
+./websockets/pong_server/launch_pong_server.sh &
 export DJANGO_SETTINGS_MODULE=core.settings
+
 # Start server
-# python manage.py runserver 0.0.0.0:8000
-daphne -b 0.0.0.0 -p 8001 core.asgi:application
+python manage.py runserver 0.0.0.0:8000
+#daphne -b 0.0.0.0 -p 8001 core.asgi:application
