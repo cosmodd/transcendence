@@ -21,7 +21,7 @@ async function loadUser(fetch: Function) {
 	user.set(data);
 }
 
-export async function load({ fetch, url }) {
-	if (!isAuthed()) throw redirect(302, '/login');
+export async function load({ fetch }) {
+	if (!isAuthed()) redirect(302, '/login');
 	await loadUser(fetch);
 }
