@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { user } from "$lib/stores/user";
+	import { page } from "$app/stores";
 	import MatchSummary from "$lib/components/profile/GameSummary.svelte";
+	import { authedFetch } from "$lib/stores/auth";
+	import { user } from "$lib/stores/user";
 	import {
 		faBan,
 		faFaceFrown,
@@ -10,92 +12,128 @@
 		faTrophy,
 		faUserPlus,
 	} from "@fortawesome/free-solid-svg-icons";
+	import { onDestroy, onMount } from "svelte";
 	import Fa from "svelte-fa";
 
-	let userStatistics: any = {};
+	let userData: any = null;
+	let games: any[] = [];
 
-	userStatistics.gamesPlayed = 100;
-	userStatistics.gamesWon = Math.floor(Math.random() * 100);
-	userStatistics.gamesLost = userStatistics.gamesPlayed - userStatistics.gamesWon;
-	userStatistics.winRate = userStatistics.gamesWon / userStatistics.gamesPlayed;
+	$: queriedUsername = $page.params.user;
+	$: self = queriedUsername == null || $user.username == queriedUsername;
 
-	const maxScore = 10;
-	const games = Array.from({ length: 30 }, (_, i) => {
-		const firstScore = Math.floor(Math.random() * maxScore);
-		const secondScore = maxScore - firstScore;
 
-		const date = new Date();
-		date.setDate(date.getDate() - i);
+	async function loadUser() {
+		if (self) {
+			userData = $user;
+			return;
+		}
 
-		return {
-			scores: [
-				{ username: $user.display_name, score: firstScore },
-				{ username: "random", score: secondScore },
-			],
-			type: ["casual", "tournament"][Math.floor(Math.random() * 2)],
-			date: date.toISOString(),
-		} as {
-			scores: { username: string; score: number }[];
-			type: "casual" | "tournament";
-			date: string;
-		};
-	});
+		const response = await authedFetch(`/api/user/${queriedUsername}/`);
 
-	console.log(games);
+		if (!response.ok) {
+			userData = null;
+			return;
+		}
+
+		userData = await response.json();
+	}
+
+	function loadGames() {
+		if (userData == null) return;
+
+		const username = userData.username;
+
+		authedFetch(`/api/pong/${username}/`).then(async (response) => {
+			if (!response.ok) return;
+			games = (await response.json())?.games ?? [];
+		});
+	}
+
+	$: {
+		queriedUsername;
+		loadUser().then(() => loadGames());
+	}
 </script>
 
-<div class="row h-100 m-0 gap-3">
-	<div class="col-3 card border-2 p-4 gap-3">
-		<div class="d-flex flex-column align-items-center">
-			<img src={$user.profile_image} class="rounded-circle" style="width: 100px; height: 100px;" alt="Avatar" />
-			<h3 class="m-0 mt-2 fw-bold">{$user.display_name}</h3>
-			<p class="m-0 text-muted">@{$user.username}</p>
-			<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
+{#if userData == null}
+	<div class="d-flex flex-column justify-content-center align-items-center h-100 gap-2">
+		<div class="d-flex align-items-center gap-3">
+			<h2>User not found</h2>
+			<Fa icon={faFaceFrown} size="2x" />
 		</div>
-		<hr class="m-0" />
-		<div class="d-flex flex-column gap-2">
-			<h5>Statistics</h5>
-			<div class="d-flex justify-content-between">
-				<div class="col d-flex gap-2 align-items-center">
-					<Fa icon={faGamepad} />
-					<p class="m-0">Games Played</p>
-				</div>
-				<p class="m-0">{userStatistics.gamesPlayed}</p>
+		<a href="/"><button class="btn btn-primary">Go back</button></a>
+	</div>
+{:else}
+	<div class="row h-100 m-0 gap-3">
+		<div class="col-3 card border-2 p-4 gap-3">
+			<div class="d-flex flex-column align-items-center">
+				<img
+					src={userData.profile_image}
+					class="rounded-circle"
+					style="width: 100px; height: 100px;"
+					alt="Avatar"
+				/>
+				<h3 class="m-0 mt-2 fw-bold">{userData.display_name}</h3>
+				<p class="m-0 text-muted">@{userData.username}</p>
+				<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
 			</div>
-			<div class="d-flex justify-content-between">
-				<div class="col d-flex gap-2 align-items-center">
-					<Fa icon={faTrophy} />
-					<p class="m-0">Wins</p>
+			<hr class="m-0" />
+			<div class="d-flex flex-column gap-2">
+				<h5>Statistics</h5>
+				<div class="d-flex justify-content-between">
+					<div class="col d-flex gap-2 align-items-center">
+						<Fa icon={faGamepad} />
+						<p class="m-0">Games Played</p>
+					</div>
+					<p class="m-0">{games.length}</p>
 				</div>
-				<p class="m-0">{userStatistics.gamesWon}</p>
-			</div>
-			<div class="d-flex justify-content-between">
-				<div class="col d-flex gap-2 align-items-center">
-					<Fa icon={faFaceFrown} />
-					<p class="m-0">Losses</p>
+				<div class="d-flex justify-content-between">
+					<div class="col d-flex gap-2 align-items-center">
+						<Fa icon={faTrophy} />
+						<p class="m-0">Wins</p>
+					</div>
+					<p class="m-0">{games.filter((game) => game.winner == userData.username).length}</p>
 				</div>
-				<p class="m-0">{userStatistics.gamesLost}</p>
-			</div>
-			<div class="d-flex justify-content-between">
-				<div class="col d-flex gap-2 align-items-center">
-					<Fa icon={faStar} />
-					<p class="m-0">Win Rate</p>
+				<div class="d-flex justify-content-between">
+					<div class="col d-flex gap-2 align-items-center">
+						<Fa icon={faFaceFrown} />
+						<p class="m-0">Losses</p>
+					</div>
+					<p class="m-0">{games.filter((game) => game.winner != userData.username).length}</p>
 				</div>
-				<p class="m-0">{Math.floor(userStatistics.winRate * 100)}%</p>
+				<div class="d-flex justify-content-between">
+					<div class="col d-flex gap-2 align-items-center">
+						<Fa icon={faStar} />
+						<p class="m-0">Win Rate</p>
+					</div>
+					<p class="m-0">
+						{((games.filter((game) => game.winner == userData.username).length / games.length) * 100).toFixed(
+							2,
+						)}%
+					</p>
+				</div>
 			</div>
+			{#if !self}
+				<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
+					<button class="btn btn-success w-100"><Fa icon={faUserPlus} class="me-1" />Add friend</button>
+					<button class="btn btn-primary w-100"><Fa icon={faMessage} class="me-1" />Message</button>
+					<button class="btn btn-danger w-100"><Fa icon={faBan} class="me-1" />Block</button>
+				</div>
+			{/if}
 		</div>
-		<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
-			<button class="btn btn-success w-100"><Fa icon={faUserPlus} class="me-1" />Add friend</button>
-			<button class="btn btn-primary w-100"><Fa icon={faMessage} class="me-1" />Message</button>
-			<button class="btn btn-danger w-100"><Fa icon={faBan} class="me-1" />Block</button>
+		<div class="col card border-2 h-100 p-3">
+			{#if games.length == 0}
+				<div class="d-flex justify-content-center align-items-center h-100">
+					<h3 class="text-muted">No games played</h3>
+				</div>
+			{:else}
+				<h3 class="fw-bold mb-3">Games History</h3>
+				<div class="container-fluid overflow-y-scroll d-flex flex-column gap-1 p-0">
+					{#each games.reverse() as game}
+						<MatchSummary {game} user={userData} />
+					{/each}
+				</div>
+			{/if}
 		</div>
 	</div>
-	<div class="col card border-2 h-100 p-0">
-		<h1 class="h3 fw-bold p-3 m-0">Games History</h1>
-		<div class="container-fluid overflow-y-scroll d-flex flex-column gap-1">
-			{#each games as game}
-				<MatchSummary scores={game.scores} date={new Date(game.date)} type={game.type} />
-			{/each}
-		</div>
-	</div>
-</div>
+{/if}

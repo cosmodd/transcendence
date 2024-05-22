@@ -1,3 +1,4 @@
+import sys
 from django.http import JsonResponse
 from django.shortcuts import render
 from .models import Game, Score
@@ -25,7 +26,13 @@ class UserGameList(generics.RetrieveAPIView):
             games = Game.objects.filter(players=user)
             games_list = []
             for game in games:
-                players_names = [player.username for player in game.players.all()]
+                if game.status != 'over':
+                    continue
+
+                players_names = [{
+                     "username": player.username,
+                     "display_name": player.display_name
+                } for player in game.players.all()]
                 scores = game.scores.all()
                 scores_str = [score.score for score in scores]
                 games_list.append(

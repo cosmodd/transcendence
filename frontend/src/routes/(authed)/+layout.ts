@@ -24,6 +24,4 @@ async function loadUser(fetch: Function) {
 export async function load({ fetch, url }) {
 	if (!isAuthed()) throw redirect(302, '/login');
 	await loadUser(fetch);
-
-	if (url.pathname === '/') throw redirect(302, '/play');
 }

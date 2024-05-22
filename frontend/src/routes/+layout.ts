@@ -5,8 +5,5 @@ import { redirect } from "@sveltejs/kit";
 export const ssr = false;
 
 export async function load({ url }) {
-	if (url.pathname === "/") {
-		if (!isAuthed()) goto("/login");
-		else goto("/play");
-	}
+	if (!isAuthed()) goto("/login");
 }

@@ -176,7 +176,23 @@ class UserProfile(generics.RetrieveAPIView):
     lookup_field = 'username'
 
     def get_object(self):
-        return Account.objects.get(username=self.kwargs['username'])
+        try:
+            return Account.objects.get(username=self.kwargs['username'])
+        except Account.DoesNotExist:
+            return None
+    
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+
+        if user is None:
+            return Response({"message": "User not found"}, status=404)
+
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "profile_image": user.profile_image.url[6:],
+            "display_name": user.display_name
+        })
 
 # update user profile
 class UpdateProfileView(generics.UpdateAPIView):

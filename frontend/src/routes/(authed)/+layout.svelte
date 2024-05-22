@@ -13,7 +13,6 @@
 		logout();
 		goto("/login");
 	}
-	console.log("user", $user);
 </script>
 
 <NotificationGame />
@@ -27,22 +26,13 @@
 			</a>
 			<ul class="navbar-nav justify-content-center update-active">
 				<li class="nav-item">
-					<NavLink href="/play">Play</NavLink>
+					<NavLink href="/" strict>Play</NavLink>
 				</li>
 				<li class="nav-item">
 					<NavLink href="/friends">Friends</NavLink>
 				</li>
 			</ul>
 			<div class="d-flex justify-content-end col-2">
-				<!-- TODO: Implement a search feature to find people's profile -->
-				<!-- <form class="d-flex gap" role="search">
-					<input
-						class="form-control"
-						type="search"
-						placeholder="Search"
-						aria-label="Search"
-					/>
-				</form> -->
 				<div class="dropdown profile">
 					<button
 						type="button"
