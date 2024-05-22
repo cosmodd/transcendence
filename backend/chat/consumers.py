@@ -8,6 +8,7 @@ from .models import Rooms, RoomMessages
 from asgiref.sync import sync_to_async
 import json, sys
 from channels.db import database_sync_to_async
+from users.models import Account
 import asyncio
 
 
@@ -61,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
         sender = event['sender']
-        room_name = event['room_name']
+        room_name = event.get('room_name', '')
         message_type = event.get('message_type', 'text')
         timestamp = event.get('timestamp', None)
         is_accepted = event.get('is_accepted', False)
@@ -248,5 +249,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
             })
             await websocket.send(message)
     
-    async def tournament_notification(self, player1, player2):
-        pass
+    #a function that will be used outside the django project to send a notification to 2 users
+    async def send_notification(self, receiver1, receiver2):
+        receiver1 = await self.get_user_from_username(receiver1)
+        receiver2 = await self.get_user_from_username(receiver2)
+        await self.channel_layer.group_send(
+            f'chat_{receiver1.id}',
+            {
+                'type': 'chat_message',
+                'message': 'You are waiting for your next tournament match',
+                'sender': 'system',
+                'message_type': 'notification'
+            }
+        )
+        await self.channel_layer.group_send(
+            f'chat_{receiver2.id}',
+            {
+                'type': 'chat_message',
+                'message': 'You are waiting for your next tournament match',
+                'sender': 'system',
+                'message_type': 'notification'
+            }
+        )
+    
+    @database_sync_to_async
+    def get_user_from_username(self, username):
+        return Account.objects.get(username=username)

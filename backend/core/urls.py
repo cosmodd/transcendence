@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/', include('pong.urls')),
     path('api/', include('chat.urls')),
     path('api/', include('tournament.urls')),
+    path('api/', include('friend.urls')),
 ]
 
 if settings.DEBUG:

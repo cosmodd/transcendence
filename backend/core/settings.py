@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'daphne',
     'channels',
     'users',
+    'friend',
     'pong',
     'core',
     'tournament',
