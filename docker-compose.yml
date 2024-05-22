@@ -26,6 +26,7 @@ services:
     env_file: .env
     volumes:
       - ./backend:/app
+      - ./certification:/certification
     networks:
       - transcendence
     ports:
@@ -49,6 +50,7 @@ services:
       - 443:443
     volumes:
       - ./frontend:/app
+      - ./certification:/certification
     restart: unless-stopped
     depends_on:
       - django

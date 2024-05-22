@@ -12,10 +12,11 @@ Les clients:
 ## Todo
 
 #### Specific
-- SSL
-  - un seul certificat
+- Game
+  - [bug] ball stuck on one side
+  - [bug] ready while disco -> added timer
 
-Channels
+- Channels
   - [feature][->] warn users expected for next game
 
 - Client

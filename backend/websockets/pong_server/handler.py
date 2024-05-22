@@ -47,7 +47,7 @@ background_rooms = set()
 async def main():
     asyncio.ensure_future(Matchmaking())
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain('/cert.pem', '/key.pem')
+    ssl_context.load_cert_chain('/certification/cert.pem', '/certification/key.pem')
     async with websockets.serve(Handler, "0.0.0.0", 8888, ssl=ssl_context):
         await asyncio.Future()  # run forever
 
