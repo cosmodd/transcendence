@@ -182,7 +182,7 @@
 				<form action="#" enctype="multipart/form-data" on:submit|preventDefault={handleAvatarUpdate}>
 					<div class="mb-3">
 						<label for="avatar" class="form-label visually-hidden">Upload new avatar</label>
-						<input type="file" class="form-control" id="avatar" name="profile_image" required />
+						<input type="file" class="form-control" id="avatar" name="profile_image" accept="image/*" required />
 					</div>
 					<button
 						type="submit"

@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from .storage import OverwriteStorage
 import pyotp, qrcode, os
 
 
@@ -32,10 +31,15 @@ class MyAccountManager(BaseUserManager):
         user.is_superuser = True
 
 def profile_image(instance, filename):
-    # if not os.path.exists(f'./users/static/users/profile_images/{instance.id}/'):
-    #     os.makedirs(f'./users/static/users/profile_images/{instance.id}/')
+    # Ensure that the profile_images folder exists
+    if not os.path.exists('./users/static/users/profile_images/'):
+        os.makedirs('./users/static/users/profile_images/')
+
     extension = filename.split('.')[-1]
-    return f'./users/static/users/profile_images/{instance.username}.{extension}'
+    timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
+
+    return f'./users/static/users/profile_images/{instance.id}_{timestamp}.{extension}'
+
 
 def default_profile_image():
     return './users/static/users/profile_images/default.jpg'
@@ -51,7 +55,7 @@ class Account(AbstractBaseUser):
     username        = models.CharField(max_length=32, unique=True)
     display_name    = models.CharField(max_length=32, unique=False)
     login_intra     = models.CharField(max_length=32, unique=True, null=True, blank=True)
-    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image, storage=OverwriteStorage())
+    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
 
     # 2FA fields
     enabled_2FA     = models.BooleanField(default=False)
@@ -74,6 +78,18 @@ class Account(AbstractBaseUser):
     # This is what it returns when you don't access to a specific field
     def __str__(self):
         return f"{self.username} <Account>"
+    
+    def save(self, *args, **kwargs):
+
+        # If the user exists in the database
+        if self.pk:
+            old_user = Account.objects.get(pk=self.pk)
+
+            # Delete old profile image
+            if old_user.profile_image != self.profile_image:
+                old_user.profile_image.delete(save=False)
+
+        super(Account, self).save(*args, **kwargs)
 
     def has_perm(self, perm, obj=None):
         return self.is_admin
