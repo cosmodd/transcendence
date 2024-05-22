@@ -36,7 +36,7 @@
 		}
 
 		login(responseData["access"], responseData["refresh"]);
-		goto("/play");
+		goto("/");
 	}
 </script>
 
