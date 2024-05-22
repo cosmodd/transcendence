@@ -1,7 +1,7 @@
 import { Vec2 } from "../utils/class_vec.js";
 import * as k from "../utils/constants_objects.js";
 import * as D from "../utils/defines.js"
-import { OverlayInit, score_node1, score_node2 } from '../ui/overlay.js';
+import { score_node1, score_node2 } from '../ui/overlay.js';
 import Paddle from "./class_paddle.js";
 import Ball from "./class_ball.js"
 import DataOrigin from "../utils/data_origin.js";
@@ -27,7 +27,6 @@ class Game {
 			ServerAPI.InitConnection();
 			Timer.DisplayTimer();
 		}
-		OverlayInit();
 	}
 
 	async SetupPlayer(color = null, position = new Vec2(0.0, 0.0))
@@ -63,25 +62,25 @@ class Game {
 	UpdatePositions()
 	{
 		// Get data from server or interpolate
-		this.player.UpdatePosition(this.delta_time);
-		this.opponent.UpdatePosition(this.delta_time);
-		this.ball.UpdatePosition(this.delta_time);
+		if (this.player != null) this.player.UpdatePosition(this.delta_time);
+		if (this.opponent != null) this.opponent.UpdatePosition(this.delta_time);
+		if (this.ball != null) this.ball.UpdatePosition(this.delta_time);
 	}
 
 	UpdateUniforms()
 	{
-		this.player.UpdateUniform();
-		this.opponent.UpdateUniform();
-		this.ball.UpdateUniform();
+		if (this.player != null) this.player.UpdateUniform();
+		if (this.opponent != null) this.opponent.UpdateUniform();
+		if (this.ball != null) this.ball.UpdateUniform();
 	}
 
 	Draw()
 	{
 		score_node1.nodeValue = this.score[0];
 		score_node2.nodeValue = this.score[1];
-		this.player.Draw();
-		this.opponent.Draw();
-		this.ball.Draw();
+		if (this.player != null) this.player.Draw();
+		if (this.opponent != null) this.opponent.Draw();
+		if (this.ball != null) this.ball.Draw();
 	}
 
 	async UpdateScore()

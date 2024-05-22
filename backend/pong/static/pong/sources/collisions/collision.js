@@ -155,6 +155,9 @@ Collision.BallWall = function(game, ball) {
 }
 
 Collision.PaddleWall = function(paddle) {
+    if (paddle == null)
+        return ;
+
     paddle.ComputeBoundingbox();
 
     if (paddle.boundingbox_top * paddle.scaling_factor[1] > 1.)

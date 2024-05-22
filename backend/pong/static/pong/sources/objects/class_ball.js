@@ -77,6 +77,9 @@ class Ball extends Mesh {
 
     UpdateUniform()
 	{
+		if (this.attached_shader.program == null)	  
+			return ;
+
         this.gl.useProgram(this.attached_shader.program);
         this.gl.uniform2f(
             this.gl.getUniformLocation(this.attached_shader.program, "uEntityPosition"),

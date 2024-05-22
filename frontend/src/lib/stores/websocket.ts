@@ -24,7 +24,7 @@ let token = authToken();
 
 function initWebsocket() {
 
-	socket = new WebSocket(`/ws/chat/${token}/`);
+	socket = new WebSocket(`wss://localhost/ws/chat/${token}/`);
 
 	socket.onopen = () => {
 		wsConnectionStatus.set('connected');

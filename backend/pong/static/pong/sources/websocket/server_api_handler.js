@@ -1,17 +1,15 @@
 import { Vec2 } from '../utils/class_vec.js';
 import { NewPaddleState } from './objects_state.js'
 import { PrintInfo, PrintError, PrintInfoMessage } from '../ui/info.js';
-import { SetCookie, DeleteCookie, GetCookie } from '../utils/cookie.js'
 import Timer from "../utils/timer.js";
 import * as k from "../utils/constants_objects.js"
-import { OverlayReadyButtonShow, OverlayReadyButtonHide, OverlayChangeUsernames } from '../ui/overlay.js';
+import { OverlayReadyButtonShow, OverlayReadyButtonHide, OverlayChangeUsernames, OverlayRefresh, OverlayShowSearching } from '../ui/overlay.js';
 
 let ServerAPI = {};
 
 document.addEventListener("DOMContentLoaded", function() {
     ServerAPI.InitConnection();
 });
-
 
 ServerAPI.InitConnection = function()
 {
@@ -35,6 +33,7 @@ ServerAPI._InitGame = function()
 		}
 		ServerAPI.websocket.send(JSON.stringify(event));
 		PrintInfoMessage("Searching for players...")
+		OverlayShowSearching();
 	});
 }
 
@@ -193,6 +192,8 @@ ServerAPI.UpdateLobbyStateRoomEnded = function(event)
 
 ServerAPI.UpdateLobbyStateRoomReconnected = function(event)
 {
+	OverlayRefresh();
+
 	if (event.hasOwnProperty(ServerAPI.DATA_PLAYER)) {
 		ServerAPI.iam = event[ServerAPI.DATA_PLAYER];
 		ServerAPI.player_state = (ServerAPI.iam === ServerAPI.DATA_PLAYER_PLAYER1) ? NewPaddleState(new Vec2(-0.9, 0.)) : NewPaddleState(new Vec2(0.9, 0.));

@@ -49,7 +49,14 @@ export function OverlayInit()
 	score_node1.nodeValue = 0;
 	score_node2.nodeValue = 0;
 	Timer.DisplayTimer();
-	ready_node.nodeValue = 'Searching...'
+	if (ready_node.nodeValue != 'Press when ready.\n') {
+		ready_node.nodeValue = 'Searching...';
+	}
+}
+
+export function OverlayShowSearching()
+{
+	ready_node.nodeValue = 'Searching...';
 }
 
 export function OverlayReadyButtonOnlineListener()
@@ -81,11 +88,8 @@ export function OverlayReadyButtonLocalListener(game)
 
 export function OverlayReadyButtonHide()
 {
-	document.getElementById('glcanvas').classList.remove('blur-5');
-	time_element.classList.remove('blur-5');
-	score_element1.classList.remove('blur-5');
-	score_element2.classList.remove('blur-5');
-	ready_element.classList.add("opacity-0");
+	document.getElementById('blurcul').classList.remove('blur-5');
+	document.getElementById('ready').classList.add("opacity-0");
 }
 
 export function OverlayReadyButtonShow(game_type = "", opponent_username = "")
@@ -97,4 +101,28 @@ export function OverlayReadyButtonShow(game_type = "", opponent_username = "")
 	ready_element.classList.remove("btn-primary");
 	ready_element.classList.add("btn-warning");
 	ready_node.nodeValue = new_nodevalue;
+}
+
+export function OverlayRefresh()
+{
+	score_element1 = document.getElementById("score1");
+	score_element1.appendChild(score_node1);
+	score_element2 = document.getElementById("score2");
+	score_element2.appendChild(score_node2);
+
+	// Time
+	time_element = document.getElementById('time');
+	time_element.appendChild(time_node);
+
+	// Ready button
+	ready_element = document.getElementById('ready');
+	ready_element.appendChild(ready_node);
+
+	// Usernames
+	left_username_element = document.getElementById('left_username');
+	if (left_username_element != null)
+		left_username_element.appendChild(left_username_node);
+	right_username_element = document.getElementById('right_username');
+	if (right_username_element != null)
+		right_username_element.appendChild(right_username_node);
 }

@@ -1,17 +1,17 @@
-import { Vec3, Vec2 } from './utils/class_vec.js';
-import GameType from './utils/game_type.js';
-import Game from './objects/class_game.js';
-import Collision from './collisions/collision.js'
+import Collision from './collisions/collision.js';
 import { ResizeCanvas } from './events/resize.js';
-import Timer from './utils/timer.js'
-import { DebugDraw, DebugSetup } from './utils/debug.js';
-import * as k from './utils/constants_objects.js'
-import { OverlayReadyButtonLocalListener, OverlayReadyButtonOnlineListener, ready_element } from './ui/overlay.js';
+import Game from './objects/class_game.js';
+import { OverlayReadyButtonLocalListener, OverlayReadyButtonOnlineListener, OverlayInit } from './ui/overlay.js';
+import { Vec2, Vec3 } from './utils/class_vec.js';
+import GameType from './utils/game_type.js';
+import ServerAPI from './websocket/server_api_handler.js';
 
 let gl = null;
 let gl_canvas = null;
 
 let game;
+
+globalThis.ServerAPI = ServerAPI;
 
 async function Init(game_type) {
     gl_canvas = document.getElementById("glcanvas");
@@ -23,6 +23,8 @@ async function Init(game_type) {
     await game.SetupPlayer(new Vec3(13 / 255, 110 / 255, 253 / 255), new Vec2(-0.9, 0.));
     await game.SetupOpponent(new Vec3(220 / 255, 53 / 255, 69 / 255), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
+
+	OverlayInit();
 
     if (game_type === GameType.Online)
         OverlayReadyButtonOnlineListener();

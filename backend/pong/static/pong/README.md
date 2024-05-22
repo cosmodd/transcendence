@@ -23,5 +23,4 @@ Les clients:
   - [bug] ui not loading #anger
 
 #### General
-- Rename websockets folder
 - Clean

@@ -56,6 +56,9 @@ class Mesh {
 	}
 
 	_SetupUniforms() {
+		if (this.attached_shader.program == null)	  
+			return ;
+
 		// Rendering data shared with the scaler
 		this.gl.useProgram(this.attached_shader.program);
 		let uScalingFactor = this.gl.getUniformLocation(this.attached_shader.program, "uScalingFactor");

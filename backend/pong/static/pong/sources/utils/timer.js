@@ -27,8 +27,8 @@ Timer.ChangeRemainingTime = function(new_remaining_time)
 
 Timer.DisplayTimer = function()
 {
-	var minutes = Math.floor(Timer.remaining_time / 60);
-	var secondes = Timer.remaining_time % 60;
+	var minutes = Math.max(0, Math.floor(Timer.remaining_time / 60));
+	var secondes = Math.max(0, Timer.remaining_time % 60);
 	time_node.nodeValue = ('0' + minutes).slice(-2) + ':' + ('0' + secondes).slice(-2);
 }
 
