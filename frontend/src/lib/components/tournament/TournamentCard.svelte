@@ -4,20 +4,18 @@
 
 	export let tournament: {
 		id: number;
-		name?: string;
-		players: string[];
-		maxPlayers: number;
+		name: string;
+		players_count: number;
+		size: "four" | "eight";
+		status: string;
 	};
-
-	const states = ["Waiting for players", "In progress"];
 </script>
 
-<div class="card p-4 d-flex flex-column gap-1 border-2">
-	<h4 class="m-0 fw-bold">{tournament.name || `Tournament ${tournament.id}`}</h4>
-	<!-- Tournament players with an icon in front -->
+<div class="card p-4 d-inline-flex flex-column gap-1 border-2">
+	<h4 class="m-0 fw-bold">{tournament.name ?? `Tournament ${tournament.id}`}</h4>
 	<div class="d-flex flex-row align-items-center gap-2 mb-2 text-muted">
 		<Fa icon={faUserGroup} />
-		<span>{tournament.players.length} / {tournament.maxPlayers} players</span>
+		<span>{tournament.players_count} / {tournament.size == "four" ? 4 : 8} players</span>
 	</div>
 	<a href="/tournament/{tournament.id}" class="btn btn-primary">
 		<Fa icon={faRightToBracket} />

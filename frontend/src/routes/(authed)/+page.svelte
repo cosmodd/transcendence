@@ -1,5 +1,5 @@
 <script>
-	import { faComputer, faPlay, faSquarePlus, faTrophy, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+	import { faComputer, faMagnifyingGlass, faPlay, faTrophy, faUserGroup } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
 </script>
 
@@ -12,13 +12,9 @@
 		<p class="card-text text-light">Play or create a new tournament</p>
 		<div class="d-flex flex-row gap-2">
 			<a class="btn btn-dark flex-fill" href="/tournament">
-				<Fa icon={faPlay} class="me-1" />
-				Play
+				<Fa icon={faMagnifyingGlass} class="me-1" />
+				Browse
 			</a>
-			<button class="btn btn-dark flex-fill">
-				<Fa icon={faSquarePlus} class="me-1" />
-				Create
-			</button>
 		</div>
 	</div>
 	<div

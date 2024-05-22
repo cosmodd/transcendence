@@ -1,42 +1,26 @@
 <script lang="ts">
 	import TournamentCard from "$lib/components/tournament/TournamentCard.svelte";
+    import { authedFetch } from "$lib/stores/auth";
+    import { onMount } from "svelte";
 
-	const names = [
-		"Battle Bash",
-		"Infinite Invitational",
-		"Battleground Brawl",
-		"Iron Fist",
-		"Brutal Brawl",
-		"Iron Fist",
-		"Extreme Encounter",
-		"Ocean Odyssey",
-		"Valiant Vendetta",
-		"Legendary Lethal League",
-		"Royal Rumble Challenge",
-		"Shadow Cup",
-		"Apocalypse Arena",
-		"Sovereign Settle",
-		"Colossal Combat",
-		"Chaos Frenzy",
-		"Interdimensional Invitational",
-		"Carnage Cartel",
-		"Colossal Combat",
-		"Combat Chronicles",
-	];
+	interface Tournament {
+		name: string;
+		id: number;
+		status: string;
+		players_count: number;
+		size: "eight" | "four";
+	};
 
-	const tournaments = Array.from({ length: 30 }, (_, i) => {
-		const maxPlayers = Math.floor(Math.random() * 10) * 2 + 2;
-		return {
-			players: Array.from({ length: Math.floor(Math.random() * maxPlayers) }, (_, j) => `Player ${j + 1}`),
-			maxPlayers,
-			name: names[Math.floor(Math.random() * names.length)],
-			id: i,
-		};
+	let tournaments: Tournament[] = [];
+
+	onMount(async () => {
+		const response = await authedFetch("/api/tournament/");
+		tournaments = await response.json();
 	});
 </script>
 
 <div class="container h-100 d-flex flex-column">
-	<h1 class="fw-bold">Tournaments</h1>
+	<h1 class="fw-bold mb-3">Tournaments</h1>
 	<div class="tournaments h-100 overflow-y-auto gap-3">
 		{#each tournaments as tournament}
 			<TournamentCard {tournament} />
