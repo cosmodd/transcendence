@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('status', models.CharField(choices=[('in_progress', 'In progress'), ('over', 'Over'), ('canceled', 'Canceled')], default='in_progress', max_length=20)),
+                ('status', models.CharField(choices=[('in_progress', 'In progress'), ('over', 'Over'), ('cancelled', 'Cancelled')], default='in_progress', max_length=20)),
                 ('active_players', models.ManyToManyField(related_name='active_tournaments', to=settings.AUTH_USER_MODEL)),
                 ('games', models.ManyToManyField(related_name='tournament', to='pong.game')),
                 ('past_players', models.ManyToManyField(related_name='past_tournaments', to=settings.AUTH_USER_MODEL)),

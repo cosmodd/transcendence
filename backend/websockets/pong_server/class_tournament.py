@@ -90,7 +90,7 @@ class Tournament:
 	
 	async def IsLaunchingNextRoundNecessary(self):
 		current_round_ended_games = 0 
-		async for i in self.model.games.filter(status__in=['over', 'canceled'], round=self.round).all():
+		async for i in self.model.games.filter(status__in=['over', 'cancelled'], round=self.round).all():
 			current_round_ended_games += 1
 		sys.stderr.write("DEBUG:: current round ended games : " + str(current_round_ended_games) + "\n")
 		sys.stderr.write("DEBUG:: ROUNDS_TO_COUNT : " + str(ROUNDS_TO_COUNT[self.round]) + "\n")

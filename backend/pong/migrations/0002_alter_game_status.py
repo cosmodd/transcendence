@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='game',
             name='status',
-            field=models.CharField(choices=[('in_progress', 'In progress'), ('over', 'Over'), ('canceled', 'Canceled')], default='in_progress', max_length=20),
+            field=models.CharField(choices=[('in_progress', 'In progress'), ('over', 'Over'), ('cancelled', 'Cancelled')], default='in_progress', max_length=20),
         ),
     ]

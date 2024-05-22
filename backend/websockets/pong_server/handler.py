@@ -166,8 +166,8 @@ async def ConnectExpectedClient(reconnecting_client):
                 except websockets.ConnectionClosed as e:
                     raise websockets.ConnectionClosed(1000, 'Normal closure')
                 except IndexError as e :
-                    logger.debug(f"List index error (in reconnection): behavior: game is canceled")
-                    game.canceled = True
+                    logger.debug(f"List index error (in reconnection): behavior: game is cancelled")
+                    game.cancelled = True
                     await game.TerminateModel()
                 except Exception as e:
                     logger.debug(f"An exception occurred (in reconnection): {e}")

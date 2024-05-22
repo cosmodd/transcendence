@@ -5,7 +5,7 @@ class Game(models.Model):
 	STATUS_CHOICES = (
 		('in_progress', 'In progress'),
 		('over', 'Over'),
-		('canceled', 'Canceled'),
+		('cancelled', 'Cancelled'),
 	)
 	TYPE_CHOICES = (
 		('duel', 'Duel'),

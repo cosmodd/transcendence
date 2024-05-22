@@ -48,7 +48,7 @@ class Tournament(models.Model):
 		('looking_for_players', 'Looking for players'),
 		('in_progress', 'In progress'),
 		('over', 'Over'),
-		('canceled', 'Canceled')
+		('cancelled', 'Cancelled')
 	)
 	SIZE_CHOICES = (
 		('four', 'Four'),

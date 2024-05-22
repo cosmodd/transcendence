@@ -38,7 +38,7 @@ class Game:
 		self.match_is_running = False
 		self.match_is_paused = False
 		self.someone_scored = False
-		self.canceled = False
+		self.cancelled = False
 
 	# Players
 	def RegisterKeyInput(self, current_player, key):
@@ -139,8 +139,8 @@ class Game:
 		await self.score[PLAYER2].asave()
 
 	async def TerminateModel(self):
-		if (self.canceled):
-			self.model.status = 'canceled'
+		if (self.cancelled):
+			self.model.status = 'cancelled'
 			await self.model.asave()
 			if (self.model.type == DATA_LOBBY_GAME_TYPE_TOURNAMENT):
 				loser = self.clients[0] if (self.score[PLAYER1].score < self.score[PLAYER2].score) else self.clients[1]

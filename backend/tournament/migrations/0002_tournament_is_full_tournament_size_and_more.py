@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tournament',
             name='status',
-            field=models.CharField(choices=[('looking_for_players', 'Looking for players'), ('in_progress', 'In progress'), ('over', 'Over'), ('canceled', 'Canceled')], default='looking_for_players', max_length=20),
+            field=models.CharField(choices=[('looking_for_players', 'Looking for players'), ('in_progress', 'In progress'), ('over', 'Over'), ('cancelled', 'Cancelled')], default='looking_for_players', max_length=20),
         ),
     ]

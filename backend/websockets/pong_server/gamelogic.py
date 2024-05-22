@@ -118,7 +118,7 @@ async def ServerLoop(game: Game):
         await sender.ToAll(game.MessageBuilder.EndGame(), game.connected)
 
     except Exception as e:
-        game.canceled = True
+        game.cancelled = True
         await game.TerminateModel()
         traceback.print_exc()
 
@@ -145,7 +145,7 @@ async def HandleDisconnection(game: Game):
     if (len(game.connected) == 0):
         game.match_is_running = False
         game.match_is_paused = False
-        game.canceled = True
+        game.cancelled = True
         return 
     # One disconnection
     if (len(game.connected) == 1):
@@ -166,7 +166,7 @@ async def LastPlayerDisconnection(game: Game):
         if c.ws.closed:
             game.match_is_running = False
             game.match_is_paused = False
-            game.canceled = True
+            game.cancelled = True
     # Reconnection timeout
     if ((datetime.now() - game.pause_timer).total_seconds() >= kReconnectionWaitingTime):
         game.match_is_running = False
