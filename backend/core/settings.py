@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'tournament',
 	'rest_framework',
     'rest_framework_simplejwt',
-	'example_api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
