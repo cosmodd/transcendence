@@ -10,33 +10,52 @@ import json, sys
 from channels.db import database_sync_to_async
 from users.models import Account
 import asyncio
+from time import sleep
 
 
 class StatusOnline(AsyncWebsocketConsumer):
     async def connect(self):
-        # accept the connection if the user is authenticated
         token = self.scope.get('url_route', {}).get('kwargs', {}).get('token')
         user = await self.get_user_from_token(token)
-        if user.username == "":
+        if user.is_anonymous:
             await self.close()
-            return 
-        await self.close_old_connection(user)
-        #add all user in same group to know if they are online or not
-        self.room_group_name = 'online_status'
-        await self.channel_layer.group_add(
-            self.room_group_name,
+        else:
+            self.user = user
+            await self.channel_layer.group_add(
+                f'user_{self.user.id}',
+                self.channel_name
+            )
+            await self.set_user_status(self.user, True)
+            await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.set_user_status(self.user, False)
+        await self.channel_layer.group_discard(
+            f'user_{self.user.id}',
             self.channel_name
         )
-        await self.accept()
-        
-    async def disconnect(self, close_code):
-        pass
 
     async def receive(self, text_data):
         pass
 
-    async def status_online(self, event):
-        pass
+    async def set_user_status(self, user, is_online):
+        await sync_to_async(Account.objects.filter(pk=user.id).update)(
+            is_online=is_online
+        )
+        await self.channel_layer.group_send(
+            'online_status',
+            {
+                'type': 'user_status',
+                'user_id': user.id,
+                'is_online': is_online
+            }
+        )
+
+    async def user_status(self, event):
+        await self.send(text_data=json.dumps({
+            'user_id': event['user_id'],
+            'is_online': event['is_online']
+        }))
 
     async def get_user_from_token(self, token):
         try:
@@ -52,3 +71,4 @@ class StatusOnline(AsyncWebsocketConsumer):
                 return AnonymousUser()
         except:
             return AnonymousUser()
+        
