@@ -1,6 +1,7 @@
-import { redirect } from "@sveltejs/kit";
-import { authToken, authedFetch, isAuthed, logout, refreshAccessToken } from "$lib/stores/auth.js";
+import { authedFetch, isAuthed, logout, refreshAccessToken } from "$lib/stores/auth.js";
 import { user } from "$lib/stores/user.js";
+import { initWebsocket } from "$lib/stores/websocket";
+import { redirect } from "@sveltejs/kit";
 
 async function loadUser(fetch: Function) {
 	let response = await authedFetch('/api/user/');
@@ -24,4 +25,5 @@ async function loadUser(fetch: Function) {
 export async function load({ fetch }) {
 	if (!isAuthed()) redirect(302, '/login');
 	await loadUser(fetch);
+	initWebsocket();
 }

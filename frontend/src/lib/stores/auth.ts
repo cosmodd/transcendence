@@ -2,6 +2,7 @@ import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
 import { user } from "./user";
 import lodash from "lodash";
+import { socket } from "$lib/stores/websocket";
 
 function isJSON(str: any) {
 	// Check if the string is an empty string
@@ -64,6 +65,7 @@ export async function refreshAccessToken(): Promise<boolean> {
 }
 
 export function logout(): void {
+	socket?.close();
 	user.set({});
 	authStore.set(null);
 	localStorage.removeItem('auth');

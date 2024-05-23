@@ -17,17 +17,14 @@ export type Conversation = {
 	message_type?: string;
 };
 
-export const wsConnectionStatus = writable<'connected' | 'disconnected' | 'error'>('disconnected');
-let socket: WebSocket | null = null;
+export let socket: WebSocket | null = null;
 
-let token = authToken();
+export function initWebsocket() {
+	const token = authToken();
 
-function initWebsocket() {
-
-	socket = new WebSocket(`wss://localhost/ws/chat/${token}/`);
+	socket = new WebSocket(`ws://localhost:3000/ws/chat/${token}/`);
 
 	socket.onopen = () => {
-		wsConnectionStatus.set('connected');
 		console.log('Connected to websocket');
 	};
 
@@ -53,29 +50,26 @@ function initWebsocket() {
 	};
 
 	socket.onclose = () => {
-		wsConnectionStatus.set('disconnected');
 		console.log('Disconnected from websocket');
 	};
 
 	socket.onerror = () => {
-		wsConnectionStatus.set('error');
 		console.log('Error in websocket connection');
 	};
 }
-initWebsocket();
 
 export function sendMessage(message: string, room_name: string) {
 	if (socket) {
-		console.log('Sending message :', JSON.stringify({message, room_name }));
+		console.log('Sending message :', JSON.stringify({ message, room_name }));
 		socket.send(JSON.stringify({ message, room_name }));
 	} else {
 		console.log('Websocket not connected');
 	}
 }
 
-export function sendInvitation(message_type: string, room_name:string) {
+export function sendInvitation(message_type: string, room_name: string) {
 	if (socket) {
-		console.log('Sending invitation :', JSON.stringify({ message_type, room_name}));
+		console.log('Sending invitation :', JSON.stringify({ message_type, room_name }));
 		socket.send(JSON.stringify({ message_type, room_name }));
 	} else {
 		console.log('Websocket not connected');

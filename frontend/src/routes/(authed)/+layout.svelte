@@ -1,13 +1,11 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import NavLink from "$lib/components/NavLink.svelte";
+	import NotificationGame from "$lib/components/notification/NotificationGame.svelte";
 	import { logout } from "$lib/stores/auth";
 	import { user } from "$lib/stores/user";
-	import { goto } from "$app/navigation";
-	import defaultAvatar from "$lib/assets/images/default.jpg";
-	import NavLink from "$lib/components/NavLink.svelte";
+	import { faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
-	import { faBell, faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
-	import "$lib/stores/websocket";
-	import NotificationGame from "$lib/components/notification/NotificationGame.svelte";
 
 	function logoutButton() {
 		logout();
