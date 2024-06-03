@@ -5,32 +5,24 @@ import Timer  from "../utils/timer.js";
 import { Vec2 } from "../utils/class_vec.js";
 
 // Score
-let score_element1 = document.getElementById("score1");
+let score_element1 = null;
 export let score_node1 = document.createTextNode("0");
-score_element1.appendChild(score_node1);
-let score_element2 = document.getElementById("score2");
+let score_element2 = null;
 export let score_node2 = document.createTextNode("0");
-score_element2.appendChild(score_node2);
 
 // Time
-let time_element = document.getElementById('time');
+let time_element = null;
 export let time_node = document.createTextNode("00:00");
-time_element.appendChild(time_node);
 
 // Ready button
-export let ready_element = document.getElementById('ready');
-let ready_node = document.createTextNode('Searching...');
-ready_element.appendChild(ready_node);
+export let ready_element = null;
+export let ready_node = document.createTextNode('Searching...');
 
 // Usernames
-let left_username_element = document.getElementById('left_username');
+let left_username_element = null;
 let left_username_node = document.createTextNode("");
-if (left_username_element != null)
-	left_username_element.appendChild(left_username_node);
-let right_username_element = document.getElementById('right_username');
+let right_username_element = null;
 let right_username_node = document.createTextNode("");
-if (right_username_element != null)
-	right_username_element.appendChild(right_username_node);
 
 export function OverlayChangeUsernames(opponent_username, side)
 {
@@ -46,8 +38,28 @@ export function OverlayChangeUsernames(opponent_username, side)
 
 export function OverlayInit()
 {
-	score_node1.nodeValue = 0;
-	score_node2.nodeValue = 0;
+	// Score
+	score_element1 = document.getElementById("score1");
+	score_element1.appendChild(score_node1);
+	score_element2 = document.getElementById("score2");
+	score_element2.appendChild(score_node2);
+
+	// Time
+	time_element = document.getElementById('time');
+	time_element.appendChild(time_node);
+
+	// Ready button
+	ready_element = document.getElementById('ready');
+	ready_element.appendChild(ready_node);
+
+	// Usernames
+	left_username_element = document.getElementById('left_username');
+	if (left_username_element != null)
+		left_username_element.appendChild(left_username_node);
+	right_username_element = document.getElementById('right_username');
+	if (right_username_element != null)
+		right_username_element.appendChild(right_username_node);
+
 	Timer.DisplayTimer();
 	if (ready_node.nodeValue != 'Press when ready.\n') {
 		ready_node.nodeValue = 'Searching...';
@@ -89,19 +101,8 @@ export function OverlayReadyButtonLocalListener(game)
 
 export function OverlayReadyButtonHide()
 {
-	document.getElementById('glcanvas').classList.remove('blur-5');
+	document.getElementById('blurcul').classList.remove('blur-5');
 	document.getElementById('ready').classList.add("opacity-0");
-
-	let user1 = document.getElementById('left_username');
-	if (user1)
-		user1.classList.remove('blur-5');
-	let user2 = document.getElementById('right_username');
-	if (user2)
-		user2.classList.remove('blur-5');
-
-	document.getElementById('score1').classList.remove("blur-5");
-	document.getElementById('score2').classList.remove("blur-5");
-	document.getElementById('time').classList.remove("blur-5");
 }
 
 

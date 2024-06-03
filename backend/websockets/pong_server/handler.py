@@ -119,7 +119,7 @@ async def HandlerClient(websocket, event):
 async def HandlerClientWaitingRoom(websocket, client, is_casual_queue: bool):
         async for message in websocket:
             event = json.loads(message)
-            if (event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
+            if (DATA_LOBBY_STATE in event and event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
 
         game = await UsernameToRoomInstance.GetFromDict(client.username)

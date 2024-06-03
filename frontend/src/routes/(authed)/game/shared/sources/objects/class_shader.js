@@ -5,13 +5,7 @@ class Shader {
 	}
 
 	async _CompileShader(file_path, type) {
-		const response = await fetch(file_path);
-		if (!response.ok) {
-			console.error(`Unable to fetch shader file: ${file_path}`);
-			return null;
-		}
-
-		const code = await response.text();
+		const code = file_path;
 		const shader = this.gl.createShader(type);
 
 		this.gl.shaderSource(shader, code);

@@ -25,7 +25,6 @@ class Game {
 
 		if (this.game_type === GameType.Online) {
 			ServerAPI.InitConnection();
-			Timer.DisplayTimer();
 		}
 	}
 

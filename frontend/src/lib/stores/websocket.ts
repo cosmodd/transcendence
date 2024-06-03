@@ -22,7 +22,7 @@ export let socket: WebSocket | null = null;
 export function initWebsocket() {
 	const token = authToken();
 
-	socket = new WebSocket(`ws://localhost:3000/ws/chat/${token}/`);
+	socket = new WebSocket(`wss://localhost/ws/chat/${token}/`);
 
 	socket.onopen = () => {
 		console.log('Connected to websocket');
