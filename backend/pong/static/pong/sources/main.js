@@ -24,7 +24,7 @@ async function Init(game_type) {
     await game.SetupOpponent(new Vec3(220 / 255, 53 / 255, 69 / 255), new Vec2(0.9, 0.));
     await game.SetupBall(new Vec3(1., 1., 1.));
 
-	OverlayInit();
+    OverlayInit();
 
     if (game_type === GameType.Online)
         OverlayReadyButtonOnlineListener();

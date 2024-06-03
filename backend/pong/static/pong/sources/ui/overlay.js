@@ -86,11 +86,24 @@ export function OverlayReadyButtonLocalListener(game)
 	});
 }
 
+
 export function OverlayReadyButtonHide()
 {
-	document.getElementById('blurcul').classList.remove('blur-5');
+	document.getElementById('glcanvas').classList.remove('blur-5');
 	document.getElementById('ready').classList.add("opacity-0");
+
+	let user1 = document.getElementById('left_username');
+	if (user1)
+		user1.classList.remove('blur-5');
+	let user2 = document.getElementById('right_username');
+	if (user2)
+		user2.classList.remove('blur-5');
+
+	document.getElementById('score1').classList.remove("blur-5");
+	document.getElementById('score2').classList.remove("blur-5");
+	document.getElementById('time').classList.remove("blur-5");
 }
+
 
 export function OverlayReadyButtonShow(game_type = "", opponent_username = "")
 {

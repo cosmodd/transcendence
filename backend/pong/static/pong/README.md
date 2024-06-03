@@ -15,6 +15,9 @@ Les clients:
 - Game
   - [bug] ball stuck on one side
   - [bug] ready while disco -> added timer
+  - [bug] not disconnecting when changing page
+  - [check] tournament cancel game behavior ?
+  - [check] local working ?
 
 - Channels
   - [feature][->] warn users expected for next game

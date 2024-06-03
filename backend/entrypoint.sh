@@ -19,7 +19,7 @@ echo "Migrations done"
 # python manage.py collectstatic
 
 # Websockets servers
-echo "Starting websocket server in the background..."
+echo "Starting game websocket server in the background..."
 ./websockets/pong_server/launch_pong_server.sh &
 export DJANGO_SETTINGS_MODULE=core.settings
 
