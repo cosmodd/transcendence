@@ -13,7 +13,11 @@ let game;
 
 globalThis.ServerAPI = ServerAPI;
 
+
+
 async function Init(game_type) {
+    FillCssStyle();
+
     gl_canvas = document.getElementById("glcanvas");
     gl = gl_canvas.getContext("webgl");
 
@@ -75,6 +79,28 @@ export function GameLoop() {
     game.Draw();
 
     requestAnimationFrame(GameLoop);
+}
+
+
+function FillCssStyle() 
+{
+    const style = document.createElement('style');
+
+    style.textContent = `
+    @keyframes disappear {
+        50% { bottom: 0; }
+        100% { bottom: -100px; }
+    }
+
+    .info {
+        animation: disappear 10s;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+    `;
+
+    document.head.append(style);
 }
 
 export default Init;

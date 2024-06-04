@@ -13,21 +13,8 @@
 
 <style>
 	.blur-5 {
-	filter: blur(5px);
-}
-
-.info {
-	animation: disappear 10s;
-	position: fixed;
-	bottom: 0;
-	left: 0;
-}
-
-@keyframes  disappear {
-	50% { bottom: 0; }
-	100% { bottom: -100px; }
-}
-
+		filter: blur(5px);
+    }
 </style>
 
 <div class="wrapper h-100 position-relative">

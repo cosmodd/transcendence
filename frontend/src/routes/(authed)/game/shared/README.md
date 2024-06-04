@@ -15,7 +15,6 @@ Les clients:
 - Game
   - [bug] ball stuck on one side
   - [bug] ready while disco -> added timer
-  - [bug] bad ui (infos) placement
   - [check] tournament cancel game behavior ?
 
 - Channels

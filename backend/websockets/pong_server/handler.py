@@ -122,8 +122,8 @@ async def HandlerClientWaitingRoom(websocket, client, is_casual_queue: bool):
             if (DATA_LOBBY_STATE in event and event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
                 break 
 
-        game = await UsernameToRoomInstance.GetFromDict(client.username)
         try:
+            game = await UsernameToRoomInstance.GetFromDict(client.username)
             if (is_casual_queue):
                 del USERNAME_TO_CURRENTLY_QUEUING[client.username]
             await ClientLoop(client, game, event[DATA_PLAYER])
