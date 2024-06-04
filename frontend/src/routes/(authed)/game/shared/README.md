@@ -13,15 +13,10 @@ Les clients:
 
 #### Specific
 - Game
-  - [bug] ball stuck on one side
-  - [bug] ready while disco -> added timer
   - [check] tournament cancel game behavior ?
 
 - Channels
   - [feature][->] warn users expected for next game
-
-- Client
-  - [bug] ui not loading #anger
 
 #### General
 - Clean

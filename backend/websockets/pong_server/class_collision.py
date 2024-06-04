@@ -23,12 +23,14 @@ class Collision:
 
         if (ball.boundingbox_left <= -1.):
             ball.Reset(Vec2(-1., 0.))
+            ball.previous_position = ball.position
             ball.collided = True
             self.attached_game.players[DATA_PLAYER_PLAYER1].Reset()
             self.attached_game.players[DATA_PLAYER_PLAYER2].Reset()
             await self.attached_game.UpdateScore(DATA_PLAYER_PLAYER2)
         elif (ball.boundingbox_right >= 1.):
             ball.Reset(Vec2(1., 0.))
+            ball.previous_position = ball.position
             ball.collided = True
             self.attached_game.players[DATA_PLAYER_PLAYER1].Reset()
             self.attached_game.players[DATA_PLAYER_PLAYER2].Reset()

@@ -10,6 +10,8 @@ from constants import *
 import traceback
 import sys
 
+SLEEPING_TIME = 1 / 120
+
 async def ClientLoop(client: Client, game: Game, current_player):
     # Client lobby ready loop
     if await client.IsReady() == False:
@@ -46,7 +48,6 @@ async def ClientLoop(client: Client, game: Game, current_player):
 async def ServerLoop(game: Game):
     sys.stderr.write("DEBUG:: ServerLoop created\n")
     try:
-        sys.stderr.write("DEBUG:: Beginning game\n")
         game.start_time = datetime.now()
         while await game.ClientsAreReadyAndConnected() == False:
             if await game.OneOfClientsIsConnected():
@@ -55,14 +56,16 @@ async def ServerLoop(game: Game):
                 raise Exception("Lobby waiting time expired")
             await asyncio.sleep(1)
 
-        last_update_time = datetime.now()
         game.ball.Reset(Vec2(-1., 0.))
         game.ball.collided = True
-        game.start_time = datetime.now()
         game.match_is_running = True
+        last_update_time = datetime.now()
+        game.start_time = datetime.now()
 
         for i in range(len(game.clients)):
             await game.clients[i].ws.send(game.MessageBuilder.ClientsAreReady(i))
+
+        sys.stderr.write("DEBUG:: Beginning game\n")
         while (game.IsMatchRunning()):
             # Delta time
             current_time = datetime.now()
@@ -111,7 +114,7 @@ async def ServerLoop(game: Game):
                 await sender.ToAll(game.MessageBuilder.FreezeBall(), game.connected)
                 await asyncio.sleep(1)
 
-            await asyncio.sleep(1 / 60) 
+            await asyncio.sleep(SLEEPING_TIME) 
         await game.TerminateModel()
         game.StopBall()
         await sender.ToAll(game.MessageBuilder.Ball(), game.connected)
@@ -121,7 +124,6 @@ async def ServerLoop(game: Game):
         game.cancelled = True
         await game.TerminateModel()
         traceback.print_exc()
-
  
 async def HandleDisconnection(game: Game):
     old_disconnected = game.disconnected
@@ -148,7 +150,7 @@ async def HandleDisconnection(game: Game):
         game.cancelled = True
         return 
     # One disconnection
-    if (len(game.connected) == 1):
+    if (len(game.connected) == 1 and game.match_is_running):
         game.match_is_paused = True
         game.pause_timer = datetime.now()
     # Send disconnection message

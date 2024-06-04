@@ -130,16 +130,16 @@ Collision.BallWall = function(game, ball) {
         game.player.Reset();
         game.opponent.Reset();
         ball.Reset(new Vec2(-1.0, 0.));
+        last_ball_pos = ball._uEntityPosition.Clone();
         game.score[1] += 1;
-        console.log("added score");
         this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_right >= 1.) {
         game.player.Reset();
         game.opponent.Reset();
         ball.Reset(new Vec2(1.0, 0.));
+        last_ball_pos = ball._uEntityPosition.Clone();
         game.score[0] += 1;
-        console.log("added score");
         this.BallJustLandedInTheNet = true;
     }
     else if (ball.boundingbox_top >= 1.) {
