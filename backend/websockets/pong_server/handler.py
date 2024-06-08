@@ -251,6 +251,8 @@ async def TournamentCreatorHandler(client):
     return new_tournament
 
 async def TournamentLaunchGamesForRound(tournament):
+    from chat.consumers import send_notification
+
     games_count = ROUNDS_TO_COUNT[tournament.round]
 
     sys.stderr.write("DEBUG:: gamescount: " + str(games_count) + "\n")
@@ -264,6 +266,8 @@ async def TournamentLaunchGamesForRound(tournament):
         sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Added " + client2.username + "\n")
         try:
             room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, tournament))
+            await send_notification(client1.username, client2.username)
+            sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Sended notification " + client1.username + "\n")
             tournament.rooms_tasks.add(room)
             room.add_done_callback(tournament.rooms_tasks.discard)
         except Exception as e:

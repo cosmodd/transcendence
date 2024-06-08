@@ -247,31 +247,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 DATA_PLAYER_PLAYER1: player1.username,
                 DATA_PLAYER_PLAYER2: player2.username,
             })
-            await websocket.send(message)
-    
-    #a function that will be used outside the django project to send a notification to 2 users
-    async def send_notification(self, receiver1, receiver2):
-        receiver1 = await self.get_user_from_username(receiver1)
-        receiver2 = await self.get_user_from_username(receiver2)
-        await self.channel_layer.group_send(
-            f'chat_{receiver1.id}',
-            {
-                'type': 'chat_message',
-                'message': 'You are waiting for your next tournament match',
-                'sender': 'system',
-                'message_type': 'notification'
-            }
-        )
-        await self.channel_layer.group_send(
-            f'chat_{receiver2.id}',
-            {
-                'type': 'chat_message',
-                'message': 'You are waiting for your next tournament match',
-                'sender': 'system',
-                'message_type': 'notification'
-            }
-        )
-    
+            await websocket.send(message) 
+
     @database_sync_to_async
     def get_user_from_username(self, username):
         return Account.objects.get(username=username)
+    
+    #a function that will be used outside the django project to send a notification to 2 users
+async def send_notification(receiver1, receiver2):
+    from channels.layers import get_channel_layer
+    channel_layer = get_channel_layer()
+
+    receiver1 = await get_user_from_username(receiver1)
+    receiver2 = await get_user_from_username(receiver2)
+    await channel_layer.group_send(
+        f'chat_{receiver1.id}',
+        {
+            'type': 'chat_message',
+            'message': 'You are waiting for your next tournament match',
+            'sender': 'system',
+            'message_type': 'notification'
+        }
+    )
+    await channel_layer.group_send(
+        f'chat_{receiver2.id}',
+        {
+            'type': 'chat_message',
+            'message': 'You are waiting for your next tournament match',
+            'sender': 'system',
+            'message_type': 'notification'
+        }
+    )
+
+@database_sync_to_async
+def get_user_from_username(username):
+    return Account.objects.get(username=username)
