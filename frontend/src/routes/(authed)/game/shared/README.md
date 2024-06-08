@@ -14,6 +14,7 @@ Les clients:
 #### Specific
 - Game
   - [check] tournament cancel game behavior ?
+  - [bug] game bad overflow
 
 - Channels
   - [feature][->] warn users expected for next game

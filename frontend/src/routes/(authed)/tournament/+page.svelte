@@ -18,7 +18,10 @@
 
 	async function loadTournaments() {
 		const response = await authedFetch("/api/tournament/");
-		tournaments = await response.json();
+		const data = await response.json();
+		if (!data)
+			return ;
+		tournaments = data;
 	}
 
 	async function createTournament(event: SubmitEvent) {
@@ -62,7 +65,7 @@
 		</div>
 	</div>
 	
-		{#if tournaments.length == 0}
+		{#if tournaments.length === 0}
 			<div class="d-flex justify-content-center align-items-center h-100">
 				<h3 class="text-muted">No tournaments available</h3>
 			</div>

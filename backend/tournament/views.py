@@ -63,13 +63,13 @@ class ActiveTournamentsListView(generics.RetrieveAPIView):
 					'name': t.name,
 					'id': t.id,
 					'status': t.status,
-					'size': t.size,
-					'players_count' : t.active_players.count() + t.past_players.count()
+					'players_count' : t.active_players.count() + t.past_players.count(),
+					'size': t.size
 					# 'active_players': [user.username for user in t.active_players.all()]
 					# 'games': [game.tournament_output() for game in t.games.all()]
 				}
 			)
-		return Response({"tournaments": tournaments_list})
+		return Response(tournaments_list)
 
 class SpecificTournamentView(generics.RetrieveAPIView):
 	queryset = Tournament.objects.all()
