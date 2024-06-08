@@ -31,7 +31,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(self.channel_layer.groups, file=sys.stderr)
         await self.accept()
 
-
     async def disconnect(self, close_code):
         #TODO: check if the user has open multiple tabs
         await self.channel_layer.group_discard(
@@ -264,7 +263,7 @@ async def send_notification(receiver1, receiver2):
         f'chat_{receiver1.id}',
         {
             'type': 'chat_message',
-            'message': 'You are waiting for your next tournament match',
+            'message': 'You are expected for your next tournament match',
             'sender': 'system',
             'message_type': 'notification'
         }
@@ -273,7 +272,7 @@ async def send_notification(receiver1, receiver2):
         f'chat_{receiver2.id}',
         {
             'type': 'chat_message',
-            'message': 'You are waiting for your next tournament match',
+            'message': 'You are expected for your next tournament match',
             'sender': 'system',
             'message_type': 'notification'
         }
