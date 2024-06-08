@@ -33,3 +33,10 @@ class Block(models.Model):
 
     def __str__(self):
         return f'{self.user.username} -> {self.blocked_user.username}'
+
+class OnlineStatus(models.Model):
+    user = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='online_status')
+    is_online = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username} is {"online" if self.is_online else "offline"}'

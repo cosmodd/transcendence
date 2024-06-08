@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import re, requests, random, string, os, sys
 from django.http import JsonResponse
 from datetime import datetime
+from friend.models import OnlineStatus
 
 # *******************************************************************************************************************
 # ************************************************* Register / Login ************************************************
@@ -58,6 +59,7 @@ class RegisterView(generics.CreateAPIView):
         # create user if all checks pass
         super().post(request, *args, **kwargs)
         refresh = RefreshToken.for_user(Account.objects.get(username=request.data['username']))
+        OnlineStatus.objects.create(user=Account.objects.get(username=request.data['username']))
         return Response(
         {
             "refresh": str(refresh),
@@ -191,7 +193,8 @@ class UserProfile(generics.RetrieveAPIView):
             "id": user.id,
             "username": user.username,
             "profile_image": user.profile_image.url[6:],
-            "display_name": user.display_name
+            "display_name": user.display_name,
+            "online_status": OnlineStatus.objects.get(user=user).is_online
         })
 
 # update user profile
@@ -280,6 +283,7 @@ class Handle42CallbackView(View):
             password='42password'
         )
         refresh = RefreshToken.for_user(user)
+        OnlineStatus.objects.create(user=user)
         # return user info and tokens and redirect to frontend home page
         return JsonResponse(
             {
