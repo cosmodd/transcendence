@@ -13,6 +13,7 @@
 		date_begin: string;
 		status: "in_progress" | "over" | "cancelled";
 		timeout: boolean;
+		round: "none" | "quarter" | "semi" | "final";
 	}
 
 	export let game: Game;
@@ -20,16 +21,20 @@
 
 	$: {
 		if (game.players[1].username == user.username) {
-			console.log("reversing");
+			// console.log("reversing");
 			game.players = game.players.reverse();
+		}
+
+		if ((game.winner === user.username && game.scores[0] < game.scores[1]) ||
+                            (game.winner !== user.username && game.scores[0] > game.scores[1])) {
 			game.scores = game.scores.reverse();
 		}
-	}
 
+	}
 	$: hasWon = game.winner === user.username;
 	$: resultColor = hasWon ? "success" : "danger";
 	$: dateString = new Date(game.date_begin).toLocaleDateString("en-US");
-	$: formattedType = game.type === "duel" ? "Duel" : "Tournament";
+	$: formattedType = game.type === "duel" ? "Duel" : "Tournament - " + game.round;
 </script>
 
 <div class="d-flex justify-content-between align-items-center p-3 border-start border-3 border-{resultColor}">
@@ -38,39 +43,21 @@
 			<Fa icon={game.type === "tournament" ? faTrophy : faUserGroup} />
 			<span class="fw-bold">{formattedType}</span>
 		</div>
-		{#if game.type === "duel"}
-			<div class="d-flex gap-2 col align-items-center">
-				<span class="badge rounded-pill bg-{resultColor}">{hasWon ? "Won" : "Lost"}</span>
-				<div class="score d-flex gap-2 fw-bold align-items-center" style="font-variant-numeric: tabular-nums">
-					<span class="text-{resultColor}">
-						{game.scores[0].toString().padStart(2, "0")}
-					</span>
-					<span class="text-muted">vs</span>
-					<span class="text-{!hasWon ? 'success' : 'danger'}">
-						{game.scores[1].toString().padStart(2, "0")}
-					</span>
-					<a href={`/profile/${game.players[1].username}`} class="text-decoration-none text-body user-link py-1 px-2 rounded-3">
-						{game.players[1].display_name}
-					</a>
-				</div>
+		<div class="d-flex gap-2 col align-items-center">
+			<span class="badge rounded-pill bg-{resultColor}">{hasWon ? "Won" : "Lost"}</span>
+			<div class="score d-flex gap-2 fw-bold align-items-center" style="font-variant-numeric: tabular-nums">
+				<span class="text-{resultColor}">
+					{game.scores[0].toString().padStart(2, "0")}
+				</span>
+				<span class="text-muted">vs</span>
+				<span class="text-{!hasWon ? 'success' : 'danger'}">
+					{game.scores[1].toString().padStart(2, "0")}
+				</span>
+				<a href={`/profile/${game.players[1].username}`} class="text-decoration-none text-body user-link py-1 px-2 rounded-3">
+					{game.players[1].display_name}
+				</a>
 			</div>
-		{:else}
-			<div class="d-flex gap-2 align-items-center col">
-				<span class="badge rounded-pill bg-{resultColor}"
-					>{hasWon ? "Won" : ["Quarter", "Semi", "Final"][Math.floor(Math.random() * 3)]}</span
-				>
-				<div class="score d-flex gap-2 fw-bold" style="font-variant-numeric: tabular-nums">
-					<span class="text-{resultColor}">
-						{scores[0].score.toString().padStart(2, "0")}
-					</span>
-					<span class="text-muted">vs</span>
-					<span class="text-{!hasWon ? 'success' : 'danger'}">
-						{scores[1].score.toString().padStart(2, "0")}
-					</span>
-					<span>{scores[1].username}</span>
-				</div>
-			</div>
-		{/if}
+		</div>
 	</div>
 	<div class="end row gap-2 w-100 justify-content-end">
 		<p class="text-muted m-0 text-end">{dateString}</p>

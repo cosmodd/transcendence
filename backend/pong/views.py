@@ -23,7 +23,7 @@ class UserGameList(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         try:
             user = self.get_object()
-            games = Game.objects.filter(players=user)
+            games = Game.objects.filter(players=user).order_by('date_begin')
             games_list = []
             for game in games:
                 if game.status != 'over':
@@ -43,7 +43,8 @@ class UserGameList(generics.RetrieveAPIView):
                         "scores": scores_str,
                         "winner": game.winner.username if game.winner else None,
                         "timeout": game.ended_with_timeout,
-                        "date_begin": game.date_begin
+                        "date_begin": game.date_begin,
+                        "round": game.round
                     }
                 )
             return Response({"games": games_list}, status=status.HTTP_200_OK)
