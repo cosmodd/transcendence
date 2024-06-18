@@ -13,8 +13,8 @@ Les clients:
 
 #### Specific
 - Game
-  - [check] tournament cancel game behavior ?
   - [bug] game bad overflow
+  - [bug] score not clearing after game
 
 - Channels
   - [feature][->] warn users expected for next game

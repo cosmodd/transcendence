@@ -117,12 +117,12 @@ async def HandlerClient(websocket, event):
 
 # Waiting room (waiting for opponent or lobby creation)
 async def HandlerClientWaitingRoom(websocket, client, is_casual_queue: bool):
-        async for message in websocket:
-            event = json.loads(message)
-            if (DATA_LOBBY_STATE in event and event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
-                break 
-
         try:
+            async for message in websocket:
+                event = json.loads(message)
+                if (DATA_LOBBY_STATE in event and event[DATA_LOBBY_STATE] == DATA_LOBBY_ROOM_CREATED):
+                    break 
+
             game = await UsernameToRoomInstance.GetFromDict(client.username)
             if (is_casual_queue):
                 del USERNAME_TO_CURRENTLY_QUEUING[client.username]
@@ -131,9 +131,11 @@ async def HandlerClientWaitingRoom(websocket, client, is_casual_queue: bool):
             raise websockets.ConnectionClosed(1000, 'Normal closure')
         except websockets.ConnectionClosed as e:
             raise websockets.ConnectionClosed(1000, 'Normal closure')
+            await RemoveClientFromQueue(client)
         except Exception as e:
             logger.debug(f"An exception of type {type(e).__name__} occurred (in handler)")
             traceback.print_exc()
+            await RemoveClientFromQueue(client)
 
 
 async def ConnectExpectedClient(reconnecting_client):
