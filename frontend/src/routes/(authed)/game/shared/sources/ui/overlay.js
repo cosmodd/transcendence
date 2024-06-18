@@ -6,9 +6,9 @@ import { Vec2 } from "../utils/class_vec.js";
 
 // Score
 let score_element1 = null;
-export let score_node1 = document.createTextNode("0");
+export let score_node1;
 let score_element2 = null;
-export let score_node2 = document.createTextNode("0");
+export let score_node2;
 
 // Time
 let time_element = null;
@@ -39,6 +39,8 @@ export function OverlayChangeUsernames(opponent_username, side)
 export function OverlayInit()
 {
 	// Score
+	score_node1 = document.createTextNode("0");
+	score_node2 = document.createTextNode("0");
 	score_element1 = document.getElementById("score1");
 	score_element1.appendChild(score_node1);
 	score_element2 = document.getElementById("score2");
