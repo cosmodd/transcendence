@@ -30,17 +30,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #print list of channels room group name
         print(self.channel_layer.groups, file=sys.stderr)
         await self.accept()
+        await self.increment_user_connection_count()
 
     async def disconnect(self, close_code):
         #TODO: check if the user has open multiple tabs
+        await self.decrement_user_connection_count()
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-        await self.channel_layer.group_discard(
-            "users",
-            self.channel_name
-        )
+
 
     async def receive(self, text_data):
         data_json = json.loads(text_data)
@@ -185,6 +184,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
         player1 = room_members[0]
         player2 = room_members[1]
         await self.create_game_room(player1, player2)
+
+    async def increment_user_connection_count(self):
+        self.user.connection_count += 1
+
+        if self.user.connection_count == 1:
+            self.user.is_online = True
+        
+        await database_sync_to_async(self.user.save)()
+
+    async def decrement_user_connection_count(self):
+        self.user.connection_count -= 1
+
+        if self.user.connection_count <= 0:
+            self.user.is_online = False
+            self.user.connection_count = 0
+        
+        await database_sync_to_async(self.user.save)()
 
     async def get_user_from_token(self, token):
         try:

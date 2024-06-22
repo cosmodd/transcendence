@@ -57,6 +57,10 @@ class Account(AbstractBaseUser):
     login_intra     = models.CharField(max_length=32, unique=True, null=True, blank=True)
     profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
 
+    # user status
+    is_online       = models.BooleanField(default=False)
+    connection_count = models.IntegerField(default=0)
+
     # 2FA fields
     enabled_2FA     = models.BooleanField(default=False)
     secret_2FA      = models.CharField(max_length=32, unique=True, null=True, blank=True)
