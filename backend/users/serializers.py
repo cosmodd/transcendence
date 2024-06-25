@@ -68,3 +68,8 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Both fields old_password and password are required"})
 
         return data
+    
+class UserOnlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['id', 'username', 'is_online', 'connection_count']

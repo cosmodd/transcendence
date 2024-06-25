@@ -27,6 +27,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        await self.channel_layer.group_add( #add the user to the group of all users
+            'online_users',
+            self.channel_name
+        )
         #print list of channels room group name
         print(self.channel_layer.groups, file=sys.stderr)
         await self.accept()
@@ -39,7 +43,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
+        await self.channel_layer.group_discard(
+            'online_users',
+            self.channel_name
+        )
 
     async def receive(self, text_data):
         data_json = json.loads(text_data)
@@ -73,6 +80,34 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'timestamp': timestamp,
             'is_accepted': is_accepted
         }))
+
+    async def user_status(self, event):
+        message = event['message']
+        message_type = event['message_type']
+        user = event['user']
+        is_online = event['is_online']
+
+        print(f"User status: {user} is online: {is_online}", file=sys.stderr)
+
+        await self.send(text_data=json.dumps({
+            'message': message,
+            'message_type': message_type,
+            'user': user,
+            'is_online': is_online
+        }))
+
+    async def send_user_online_status(self, is_online):
+        message = f'{self.user.username} is now online' if is_online else f'{self.user.username} is now offline'
+        await self.channel_layer.group_send(
+            'online_users',
+            {
+                'type': 'user_status',
+                'message': message,
+                'message_type': 'online_status',
+                'user': self.user.username,
+                'is_online': is_online
+            }
+        )
 
     async def send_message(self, message, room_name):
         room = await self.get_chat_room(room_name)
@@ -186,19 +221,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.create_game_room(player1, player2)
 
     async def increment_user_connection_count(self):
+        self.user = await database_sync_to_async(Account.objects.get)(username=self.user.username)
         self.user.connection_count += 1
 
         if self.user.connection_count == 1:
             self.user.is_online = True
+            await self.send_user_online_status(True)
+            print(f"-----------------------------------------------------------------", file=sys.stderr)
+            print(f"User '{self.user.username}' is online: {self.user.is_online}", file=sys.stderr)
+            print(f"-----------------------------------------------------------------", file=sys.stderr)
         
         await database_sync_to_async(self.user.save)()
 
     async def decrement_user_connection_count(self):
+        self.user = await database_sync_to_async(Account.objects.get)(username=self.user.username)
+        print(f"User '{self.user.username}' connection count: {self.user.connection_count}", file=sys.stderr)
         self.user.connection_count -= 1
 
         if self.user.connection_count <= 0:
             self.user.is_online = False
             self.user.connection_count = 0
+            await self.send_user_online_status(False)
+            print(f"User '{self.user.username}' is online: {self.user.is_online}", file=sys.stderr)
         
         await database_sync_to_async(self.user.save)()
 

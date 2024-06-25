@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, ProfileView, AuthentificationWith42View, Handle42CallbackView, UserProfile, UpdateProfileView, Check_two_factor_code
+from .views import RegisterView, LoginView, ProfileView, AuthentificationWith42View, Handle42CallbackView, UserProfile, UpdateProfileView, Check_two_factor_code, UserOnlineStatusView
 from rest_framework_simplejwt.views import TokenRefreshView
 import sys
 
@@ -14,6 +14,7 @@ urlpatterns = [
 
     path('auth/42/', AuthentificationWith42View.as_view(), name='authentification-with-42'),
     path('auth/42/callback/', Handle42CallbackView.as_view(), name='authentification-with-42-callback'),
+    path('user_status/<str:username>', UserOnlineStatusView.as_view(), name='user-status'),
     
     # TODO : clean this
     path('profile/update/', UpdateProfileView.as_view(), name='update-profile'),

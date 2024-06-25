@@ -1,11 +1,12 @@
 from django.views.generic import RedirectView, View
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions, parsers
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import UntypedToken
 from .models import Account
-from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, UpdateProfileSerializer
+from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, UpdateProfileSerializer, UserOnlineSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 import re, requests, random, string, os, sys
 from django.http import JsonResponse
@@ -329,3 +330,17 @@ class Handle42CallbackView(View):
 
         return JsonResponse({'error': 'Authentication failed'}, status=400)
 
+# *******************************************************************************************************************
+# ************************************************** Online Status **************************************************
+# *******************************************************************************************************************
+
+class UserOnlineStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, username, *args, **kwargs):
+        try:
+            user = Account.objects.get(username=username)
+            serializer = UserOnlineSerializer(user)
+            return Response(serializer.data)
+        except Account.DoesNotExist:
+            return Response({'error': 'User not found'}, status=404)

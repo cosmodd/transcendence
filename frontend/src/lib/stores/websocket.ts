@@ -37,13 +37,18 @@ export function initWebsocket() {
 		let wsMessageEvent = new CustomEvent('wsmessage', {
 			detail: data,
 		});
+		let wsOnlineStatusEvent = new CustomEvent('wsonlinestatus', {
+			detail: data,
+		});
 
 		if (data.message_type === 'notification') {
 			window.dispatchEvent(notificationEvent);
 			console.log('Received notification :', data);
 			return;
-		}
-		else {
+		} else if (data.message_type === 'online_status') {
+			window.dispatchEvent(wsOnlineStatusEvent);
+			console.log('Received message :', data);
+		} else {
 			window.dispatchEvent(wsMessageEvent);
 			console.log('Received message :', data);
 		}

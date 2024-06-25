@@ -18,6 +18,7 @@
 	let selected_conversation : Conversation | null = null;
 	let new_message : string = "";
 	let messages_container : HTMLDivElement;
+	let online_status : boolean = false;
 
 	//	******************************************************************************************************	//
 	//													Part 1													//
@@ -128,7 +129,11 @@
 		}
 	}
 
- }}/>
+ }} on:wsonlinestatus={async (e) => {
+	 console.log('OnlineStatus', e.detail);
+	 online_status = e.detail;
+ }} />
+
 
 <div class="row h-100 m-0 gap-3">
 	<div class="col-3 p-0 card border-2 d-flex flex-column h-100 overflow-auto" id="users">
