@@ -16,6 +16,11 @@ async function loadUser(fetch: Function) {
 		}
 
 		response = await authedFetch('/api/user/');
+
+		if (!response.ok) {
+			logout();
+			throw redirect(302, '/login');
+		}
 	}
 
 	const data = await response.json();

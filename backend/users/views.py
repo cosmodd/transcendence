@@ -242,93 +242,86 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 REDIRECT_URI = os.environ.get('REDIRECT_URI')
 
-# Auth with 42
-class AuthentificationWith42View(RedirectView):
+class RedirectTo42View(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         return f'https://api.intra.42.fr/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code'
 
-class Handle42CallbackView(View):
+class Handle42AuthView(APIView):
+    permission_classes = [permissions.AllowAny]
 
-    def manage_intra_user(self, user_info):
+    def find_or_create_intra_user(self, user_info):
         User = get_user_model()
-        #if login_42 already exists, return the user
+        
+        # If the user already exists, return the user
         if User.objects.filter(login_intra=user_info['login']).exists():
-            user = User.objects.get(login_intra=user_info['login'])
-            refresh = RefreshToken.for_user(user)
-            return JsonResponse(
-                {
-                    "refresh": str(refresh),
-                    "access": str(refresh.access_token),
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "email": user.email,
-                        "profile_image": user.profile_image.url if user.profile_image else None
-                    }
-                }, status=302, headers={'Location': 'http://localhost:8080/'}
-            )
-
+            return User.objects.get(login_intra=user_info['login'])
+        
+        # Create the user if it doesn't exist
         username_base = user_info['login']
+        username = username_base
         attempts = 0
-        #randomize a number in int
-        nb = random.randint(0, 9999)
-        while User.objects.filter(username=username_base).exists():
-            #convert int to string
-            nb += attempts
-            username_base = f'{user_info["login"]}{str(nb)}'
+
+        while User.objects.filter(username=username).exists():
             attempts += 1
+            username = f'{username_base}{str(attempts)}'
+
         user = User.objects.create_user(
+            username=username,
             email=user_info['email'],
-            username=username_base,
             login_intra=user_info['login'],
-            password='42password'
+            password=user_info['login']
         )
-        refresh = RefreshToken.for_user(user)
-        OnlineStatus.objects.create(user=user)
-        # return user info and tokens and redirect to frontend home page
-        return JsonResponse(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": {
-                    "id": user.id,
-                    "username": user.username,
-                    "email": user.email,
-                    "profile_image": user.profile_image.url if user.profile_image else None
-                }
-            }, status=302, headers={'Location': 'http://localhost:8080/'}
-        )
+        user.save()
+        return user
+    
+    def post(self, request, *args, **kwargs):
+        code = request.data['code']
 
-    def get(self, request, *args, **kwargs):
-        print("HERE 2", file=sys.stderr)
-        #authorization code : None means user denied the request for authorization
-        code = request.GET.get('code')
 
-        print("HERE", file=sys.stderr)
-        if code:
-            response = requests.post('https://api.intra.42.fr/oauth/token', data={
+        if code is None:
+            return Response({"message": "Code is required"}, status=400)
+
+        response = requests.post(
+            f'https://api.intra.42.fr/oauth/token',
+            data={
                 'grant_type': 'authorization_code',
                 'client_id': CLIENT_ID,
                 'client_secret': CLIENT_SECRET,
-                'code': code,
                 'redirect_uri': REDIRECT_URI,
-            })
+                'code': code
+            }
+        )
 
-            if response.status_code == 200:
-                # extract the access token from the response
-                access_token = response.json().get('access_token')
-                # get user info from 42 api
-                user_info_response = requests.get('https://api.intra.42.fr/v2/me', headers={
-                    'Authorization': f'Bearer {access_token}',
-                })
 
-                if user_info_response.status_code == 200:
-                    user_info = user_info_response.json()
-                    #print user_info to see what you can use in stdin
-                    print(user_info, file=sys.stderr)
-                    return self.manage_intra_user(user_info)
+        if response.status_code != 200:
+            return Response({"message": "Authentication failed"}, status=400)
 
-        return JsonResponse({'error': 'Authentication failed'}, status=400)
+        authorizations = response.json()
+        access_token = authorizations['access_token']
+        user_response = requests.get(
+            'https://api.intra.42.fr/v2/me',
+            headers={
+                'Authorization': f'Bearer {access_token}'
+            }
+        )
+
+        if user_response.status_code != 200:
+            return Response({"message": "Failed to retrieve user info"}, status=400)
+
+        user_info = user_response.json()
+        user = self.find_or_create_intra_user(user_info)
+        refresh = RefreshToken.for_user(user)
+
+        return JsonResponse({
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "profile_image": user.profile_image.url if user.profile_image else None
+            }
+        })
 
 # *******************************************************************************************************************
 # ************************************************** Online Status **************************************************

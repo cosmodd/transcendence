@@ -87,13 +87,13 @@
 			<Fa icon={faRightToBracket} />
 			Register
 		</button>
-		<button
-			type="button"
+		<a
 			id="intra-login"
+			href="/api/auth/42/redirect/"
 			class="btn bg-black text-white d-flex justify-content-center gap-2 align-items-center"
 		>
 			<Logo42 style="width: 20px; height: 20px; fill: white;" />
 			Register with intra
-		</button>
+		</a>
 	</div>
 </form>

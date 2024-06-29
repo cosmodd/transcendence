@@ -4,6 +4,8 @@
 	import Fa from "svelte-fa";
 	import { faRightToBracket, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 	import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
+    import { page } from "$app/stores";
 
 	let alertMessage = "";
 
@@ -13,7 +15,6 @@
 	};
 
 	async function handleForm(event: SubmitEvent) {
-		const form = event.target as HTMLFormElement;
 		const formData = new FormData(event.target as HTMLFormElement);
 
 		const data = {
@@ -47,6 +48,32 @@
 		login(responseData["access"], responseData["refresh"]);
 		goto("/");
 	}
+
+	async function handle42Login(code: string) {
+		const response = await fetch("/api/auth/42/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ code }),
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			alertMessage = data.message;
+			return;
+		}
+
+		login(data["access"], data["refresh"]);
+		goto("/");
+	}
+
+	onMount(() => {
+		const oauthCode = $page.url.searchParams.get("code");
+
+		if (oauthCode) handle42Login(oauthCode);
+	});
 </script>
 
 <form
@@ -106,13 +133,13 @@
 			<Fa icon={faRightToBracket} />
 			Sign in
 		</button>
-		<button
-			type="button"
+		<a
 			id="intra-login"
+			href="/api/auth/42/redirect/"
 			class="btn bg-black text-white d-flex justify-content-center gap-2 align-items-center"
 		>
 			<Logo42 style="width: 20px; height: 20px; fill: white;" />
 			Login with intra
-		</button>
+		</a>
 	</div>
 </form>
