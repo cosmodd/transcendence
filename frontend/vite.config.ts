@@ -8,6 +8,7 @@ export default defineConfig({
 		proxy: {
 			'/api': 'http://django:8000',
 			'/static': 'http://django:8000',
+			'/media': 'http://django:8000',
 			'/ws': 'ws://django:8000'
 		}
 	}

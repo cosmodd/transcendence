@@ -1,3 +1,5 @@
+import io
+import sys
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -12,15 +14,18 @@ class MyAccountManager(BaseUserManager):
             raise ValueError("User must have an username")
         if password is None:
             raise ValueError("User must have a password")
+        
         user = self.model(email=self.normalize_email(email), username=username, display_name=username, login_intra=login_intra)
         user.set_password(password)
-        # check password is hashed or not
-        # print(user.password, file=sys.stderr)
         user.save(using=self._db)
+        
+        # Generate QR Code
         user.secret_2FA = pyotp.random_base32()
-        path = user_qrcode(user)
-        qrcode.make(user.get_authentification_setup_uri()).save(path)
-        user.qrcode_2FA = path
+        qr = qrcode.make(user.get_authentification_setup_uri())
+        buffer = io.BytesIO()
+        qr.save(buffer, format='PNG')
+        user.qrcode_2FA.save('qrcode.png', buffer, save=False)
+        buffer.close()
         user.save(using=self._db)
         return user
 
@@ -30,24 +35,17 @@ class MyAccountManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
 
-def profile_image(instance, filename):
-    # Ensure that the profile_images folder exists
-    if not os.path.exists('./users/static/users/profile_images/'):
-        os.makedirs('./users/static/users/profile_images/')
+def profile_image_path(instance, filename):
+    return None
 
+def profile_image(instance, filename):
     extension = filename.split('.')[-1]
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
 
-    return f'./users/static/users/profile_images/{instance.id}_{timestamp}.{extension}'
+    return f'profile_images/{instance.id}_{timestamp}.{extension}'
 
-
-def default_profile_image():
-    return './users/static/users/profile_images/default.jpg'
-
-def user_qrcode(instance):
-    if not os.path.exists(f'./users/static/users/qrcodes/'):
-        os.makedirs(f'./users/static/users/qrcodes/')
-    return f'./users/static/users/qrcodes/{instance.id}.png'
+def user_qrcode(instance, filename):
+    return f'qrcodes/{instance.id}.png'
 
 # Create your models here.
 class Account(AbstractBaseUser):
@@ -55,7 +53,7 @@ class Account(AbstractBaseUser):
     username        = models.CharField(max_length=32, unique=True)
     display_name    = models.CharField(max_length=32, unique=False)
     login_intra     = models.CharField(max_length=32, unique=True, null=True, blank=True)
-    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True, default=default_profile_image)
+    profile_image   = models.ImageField(max_length=255, upload_to=profile_image, null=True, blank=True)
 
     # user status
     is_online       = models.BooleanField(default=False)
@@ -90,7 +88,7 @@ class Account(AbstractBaseUser):
             old_user = Account.objects.get(pk=self.pk)
 
             # Delete old profile image
-            if old_user.profile_image != self.profile_image:
+            if old_user.profile_image and old_user.profile_image != self.profile_image:
                 old_user.profile_image.delete(save=False)
 
         super(Account, self).save(*args, **kwargs)
@@ -120,3 +118,9 @@ class Account(AbstractBaseUser):
 
     def compare_date_2FA(self):
         return (timezone.now() - self.waiting_2FA).seconds > 60
+    
+    def get_profile_image_url(self):
+        if self.profile_image:
+            return self.profile_image.url
+        else:
+            return '/static/images/default_profile_image.jpg'

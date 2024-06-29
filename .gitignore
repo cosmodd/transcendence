@@ -1,7 +1,11 @@
-# Python Venv
+#################
+# Python Venv   #
+#################
 venv/
 
-# Django
+#################
+# Django        #
+#################
 *.log
 *.pot
 *.pyc
@@ -10,9 +14,17 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media
+staticfiles
 
-# Other
+# - Ignore all migrations files
+*/migrations/*
+
+# - But keep __init__.py
+!*/migrations/__init__.py
+
+#################
+# Other         #
+#################
 .env
 database
 .vscode/settings.json
-backend/users/static/users/qrcodes

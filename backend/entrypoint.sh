@@ -15,8 +15,10 @@ echo "Migrating..."
 python manage.py migrate
 echo "Migrations done"
 
-# collect static files
-# python manage.py collectstatic
+# Statics
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
+echo "Statics collected"
 
 # Websockets servers
 echo "Starting game websocket server in the background..."

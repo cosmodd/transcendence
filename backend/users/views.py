@@ -57,19 +57,22 @@ class RegisterView(generics.CreateAPIView):
             return Response({"message": "Password must be at least 8 characters long"}, status=401)
         if len(request.data['password']) > 32:
             return Response({"message": "Password must be at most 32 characters long"}, status=401)
+        
         # create user if all checks pass
         super().post(request, *args, **kwargs)
-        refresh = RefreshToken.for_user(Account.objects.get(username=request.data['username']))
-        OnlineStatus.objects.create(user=Account.objects.get(username=request.data['username']))
-        return Response(
-        {
+
+        user = Account.objects.get(username=request.data['username'])
+        refresh = RefreshToken.for_user(user)
+        OnlineStatus.objects.create(user=user)
+
+        return Response({
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": {
-                "id": Account.objects.get(username=request.data['username']).id,
+                "id": user.id,
                 "username": request.data['username'],
                 "email": request.data['email'],
-                "profile_image": Account.objects.get(username=request.data['username']).profile_image.url
+                "profile_image": user.get_profile_image_url()
             }
         }, status=201)
 
@@ -92,18 +95,16 @@ class LoginView(TokenObtainPairView):
             return Response({"id": user.id}, status=200)
 
         refresh = RefreshToken.for_user(user)
-        return Response(
-        {
+        return Response({
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": {
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
-                "profile_image": user.profile_image.url if user.profile_image else None
+                "profile_image": user.get_profile_image_url(user),
             }
-        }
-        )
+        })
 
 
 # *******************************************************************************************************************
@@ -128,15 +129,14 @@ class Check_two_factor_code(TokenObtainPairView):
             # Reset the waiting_2FA field
             user.waiting_2FA = None
             user.save()
-            return Response(
-            {
+            return Response({
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
                 "user": {
                     "id": user.id,
                     "username": user.username,
                     "email": user.email,
-                    "profile_image": user.profile_image.url
+                    "profile_image": user.get_profile_image_url()
                 }
             }, status=200)
         return Response({"message": "Invalid 2FA code"}, status=400)
@@ -156,15 +156,11 @@ class ProfileView(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         user = self.get_object()
-        #remove /users from the url path of profile_image and qrcode_2FA
-        user.profile_image = user.profile_image.url[6:]
-        user.qrcode_2FA = user.qrcode_2FA.url[6:]
-        return Response(
-        {
+        return Response({
             "id": user.id,
             "username": user.username,
             "email": user.email,
-            "profile_image": user.profile_image.url,
+            "profile_image": user.get_profile_image_url(),
             "display_name": user.display_name,
             "enabled_2FA": user.enabled_2FA,
             "qrcode_2FA": user.qrcode_2FA.url
@@ -193,7 +189,7 @@ class UserProfile(generics.RetrieveAPIView):
         return Response({
             "id": user.id,
             "username": user.username,
-            "profile_image": user.profile_image.url[6:],
+            "profile_image": user.get_profile_image_url(),
             "display_name": user.display_name,
             "online_status": OnlineStatus.objects.get(user=user).is_online
         })
@@ -228,7 +224,7 @@ class UpdateProfileView(generics.UpdateAPIView):
             instance.save()
 
         if 'profile_image' in serializer.validated_data:
-            serializer.validated_data["profile_image"] = instance.profile_image.url[6:]
+            serializer.validated_data["profile_image"] = instance.get_profile_image_url()
 
         return Response(serializer.validated_data)
 
@@ -319,7 +315,7 @@ class Handle42AuthView(APIView):
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
-                "profile_image": user.profile_image.url if user.profile_image else None
+                "profile_image": user.get_profile_image_url()
             }
         })
 
