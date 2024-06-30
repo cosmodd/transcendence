@@ -1,43 +1,36 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import Matchup from "$lib/components/tournament/Matchup.svelte";
 
-	const playerCount: number = 2 << 2;
+	let tournament: Tournament;
+	let rounds: TournamentGame[][];
+
+	$: tournament = $page.data.tournament;
+	$: rounds = $page.data.arrangedGames;
+
 </script>
 
-<div class="bracket d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
-	{#if playerCount >= 8}
-		<div class="round quarter d-flex flex-column justify-content-between">
-			{#each Array(4) as i}
-				<div class="matchup flex-grow-1 d-flex align-items-center py-2">
-					<Matchup />
-				</div>
-			{/each}
-		</div>
-		<div class="quarter connectors d-flex flex-column">
-			{#each Array(4) as i}
-				<div class="connector flex-grow-1 position-relative" />
-			{/each}
-		</div>
-	{/if}
+<div class="d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
+	<div class="bracket d-flex flex-row my-auto">
+		{#each rounds as games}
+			<div class="round d-flex flex-column justify-content-between">
+				{#each games as game}
+					<div class="matchup flex-grow-1 d-flex align-items-center py-2">
+						<Matchup {game} />
+					</div>
+				{/each}
+			</div>
+			<div class="connectors d-flex flex-column">
+				{#each games as _}
+					<div class="connector flex-grow-1 position-relative" />
+				{/each}
+			</div>
+		{/each}
 
-	{#if playerCount >= 4}
-		<div class="round semi d-flex flex-column justify-content-between">
-			{#each Array(2) as i}
-				<div class="matchup flex-grow-1 d-flex align-items-center py-2">
-					<Matchup />
-				</div>
-			{/each}
-		</div>
-		<div class="semi connectors d-flex flex-column">
-			{#each Array(2) as i}
-				<div class="connector flex-grow-1 position-relative" />
-			{/each}
-		</div>
-	{/if}
-
-	<div class="round final d-flex flex-column justify-content-between">
-		<div class="matchup flex-grow-1 d-flex align-items-center py-2">
-			<Matchup />
+		<div class="round final d-flex flex-column justify-content-between">
+			<div class="matchup flex-grow-1 d-flex align-items-center py-2">
+				<Matchup game={rounds[rounds.length - 1][0]} />
+			</div>
 		</div>
 	</div>
 </div>
