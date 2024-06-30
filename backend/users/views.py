@@ -102,7 +102,7 @@ class LoginView(TokenObtainPairView):
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
-                "profile_image": user.get_profile_image_url(user),
+                "profile_image": user.get_profile_image_url(),
             }
         })
 
