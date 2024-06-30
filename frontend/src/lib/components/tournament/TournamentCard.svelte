@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { faRightToBracket, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+	import { faArrowRightFromBracket, faEye, faRightFromBracket, faRightToBracket, faTrash, faUserGroup } from "@fortawesome/free-solid-svg-icons";
     import { authedFetch } from "$lib/stores/auth";
 	import Fa from "svelte-fa";
+    import { user } from "$lib/stores/user";
 
 	export let tournament: {
 		id: number;
@@ -11,6 +12,9 @@
 		players_count: number;
 		players: string[];
 	};
+
+	export let hasUser: boolean;
+	export let isUserInTournament: boolean;
 
 	async function joinTournament(id: number) {
 		const response = await authedFetch("/api/tournament/join/", {
@@ -35,8 +39,21 @@
 		<Fa icon={faUserGroup} />
 		<span>{tournament.players_count} / {tournament.size} players</span>
 	</div>
-	<button on:click={() => joinTournament(tournament.id)} class="btn btn-primary">
-		<Fa icon={faRightToBracket} />
-		<span class="ms-1 fw-bold">Join</span>
-	</button>
+	<div class="buttons d-flex flex-row gap-2">
+		{#if !hasUser}
+			<button on:click={() => joinTournament(tournament.id)} class="btn btn-primary flex-fill" disabled={isUserInTournament}>
+				<Fa icon={faRightToBracket} />
+				<span class="ms-1 fw-bold">Join</span>
+			</button>
+		{:else}
+			<a href="/tournament/{tournament.id}" class="btn btn-primary flex-fill">
+				<Fa icon={faEye} />
+				<span class="ms-1 fw-bold">View</span>
+			</a>
+			<button on:click={() => { /* TODO: Leave tournament */ }} class="btn btn-danger flex-fill" disabled>
+				<Fa icon={faRightFromBracket} />
+				<span class="ms-1 fw-bold">Leave</span>
+			</button>
+		{/if}
+	</div>
 </div>

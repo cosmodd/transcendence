@@ -1,6 +1,7 @@
 <script lang="ts">
 	import TournamentCard from "$lib/components/tournament/TournamentCard.svelte";
     import { authedFetch } from "$lib/stores/auth";
+    import { user } from "$lib/stores/user";
     import { faPlus, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
     import { onMount } from "svelte";
     import Fa from "svelte-fa";
@@ -17,12 +18,16 @@
 	let tournaments: Tournament[] = [];
 	let creationAlert: string = "";
 
+	$: isUserInTournament = tournaments.some((tournament) => tournament.players.includes($user.username));
+
 	async function loadTournaments() {
 		const response = await authedFetch("/api/tournament/");
 		const data = await response.json();
+
 		if (!data)
 			return ;
-		tournaments = data;
+
+		tournaments = data.sort((a: Tournament, b: Tournament) => b.players.includes($user.username) - a.players.includes($user.username));
 	}
 
 	async function createTournament(event: SubmitEvent) {
@@ -73,7 +78,11 @@
 		{:else}
 			<div class="tournaments h-100 overflow-y-auto gap-3">
 				{#each tournaments as tournament}
-					<TournamentCard {tournament} />
+					<TournamentCard
+						{tournament}
+						hasUser={tournament.players.includes($user.username)}
+						isUserInTournament={isUserInTournament}
+					/>
 				{/each}
 			</div>
 		{/if}
