@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PasswordField from "$lib/components/auth/PasswordField.svelte";
+    import ThirdParty from "$lib/components/auth/ThirdParty.svelte";
 	import { authedFetch } from "$lib/stores/auth";
 	import { user } from "$lib/stores/user";
 	import { faPen } from "@fortawesome/free-solid-svg-icons";
@@ -134,16 +135,19 @@
 				<span class="fw-bold text-capitalize">Display name</span>
 				<p class="text-muted m-0">Change your username visible to other users.</p>
 			</div>
-			<button class="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#displayNameModal"
-				>Edit</button
-			>
+			<button class="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#displayNameModal">
+				Edit
+			</button>
 		</div>
 		<div class="setting d-flex flex-row gap-3 w-100 border-bottom align-items-center pb-3">
 			<div class="d-flex flex-column flex-grow-1">
 				<span class="fw-bold text-capitalize">Password</span>
 				<p class="text-muted m-0">Change your password.</p>
 			</div>
-			<button class="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#passwordModal">Edit</button>
+			<ThirdParty>
+				<button class="btn btn-secondary px-3" data-bs-toggle="modal" data-bs-target="#passwordModal">Edit</button>
+				<span slot="disabled" class="text-muted">Disabled because your account is from a third-party provider.</span>
+			</ThirdParty>
 		</div>
 		<div class="setting d-flex flex-row gap-1 w-100 border-bottom align-items-center pb-3">
 			<div class="d-flex flex-column flex-grow-1">
@@ -155,14 +159,17 @@
 					<span class="visually-hidden">Loading...</span>
 				</div>
 			{/if}
-			{#if $user.enabled_2FA}
-				<button class="btn btn-danger px-3" on:click={toggle2FA}>Disable</button>
-				<button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#qrModal">
-					Show QR code
-				</button>
-			{:else}
-				<button class="btn btn-success px-3" on:click={toggle2FA}>Enable</button>
-			{/if}
+			<ThirdParty>
+				{#if $user.enabled_2FA}
+					<button class="btn btn-danger px-3" on:click={toggle2FA}>Disable</button>
+					<button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#qrModal">
+						Show QR code
+					</button>
+				{:else}
+					<button class="btn btn-success px-3" on:click={toggle2FA}>Enable</button>
+				{/if}
+				<span slot="disabled" class="text-muted">Disabled because your account is from a third-party provider.</span>
+			</ThirdParty>
 		</div>
 	</div>
 </div>
@@ -182,7 +189,14 @@
 				<form action="#" enctype="multipart/form-data" on:submit|preventDefault={handleAvatarUpdate}>
 					<div class="mb-3">
 						<label for="avatar" class="form-label visually-hidden">Upload new avatar</label>
-						<input type="file" class="form-control" id="avatar" name="profile_image" accept="image/*" required />
+						<input
+							type="file"
+							class="form-control"
+							id="avatar"
+							name="profile_image"
+							accept="image/*"
+							required
+						/>
 					</div>
 					<button
 						type="submit"
@@ -249,58 +263,63 @@
 </div>
 
 <!-- Password modal -->
-<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title" id="passwordModalLabel">Password</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-			</div>
-			<div class="modal-body p-4">
-				{#if passwordAlert}
-					<div class="alert alert-danger" role="alert">{passwordAlert}</div>
-				{/if}
-				<form action="#" on:submit|preventDefault={handlePasswordUpdate} class="d-flex flex-column gap-3">
-					<PasswordField askOld />
-					<button
-						type="submit"
-						class="btn btn-primary d-flex flex-row gap-2 align-items-center fw-bold w-100 justify-content-center"
-					>
-						{#if processing}
-							<div class="spinner-border spinner-border-sm spinner-grow-sm" role="status">
-								<span class="visually-hidden">Loading...</span>
-							</div>
-						{:else}
-							<Fa icon={faPen} />
-						{/if}
-						Update
-					</button>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- QR modal -->
-{#if $user.enabled_2FA}
-	<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+<ThirdParty>
+	<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="qrModalLabel">QR code</h5>
+					<h5 class="modal-title" id="passwordModalLabel">Password</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
 				</div>
 				<div class="modal-body p-4">
-					<div class="d-flex flex-column align-items-center">
-						<img
-							src={$user.qrcode_2FA}
-							alt="qrcode"
-							class="img-fluid rounded"
-							style="width: 256px; height: 256px;"
-						/>
+					{#if passwordAlert}
+						<div class="alert alert-danger" role="alert">{passwordAlert}</div>
+					{/if}
+					<form action="#" on:submit|preventDefault={handlePasswordUpdate} class="d-flex flex-column gap-3">
+						<PasswordField askOld />
+						<button
+							type="submit"
+							class="btn btn-primary d-flex flex-row gap-2 align-items-center fw-bold w-100 justify-content-center"
+						>
+							{#if processing}
+								<div class="spinner-border spinner-border-sm spinner-grow-sm" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							{:else}
+								<Fa icon={faPen} />
+							{/if}
+							Update
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</ThirdParty>
+
+<!-- QR modal -->
+
+{#if $user.enabled_2FA}
+	<ThirdParty>
+		<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="qrModalLabel">QR code</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+					</div>
+					<div class="modal-body p-4">
+						<div class="d-flex flex-column align-items-center">
+							<img
+								src={$user.qrcode_2FA}
+								alt="qrcode"
+								class="img-fluid rounded"
+								style="width: 256px; height: 256px;"
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</ThirdParty>
 {/if}

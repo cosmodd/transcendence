@@ -163,7 +163,8 @@ class ProfileView(generics.RetrieveAPIView):
             "profile_image": user.get_profile_image_url(),
             "display_name": user.display_name,
             "enabled_2FA": user.enabled_2FA,
-            "qrcode_2FA": user.qrcode_2FA.url
+            "qrcode_2FA": user.qrcode_2FA.url,
+            "third_party_auth": True if user.login_intra else False
         })
 
 

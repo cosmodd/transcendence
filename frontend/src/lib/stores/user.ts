@@ -8,6 +8,7 @@ interface User {
 	profile_image: string;
 	enabled_2FA: boolean;
 	qrcode_2FA: string;
+	third_party_auth: boolean;
 }
 
 export const user: Writable<Partial<User>> = writable({});
