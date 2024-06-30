@@ -1,12 +1,12 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import CreateTournamentSerializer, FillTournamentSerializer
+from .serializers import CreateTournamentSerializer, JoinTournamentSerializer
 from .models import Tournament
 import traceback
 
-class FillTournamentView(generics.CreateAPIView):
-	serializer_class = FillTournamentSerializer
+class JoinTournamentView(generics.CreateAPIView):
+	serializer_class = JoinTournamentSerializer
 	permission_classes = [permissions.IsAuthenticated]
 
 	def perform_create(self, serializer):
@@ -52,7 +52,7 @@ class CreateTournamentView(generics.CreateAPIView):
 			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ActiveTournamentsListView(generics.RetrieveAPIView):
-	queryset = Tournament.objects.all()
+	permission_classes = [permissions.IsAuthenticated]
 
 	def get(self, request, *args, **kwargs):
 		tournaments = Tournament.objects.filter(status__in=['in_progress', 'looking_for_players'])
@@ -64,16 +64,14 @@ class ActiveTournamentsListView(generics.RetrieveAPIView):
 					'id': t.id,
 					'status': t.status,
 					'players_count' : t.active_players.count() + t.past_players.count(),
-					'size': t.size
-					# 'active_players': [user.username for user in t.active_players.all()]
-					# 'games': [game.tournament_output() for game in t.games.all()]
+					'size': t.size,
+					'players': [user.username for user in t.active_players.all()]
 				}
 			)
 		return Response(tournaments_list)
 
 class SpecificTournamentView(generics.RetrieveAPIView):
-	queryset = Tournament.objects.all()
-	lookup_field = 'pk'
+	permission_classes = [permissions.IsAuthenticated]
 
 	def get_object(self):
 		return Tournament.objects.get(id=self.kwargs['pk'])

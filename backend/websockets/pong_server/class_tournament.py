@@ -30,11 +30,10 @@ async def IsItTournamentFirstConnection(username) -> bool:
 		active_players_count += 1
 
 	sys.stderr.write("TOURNAMENT NEEDS TO BE CREATED: " + str(active_players_count) + " " + tournament.size)
+
+	if active_players_count >= tournament.size:
+		return True
 	
-	if (active_players_count == 8 and tournament.size == 'eight'):
-		return True
-	if (active_players_count == 4 and tournament.size == 'four'):
-		return True
 	return False	
 
 async def IsUserActiveInTournament(username) -> bool:
@@ -57,7 +56,7 @@ class Tournament:
 		self.rooms_tasks = set()
 
 	def InitRound(self):
-		if (self.model.size == 'eight'):
+		if (self.model.size > 4):
 			return ROUND_QUARTER
 		return ROUND_SEMI
 	

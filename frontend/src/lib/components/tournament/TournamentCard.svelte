@@ -6,9 +6,10 @@
 	export let tournament: {
 		id: number;
 		name: string;
-		players_count: number;
-		size: "four" | "eight";
+		size: 4 | 8;
 		status: string;
+		players_count: number;
+		players: string[];
 	};
 
 	async function joinTournament(id: number) {
@@ -25,8 +26,6 @@
 			alert("Error! " + error.error)
 			return;
 		}
-
-		alert("Joined tournament.");
 	}
 </script>
 
@@ -34,7 +33,7 @@
 	<h4 class="m-0 fw-bold">{tournament.name ?? `Tournament ${tournament.id}`}</h4>
 	<div class="d-flex flex-row align-items-center gap-2 mb-2 text-muted">
 		<Fa icon={faUserGroup} />
-		<span>{tournament.players_count} / {tournament.size == "four" ? 4 : 8} players</span>
+		<span>{tournament.players_count} / {tournament.size} players</span>
 	</div>
 	<button on:click={() => joinTournament(tournament.id)} class="btn btn-primary">
 		<Fa icon={faRightToBracket} />

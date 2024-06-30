@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Tournament
 
-class FillTournamentSerializer(serializers.ModelSerializer):
+class JoinTournamentSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 
     class Meta:
@@ -9,7 +9,7 @@ class FillTournamentSerializer(serializers.ModelSerializer):
         fields = ['id']
 
     def create(self, validated_data):
-        tournament = Tournament.objects.FillTournament(
+        tournament = Tournament.objects.JoinTournament(
 			id=validated_data['id'],
             user=self.context['request'].user
         )

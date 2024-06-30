@@ -3,10 +3,19 @@ from users.models import Account
 from pong.models import Game
 
 class TournamentManager(models.Manager):
-	def FillTournament(self, id, user):
-		if not id:
-			raise ValueError("Tournament must have an id.")
 
+	def CreateTournament(self, name, size, user):
+		# User already signed somewhere
+		if user.active_tournaments.exists():
+			raise ValueError("An user is already signed in a tournament.")
+
+		tournament = Tournament.objects.create(name=name, size=size)
+		tournament.active_players.add(user)
+
+		tournament.save()
+		return tournament
+
+	def JoinTournament(self, id, user):
 		# User already signed somewhere
 		if user.active_tournaments.exists():
 			raise ValueError("An user is already signed in a tournament.")
@@ -18,50 +27,32 @@ class TournamentManager(models.Manager):
 
 		tournament.active_players.add(user)
 
-		if (tournament.size == 'four' and tournament.active_players.count() >= 4) or \
-		(tournament.size == 'height' and tournament.active_players.count() >= 8):
+		if (tournament.active_players.count() >= tournament.size):
 			tournament.is_full = True
 			tournament.status = 'in_progress'
 
 		tournament.save()
-
-		return tournament
-
-	def CreateTournament(self, name, size, user):
-		if not size:
-			raise ValueError("Tournament must have a size.")
-		if not name:
-			raise ValueError("Tournament must have a name.")
-
-		# User already signed somewhere
-		if user.active_tournaments.exists():
-			raise ValueError("User is already signed in a tournament.")
-		
-		tournament = Tournament.objects.create(name=name, size=size)
-		tournament.active_players.add(user)
-		tournament.save()
-
 		return tournament
 
 class Tournament(models.Model):
-	STATUS_CHOICES = (
-		('looking_for_players', 'Looking for players'),
-		('in_progress', 'In progress'),
-		('over', 'Over'),
-		('cancelled', 'Cancelled')
-	)
-	SIZE_CHOICES = (
-		('four', 'Four'),
-		('eight', 'Eight')
-	)
+
+	class Statuses(models.TextChoices):
+		LOOKING_FOR_PLAYERS = 'looking_for_players', 'Looking for players'
+		IN_PROGRESS = 'in_progress', 'In progress'
+		OVER = 'over', 'Over'
+		CANCELLED = 'cancelled', 'Cancelled'
+
+	class Sizes(models.IntegerChoices):
+		FOUR = 4
+		EIGHT = 8
 
 	name = models.CharField(max_length=100)
-	size = models.CharField(max_length=10, choices=SIZE_CHOICES, default='four')
+	size = models.IntegerField(choices=Sizes.choices, default=Sizes.FOUR)
 	is_full = models.BooleanField(default=False)	
 	active_players = models.ManyToManyField(Account, related_name='active_tournaments') # 1 max
 	past_players = models.ManyToManyField(Account, related_name='past_tournaments')
 	games = models.ManyToManyField(Game, related_name='tournament')
-	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='looking_for_players')
+	status = models.CharField(max_length=20, choices=Statuses.choices, default=Statuses.LOOKING_FOR_PLAYERS)
 	winner = models.ForeignKey(Account, on_delete=models.SET_NULL, null=True, related_name='won_tournaments')
 
 	objects = TournamentManager()

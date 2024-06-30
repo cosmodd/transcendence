@@ -9,8 +9,9 @@
 		name: string;
 		id: number;
 		status: string;
+		size: 4 | 8;
 		players_count: number;
-		size: "eight" | "four";
+		players: string[];
 	};
 
 	let tournaments: Tournament[] = [];
@@ -100,10 +101,10 @@
 						<input type="text" class="form-control" id="name" name="name" placeholder="Tournament Name" required />
 					</div>
 					<div class="mb-3 btn-group w-100 border border-1">
-						<input type="radio" name="size" value="four" class="btn-check" id="four" checked>
+						<input type="radio" name="size" value="4" class="btn-check" id="four" checked>
 						<label class="btn btn-dark" for="four">4 Players</label>
 
-						<input type="radio" name="size" value="eight" class="btn-check" id="eight">
+						<input type="radio" name="size" value="8" class="btn-check" id="eight">
 						<label class="btn btn-dark" for="eight">8 Players</label>
 					</div>
 					<button
