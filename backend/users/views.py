@@ -24,11 +24,11 @@ class RegisterView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # check if required fields are present
-        if not request.data['username']:
+        if not "username" in request.data:
             return Response({"message": "Username is required"}, status=401)
-        if not request.data['email']:
+        if not "email" in request.data:
             return Response({"message": "Email is required"}, status=401)
-        if not request.data['password']:
+        if not "password" in request.data:
             return Response({"message": "Password is required"}, status=401)
 
         # check if username and email already exists
@@ -115,9 +115,9 @@ class Check_two_factor_code(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        if not request.data['id']:
+        if not "id" in request.data:
             return Response({"message": "User id is required"}, status=400)
-        if not request.data['code']:
+        if not "code" in request.data:
             return Response({"message": "2FA code is required"}, status=400)
         user = Account.objects.get(id=request.data['id'])
         if not user.waiting_2FA:
