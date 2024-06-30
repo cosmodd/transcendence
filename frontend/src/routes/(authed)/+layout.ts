@@ -3,7 +3,7 @@ import { user } from "$lib/stores/user.js";
 import { initWebsocket } from "$lib/stores/websocket";
 import { redirect } from "@sveltejs/kit";
 
-async function loadUser(fetch: Function) {
+async function loadUser() {
 	let response = await authedFetch('/api/user/');
 
 	if (!response.ok) {
@@ -27,8 +27,8 @@ async function loadUser(fetch: Function) {
 	user.set(data);
 }
 
-export async function load({ fetch }) {
+export async function load() {
 	if (!isAuthed()) redirect(302, '/login');
-	await loadUser(fetch);
+	await loadUser();
 	initWebsocket();
 }
