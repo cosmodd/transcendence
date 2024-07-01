@@ -2,6 +2,7 @@
 	import { goto } from "$app/navigation";
 	import NavLink from "$lib/components/NavLink.svelte";
 	import NotificationGame from "$lib/components/notification/NotificationGame.svelte";
+	import ToastContainer from "$lib/components/toasts/ToastContainer.svelte";
 	import { logout } from "$lib/stores/auth";
 	import { user } from "$lib/stores/user";
 	import { faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +15,7 @@
 </script>
 
 <NotificationGame />
+<ToastContainer />
 
 <div class="container-fluid d-flex flex-column vh-100">
 	<nav class="navbar navbar-expand mb-2">
