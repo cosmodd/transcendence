@@ -240,7 +240,16 @@ class UpdateProfileView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        return Response(status=200)
+        if 'old_password' in serializer.validated_data:
+            serializer.validated_data.pop('old_password')
+
+        if 'password' in serializer.validated_data:
+            serializer.validated_data.pop('password')
+
+        if 'profile_image' in serializer.validated_data:
+            serializer.validated_data['profile_image'] = instance.get_profile_image_url()
+
+        return Response(serializer.validated_data, status=200)
 
 
 
