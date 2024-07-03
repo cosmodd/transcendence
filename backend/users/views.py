@@ -1,6 +1,6 @@
-from django.views.generic import RedirectView, View
+from django.views.generic import RedirectView
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, parsers
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -8,10 +8,10 @@ from rest_framework_simplejwt.tokens import UntypedToken
 from .models import Account
 from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, UpdateProfileSerializer, UserOnlineSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-import re, requests, random, string, os, sys
+import re, requests, os
 from django.http import JsonResponse
-from datetime import datetime
 from friend.models import OnlineStatus
+from django.contrib.auth.hashers import make_password
 
 # *******************************************************************************************************************
 # ************************************************* Register / Login ************************************************
@@ -93,6 +93,9 @@ class LoginView(TokenObtainPairView):
         if user.enabled_2FA:
             user.set_date_2FA()
             return Response({"id": user.id}, status=200)
+
+        if user.login_intra:
+            return Response({"message": "Login with your 42 account"}, status=401)
 
         refresh = RefreshToken.for_user(user)
         return Response({
@@ -211,6 +214,24 @@ class UpdateProfileView(generics.UpdateAPIView):
         except:
             return Response({"message": "Unauthorized"}, status=401)
         return self.request.user
+    
+    def perform_update(self, serializer):
+        is_intra = self.get_object().login_intra
+
+        if is_intra:
+            if 'old_password' in serializer.validated_data:
+                serializer.validated_data.pop('old_password')
+
+            if 'password' in serializer.validated_data:
+                serializer.validated_data.pop('password')
+
+            if 'enabled_2FA' in serializer.validated_data:
+                serializer.validated_data.pop('enabled_2FA')
+
+        if 'password' in serializer.validated_data:
+            serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
+
+        serializer.save()
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -219,15 +240,7 @@ class UpdateProfileView(generics.UpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        new_password = serializer.validated_data.get('password', None)
-        if new_password:
-            instance.set_password(new_password)
-            instance.save()
-
-        if 'profile_image' in serializer.validated_data:
-            serializer.validated_data["profile_image"] = instance.get_profile_image_url()
-
-        return Response(serializer.validated_data)
+        return Response(status=200)
 
 
 
