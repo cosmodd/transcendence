@@ -12,10 +12,10 @@
 		faTrophy,
 		faUserPlus,
 	} from "@fortawesome/free-solid-svg-icons";
-	import { onDestroy, onMount } from "svelte";
 	import Fa from "svelte-fa";
 
 	let userData: any = null;
+	let userStatus: any = null;
 	let games: any[] = [];
 
 	$: queriedUsername = $page.params.user;
@@ -30,12 +30,19 @@
 
 		const response = await authedFetch(`/api/user/${queriedUsername}/`);
 
-		if (!response.ok) {
-			userData = null;
-			return;
-		}
+		if (!response.ok) return;
 
 		userData = await response.json();
+	}
+
+	async function loadStatus() {
+		if (userData == null) return;
+
+		const response = await authedFetch(`/api/user_status/${userData.username}/`);
+
+		if (!response.ok) return;
+
+		userStatus = await response.json();
 	}
 
 	function loadGames() {
@@ -51,7 +58,10 @@
 
 	$: {
 		queriedUsername;
-		loadUser().then(() => loadGames());
+		loadUser().then(() => {
+			loadStatus();
+			loadGames();
+		});
 	}
 </script>
 
@@ -75,7 +85,11 @@
 				/>
 				<h3 class="m-0 mt-2 fw-bold">{userData.display_name}</h3>
 				<p class="m-0 text-muted">@{userData.username}</p>
-				<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
+				{#if userStatus != null && userStatus.is_online}
+					<span class="mt-2 badge rounded-pill bg-success">Online</span>
+				{:else}
+					<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
+				{/if}
 			</div>
 			<hr class="m-0" />
 			<div class="d-flex flex-column gap-2">
@@ -128,7 +142,7 @@
 				</div>
 			{:else}
 				<h3 class="fw-bold mb-3">Games History</h3>
-				<div class="container-fluid overflow-y-scroll d-flex flex-column gap-1 p-0">
+				<div class="container-fluid overflow-y-auto d-flex flex-column gap-1 p-0">
 					{#each games.reverse() as game}
 						<MatchSummary {game} user={userData} />
 					{/each}

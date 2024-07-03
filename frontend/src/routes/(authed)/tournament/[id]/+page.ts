@@ -10,7 +10,7 @@ export async function load({ params }) {
 	}
 
 	const tournament = await response.json();
-	const rounds = Array.from({ length: Math.log2(tournament.size - 1) }, (_, i) => Math.pow(2, i + 1)).reverse();
+	const rounds = Array.from({ length: Math.log2(tournament.size) }, (_, i) => Math.pow(2, i)).reverse();
 
 
 	let gamesCopy = tournament.games.slice().concat(Array(tournament.size - 1 - tournament.games.length).fill(null));

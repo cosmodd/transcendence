@@ -8,6 +8,8 @@
 	$: tournament = $page.data.tournament;
 	$: rounds = $page.data.arrangedGames;
 
+	$: console.log(rounds);
+
 </script>
 
 <div class="d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
@@ -20,18 +22,14 @@
 					</div>
 				{/each}
 			</div>
-			<div class="connectors d-flex flex-column">
-				{#each games as _}
-					<div class="connector flex-grow-1 position-relative" />
-				{/each}
-			</div>
+			{#if games.length > 1}
+				<div class="connectors d-flex flex-column">
+					{#each games as _}
+						<div class="connector flex-grow-1 position-relative" />
+					{/each}
+				</div>
+			{/if}
 		{/each}
-
-		<div class="round final d-flex flex-column justify-content-between">
-			<div class="matchup flex-grow-1 d-flex align-items-center py-2">
-				<Matchup game={rounds[rounds.length - 1][0]} />
-			</div>
-		</div>
 	</div>
 </div>
 

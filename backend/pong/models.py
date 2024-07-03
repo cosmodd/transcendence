@@ -34,10 +34,17 @@ class Game(models.Model):
 		return f"Partie ({self.id}), {self.status}, Room_ID: {self.room_id}, {scores_str}, Winner: {winner_username}"
 	
 	def tournament_output(self) -> dict:
-		players_names = [player.username for player in self.players.all()]
+		players = [
+			{
+				"username": player.username,
+				"display_name": player.display_name,
+				"profile_image": player.get_profile_image_url()
+			}
+			for player in self.players.all()
+		]
 		scores = [score.score for score in self.scores.all()]
 		return {
-			"players": players_names,
+			"players": players,
 			"type": self.type,
 			"round": self.round,
 			"status": self.status,

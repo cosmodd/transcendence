@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('auth/42/redirect/', RedirectTo42View.as_view(), name='authentification-with-42-redirect'),
     path('auth/42/', Handle42AuthView.as_view(), name='authentification-with-42'),
-    path('user_status/<str:username>', UserOnlineStatusView.as_view(), name='user-status'),
+    path('user_status/<str:username>/', UserOnlineStatusView.as_view(), name='user-status'),
     
     # TODO : clean this
     path('profile/update/', UpdateProfileView.as_view(), name='update-profile'),

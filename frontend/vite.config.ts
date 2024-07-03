@@ -5,6 +5,10 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
+		https: {
+			key: '/certification/key.pem',
+			cert: '/certification/cert.pem'
+		},
 		proxy: {
 			'/api': 'http://django:8000',
 			'/static': 'http://django:8000',

@@ -47,6 +47,22 @@
 	</div>
 	<div class="toast-body">
 		{data.description ?? ""}
+		{#if data.buttons}
+			<div class="buttons d-grid mt-2">
+				{#each data.buttons as button}
+					<button
+						class="btn btn-primary btn-sm"
+						on:click={() => {
+							button?.action();
+							if (button?.dismiss)
+								data.remove();
+						}}
+					>
+						{button.label ?? "OK"}
+					</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 	{#if data.showProgress && data.duration > 0}
 		<div class="progress" style="height: 2px;">
@@ -61,3 +77,10 @@
 		</div>
 	{/if}
 </div>
+
+
+<style>
+	.toast {
+		--bs-toast-bg: rgb(var(--bs-body-bg-rgb));
+	}
+</style>

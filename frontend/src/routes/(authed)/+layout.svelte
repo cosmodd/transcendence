@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import NavLink from "$lib/components/NavLink.svelte";
-	import NotificationGame from "$lib/components/notification/NotificationGame.svelte";
 	import ToastContainer from "$lib/components/toasts/ToastContainer.svelte";
 	import { logout } from "$lib/stores/auth";
+    import toasts from "$lib/stores/toasts";
 	import { user } from "$lib/stores/user";
 	import { faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
@@ -12,9 +12,30 @@
 		logout();
 		goto("/login");
 	}
+
+	function handleNotifications(event: CustomEvent<any>) {
+		const data = event.detail;
+
+		console.log("Received notification : ", data);
+
+		const message = data.sender === "system" ? data.message : "Join the game!";
+
+		toasts.add({
+			type: "info",
+			title: "Tournament",
+			description: message,
+			buttons: [{
+				label: "Go to match!",
+				action: () => goto('/game/online/'),
+				dismiss: true
+			}],
+			duration: 30_000, // Refer to .\backend\websockets\pong_server\gamelogic.py
+		});
+	}
 </script>
 
-<NotificationGame />
+<svelte:window on:notification={handleNotifications} />
+
 <ToastContainer />
 
 <div class="container-fluid d-flex flex-column vh-100">

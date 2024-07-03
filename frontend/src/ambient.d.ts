@@ -1,10 +1,11 @@
 interface Tournament {
 	name: string;
 	id: number;
-	status: string;
+	status: "looking_for_players" | "in_progress" | "over" | "cancelled";
 	size: 4 | 8;
 	players_count: number;
 	players: string[];
+	games: TournamentGame[];
 };
 
 interface TournamentGame {
@@ -25,14 +26,21 @@ interface ToastData {
 	title?: string;
 	description: string;
 	showProgress?: boolean;
-
+	buttons?: ToastButton[];
 	remove: () => void;
 };
 
+interface ToastButton {
+	label: string;
+	dismiss?: boolean;
+	action: () => void;
+};
+
 interface ToastOptions {
+	description: string;
 	duration?: number;
 	title?: string;
-	description: string;
 	type?: "info" | "success" | "warning" | "error";
 	showProgress?: boolean;
+	buttons?: Partial<ToastButton>[];
 };

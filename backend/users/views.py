@@ -194,8 +194,7 @@ class UserProfile(generics.RetrieveAPIView):
             "id": user.id,
             "username": user.username,
             "profile_image": user.get_profile_image_url(),
-            "display_name": user.display_name,
-            "online_status": OnlineStatus.objects.get(user=user).is_online
+            "display_name": user.display_name
         })
 
 # update user profile

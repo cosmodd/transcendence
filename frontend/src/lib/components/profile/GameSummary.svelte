@@ -34,7 +34,7 @@
 	$: hasWon = game.winner === user.username;
 	$: resultColor = hasWon ? "success" : "danger";
 	$: dateString = new Date(game.date_begin).toLocaleDateString("en-US");
-	$: formattedType = game.type === "duel" ? "Duel" : "Tournament - " + game.round;
+	$: formattedType = game.type === "duel" ? "Duel" : "Tournament";
 </script>
 
 <div class="d-flex justify-content-between align-items-center p-3 border-start border-3 border-{resultColor}">
@@ -44,7 +44,7 @@
 			<span class="fw-bold">{formattedType}</span>
 		</div>
 		<div class="d-flex gap-2 col align-items-center">
-			<span class="badge rounded-pill bg-{resultColor}">{hasWon ? "Won" : "Lost"}</span>
+			<span class="badge rounded-pill bg-{resultColor}">{`${hasWon ? "Won" : "Lost"}${game.type === "tournament" ? ` / ${game.round}` : ""}`}</span>
 			<div class="score d-flex gap-2 fw-bold align-items-center" style="font-variant-numeric: tabular-nums">
 				<span class="text-{resultColor}">
 					{game.scores[0].toString().padStart(2, "0")}

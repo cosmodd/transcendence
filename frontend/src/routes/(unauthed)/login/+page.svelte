@@ -35,6 +35,7 @@
 		if (!loginResponse.ok) {
 			feedbacks.username = responseData["username"] ?? [];
 			feedbacks.password = responseData["password"] ?? [];
+			alertMessage = responseData["message"] ?? "";
 			return;
 		}
 

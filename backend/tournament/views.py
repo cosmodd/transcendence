@@ -65,7 +65,7 @@ class ActiveTournamentsListView(generics.RetrieveAPIView):
 					'status': t.status,
 					'players_count' : t.active_players.count() + t.past_players.count(),
 					'size': t.size,
-					'players': [user.username for user in t.active_players.all()]
+					'players': [user.username for user in t.active_players.all()] + [user.username for user in t.past_players.all()]
 				}
 			)
 		return Response(tournaments_list)

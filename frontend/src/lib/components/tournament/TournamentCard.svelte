@@ -1,17 +1,11 @@
 <script lang="ts">
-	import { faArrowRightFromBracket, faEye, faRightFromBracket, faRightToBracket, faTrash, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+	import { faEye, faRightToBracket, faUserGroup } from "@fortawesome/free-solid-svg-icons";
     import { authedFetch } from "$lib/stores/auth";
 	import Fa from "svelte-fa";
-    import { user } from "$lib/stores/user";
+    import toasts from "$lib/stores/toasts";
+    import { goto } from "$app/navigation";
 
-	export let tournament: {
-		id: number;
-		name: string;
-		size: 4 | 8;
-		status: string;
-		players_count: number;
-		players: string[];
-	};
+	export let tournament: Tournament;
 
 	export let hasUser: boolean;
 	export let isUserInTournament: boolean;
@@ -26,10 +20,20 @@
 
 		if (!response.ok) {
 			const error = await response.json();
-			console.log("Error! " + error.error)
-			alert("Error! " + error.error)
+			toasts.add({
+				type: "error",
+				description: error.error,
+				duration: 5000,
+			});
 			return;
 		}
+
+		toasts.add({
+			type: "success",
+			description: "Joined tournament"
+		});
+
+		goto(`/tournament/${id}`);
 	}
 </script>
 
@@ -50,10 +54,6 @@
 				<Fa icon={faEye} />
 				<span class="ms-1 fw-bold">View</span>
 			</a>
-			<button on:click={() => { /* TODO: Leave tournament */ }} class="btn btn-danger flex-fill" disabled>
-				<Fa icon={faRightFromBracket} />
-				<span class="ms-1 fw-bold">Leave</span>
-			</button>
 		{/if}
 	</div>
 </div>
