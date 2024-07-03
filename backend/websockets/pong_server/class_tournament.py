@@ -29,8 +29,6 @@ async def IsItTournamentFirstConnection(username) -> bool:
 	async for user in AccountModel.objects.filter(active_tournaments__id=tournament.id).all():
 		active_players_count += 1
 
-	sys.stderr.write("TOURNAMENT NEEDS TO BE CREATED: " + str(active_players_count) + " " + tournament.size)
-
 	if active_players_count >= tournament.size:
 		return True
 	

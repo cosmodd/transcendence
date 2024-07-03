@@ -253,7 +253,7 @@ async def TournamentCreatorHandler(client):
     return new_tournament
 
 async def TournamentLaunchGamesForRound(tournament):
-    from chat.consumers import send_notification
+    import requests
 
     games_count = ROUNDS_TO_COUNT[tournament.round]
 
@@ -268,7 +268,9 @@ async def TournamentLaunchGamesForRound(tournament):
         sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Added " + client2.username + "\n")
         try:
             room = asyncio.create_task(NewRoom([client1, client2], DATA_LOBBY_GAME_TYPE_TOURNAMENT, tournament))
-            await send_notification(client1.username, client2.username)
+            reponse = requests.post("http://127.0.0.1:8000/api/internal/notification/", data={"user1": client1.username, "user2": client2.username})
+            if reponse.status_code != 200:
+                print("notification failed", file=sys.stderr)
             sys.stderr.write("DEBUG:: TournamentLaunchGamesForRound :: Sended notification " + client1.username + "\n")
             tournament.rooms_tasks.add(room)
             room.add_done_callback(tournament.rooms_tasks.discard)

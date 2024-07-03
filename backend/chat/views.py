@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from .consumers import send_notification
 from .models import Rooms, RoomMessages
 from .serializers import  RoomsSerializer, RoomMessagesSerializer
 from users.models import Account
 import sys
+from asgiref.sync import async_to_sync
 
 class RoomView(APIView):
     permission_classes = [IsAuthenticated]
@@ -71,3 +73,12 @@ class ChatView(APIView):
             room = Rooms.objects.create(name=room_name, conversation_type='private')
             room.members.add(current_user, target_user)
         return Response({'room': room_name}, 200)
+    
+class InternalNotificationView(APIView):
+    def post(self, request):
+        if request.META.get('REMOTE_ADDR') != '127.0.0.1':
+            return Response({'error': 'Unauthorized'}, status=401)
+        first_user = request.data.get('user1')
+        second_user = request.data.get('user2')
+        async_to_sync(send_notification)(first_user, second_user)
+        return Response({'info': 'Notification sent'}, status=200)

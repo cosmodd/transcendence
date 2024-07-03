@@ -10,6 +10,7 @@ import json, sys
 from channels.db import database_sync_to_async
 from users.models import Account
 import asyncio
+from friend.models import Block
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -53,6 +54,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = data_json.get('message', '')
         room_name = data_json['room_name']
         message_type = data_json.get('message_type', 'text')
+
+        #check if the user is blocked
+        blocked = await self.get_blocked_users(room_name)
+        if blocked:
+            return
 
         print(f"Message_type: {message_type}", file=sys.stderr)
 
@@ -311,6 +317,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_user_from_username(self, username):
         return Account.objects.get(username=username)
+    
+    @database_sync_to_async
+    def get_blocked_users(self, room_name):
+        room = Rooms.objects.get(name=room_name)
+        room_members = list(room.members.all())
+        for member in room_members:
+            if Block.objects.filter(user=self.user, blocked_user=member).exists():
+                return True
+        return False
     
     #a function that will be used outside the django project to send a notification to 2 users
 async def send_notification(receiver1, receiver2):
