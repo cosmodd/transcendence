@@ -58,7 +58,7 @@
 		{#if friends.length > 0}
 			<div class="grid-container overflow-y-auto gap-3">
 				{#each friends as relation}
-					<Friend data={relation} />
+					<Friend data={relation} on:remove={loadFriendsList} />
 				{/each}
 			</div>
 		{:else}

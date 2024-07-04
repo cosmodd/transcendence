@@ -1,12 +1,11 @@
 import { authedFetch } from '$lib/stores/auth.js';
+import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
 	const response = await authedFetch(`/api/tournament/${params.id}/`);
 
 	if (!response.ok) {
-		return {
-			tournament: null
-		};
+		error(404, 'Tournament not found');
 	}
 
 	const tournament = await response.json();

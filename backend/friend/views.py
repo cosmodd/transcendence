@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Friend, FriendRequest, Block
 from .serializers import FriendSerializer, FriendRequestSerializer, BlockSerializer
 from users.models import Account
-import sys
 
 #list of friends
 class FriendListView(generics.ListAPIView):
@@ -29,7 +28,7 @@ class SendFriendRequestView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        target = request.data['to_user']
+        target = request.data['username']
         try :
             target = Account.objects.get(username=target)
         except:
@@ -37,7 +36,6 @@ class SendFriendRequestView(APIView):
         #check if the user target is blocked by the user
         if Block.objects.filter(user=request.user, blocked_user=target).exists():
             return Response({'error': 'You have blocked this user'}, status=400)
-        print("HERE", file=sys.stderr)
         #check if the user is blocked by the user target
         if Block.objects.filter(user=target, blocked_user=request.user).exists():
             return Response({'error': 'You are blocked by this user'}, status=400)
@@ -49,7 +47,13 @@ class SendFriendRequestView(APIView):
             return Response({'error': 'A friend request has already been sent'}, status=400)
         #check if the user target has already sent a friend request
         if FriendRequest.objects.filter(from_user=target, to_user=request.user).exists():
-            return Response({'error': 'You have already received a friend request from this user'}, status=400)
+            # Accept the friend request
+            friend_request = FriendRequest.objects.get(from_user=target, to_user=request.user)
+            Friend.objects.create(user=friend_request.to_user, friend=friend_request.from_user)
+            Friend.objects.create(user=friend_request.from_user, friend=friend_request.to_user)
+            friend_request.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         return self.create(request, target)
 
     def create(self, request, target):
@@ -72,7 +76,7 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
             return Response({'error': 'Friend request not found'}, status=404)
 
     def get_object(self, request, *args, **kwargs):
-        target = Account.objects.get(username=request.data['from_user'])
+        target = Account.objects.get(username=request.data['username'])
         return FriendRequest.objects.get(from_user=target, to_user=request.user)
 
 # when the user rejects a friend request
@@ -89,7 +93,7 @@ class RejectFriendRequestView(generics.DestroyAPIView):
             return Response({'error': 'Friend request not found'}, status=404)
 
     def get_object(self, request, *args, **kwargs):
-        target = Account.objects.get(username=request.data['from_user'])
+        target = Account.objects.get(username=request.data['username'])
         return FriendRequest.objects.get(from_user=target, to_user=request.user)
     
 #remove a friend
@@ -99,45 +103,44 @@ class RemoveFriendView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            friend = self.get_object(request, *args, **kwargs)
-            friend.delete()
+            target = Account.objects.get(username=request.data['username'])
+            relation = Friend.objects.get(user=request.user, friend=target)
+            relation.delete()
+            relation = Friend.objects.get(user=target, friend=request.user)
+            relation.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response({'error': 'Friend not found'}, status=404)
 
-    def get_object(self, request, *args, **kwargs):
-        target = Account.objects.get(username=request.data['friend'])
-        return Friend.objects.get(user=request.user, friend=target)
-        
 # when the user blocks another user
 class BlockUserView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = BlockSerializer
 
     def create(self, request, *args, **kwargs):
-        blocked_user = request.data['blocked_user']
+        to_block = request.data['username']
         try:
-            blocked_user = Account.objects.get(username=request.data['blocked_user'])
+            to_block = Account.objects.get(username=to_block)
         except:
             return Response({'error': 'User not found'}, status=404)
         
-        if request.user == blocked_user:
+        if request.user == to_block:
             return Response({'error': 'You cannot block yourself'}, status=400)
-        if Block.objects.filter(user=request.user, blocked_user=blocked_user).exists():
+        if Block.objects.filter(user=request.user, blocked_user=to_block).exists():
             return Response({'error': 'You have already blocked this user'}, status=400)
         #check if they are already friendsso dont block them
-        if Friend.objects.filter(user=request.user, friend=blocked_user).exists():
+        if Friend.objects.filter(user=request.user, friend=to_block).exists():
             return Response({'error': "Can't block a friend"}, status=400)
         #check if a friend request has already been sent if so remove it
-        if FriendRequest.objects.filter(from_user=request.user, to_user=blocked_user).exists():
-            FriendRequest.objects.filter(from_user=request.user, to_user=blocked_user).delete()
+        if FriendRequest.objects.filter(from_user=request.user, to_user=to_block).exists():
+            FriendRequest.objects.filter(from_user=request.user, to_user=to_block).delete()
         #check if the user target has already sent a friend request if so remove it
-        if FriendRequest.objects.filter(from_user=blocked_user, to_user=request.user).exists():
-            FriendRequest.objects.filter(from_user=blocked_user, to_user=request.user).delete()
-        return super().create(request, *args, **kwargs)
+        if FriendRequest.objects.filter(from_user=to_block, to_user=request.user).exists():
+            FriendRequest.objects.filter(from_user=to_block, to_user=request.user).delete()
+        return self.block_user(request, to_block)
     
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def block_user(self, request, to_block):
+        Block.objects.create(user=request.user, blocked_user=to_block)
+        return Response(status=status.HTTP_201_CREATED)
 
 # when the user unblocks another user
 class UnblockUserView(generics.DestroyAPIView):
@@ -153,4 +156,5 @@ class UnblockUserView(generics.DestroyAPIView):
             return Response({'error': 'Block not found'}, status=404)
 
     def get_object(self, request, *args, **kwargs):
-        return Block.objects.get(user=request.user, blocked_user=request.data['blocked_user'])
+        target = Account.objects.get(username=request.data['username'])
+        return Block.objects.get(user=request.user, blocked_user=target)

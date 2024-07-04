@@ -17,11 +17,11 @@
 			<Avatar src={players[0]?.profile_image ?? "/static/images/default_profile_image.jpg"} size={24} />
 			<span class="displayname fw-bold me-1">{players[0]?.username ?? "TBD"}</span>
 			{#if game.status == "over"}
-			<span class="score badge bg-{firstPlayerWon ? 'success' : 'danger'} ms-auto">{scores[0] ?? "N/A"}</span>
+				<span class="score badge bg-{firstPlayerWon ? 'success' : 'danger'} ms-auto">{scores[0] ?? "N/A"}</span>
 			{:else if game.status == "cancelled"}
-			<span class="score badge bg-danger ms-auto">CNCLD</span>
+				<span class="score badge bg-danger ms-auto">CNCLD</span>
 			{:else}
-			<span class="score badge bg-secondary ms-auto">N/A</span>
+				<span class="score badge bg-secondary ms-auto">N/A</span>
 			{/if}
 		</a>
 		<hr class="m-0 border-2" />

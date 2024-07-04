@@ -13,7 +13,7 @@ export type Conversation = {
 	room_name: string;
 	last_message: string | null;
 	last_message_sender: string | null;
-	chatting_with: string;
+	chatting_with: SimpleUser;
 	message_type?: string;
 };
 

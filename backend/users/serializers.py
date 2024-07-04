@@ -3,6 +3,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Account
 import sys
 
+class SimpleAccountSerializer(serializers.ModelSerializer):
+    profile_image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Account
+        fields = ['display_name', 'username', 'profile_image', 'is_online']
+
+    def get_profile_image(self, obj):
+        return obj.get_profile_image_url()
+
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account

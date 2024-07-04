@@ -28,7 +28,10 @@
 			buttons: [
 				{
 					label: "Go to match!",
-					action: () => goto("/game/online/"),
+					action: async () => {
+						await goto("/");
+						await goto("/game/online/");
+					},
 					dismiss: true,
 				},
 			],

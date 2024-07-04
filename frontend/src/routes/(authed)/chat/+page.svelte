@@ -1,32 +1,33 @@
 <script lang="ts">
-	import UserSelect from "$lib/components/chat/UserSelect.svelte";
-	import Message from "$lib/components/chat/Message.svelte";
+	import Avatar from "$lib/components/Avatar.svelte";
 	import GameInvite from "$lib/components/chat/GameInvite.svelte";
-	import { user } from "$lib/stores/user";
-	import { onMount, tick } from "svelte";
-    import { authedFetch } from "$lib/stores/auth";
-	import { sendMessage, sendInvitation } from "$lib/stores/websocket";
-	import type { Conversation, ChatMessage } from "$lib/stores/websocket";
+	import Message from "$lib/components/chat/Message.svelte";
+	import UserSelect from "$lib/components/chat/UserSelect.svelte";
+	import { authedFetch } from "$lib/stores/auth";
+	import type { ChatMessage, Conversation } from "$lib/stores/websocket";
+	import { sendInvitation, sendMessage } from "$lib/stores/websocket";
+    import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+	import { tick } from "svelte";
+    import Fa from "svelte-fa";
 
 	//	******************************************************************************************************	//
 	//													Code													//
 	//	******************************************************************************************************	//
 
-	
 	let list_conversation = new Map<string, Conversation>();
-	let current_messages : ChatMessage[] = [];
-	let selected_conversation : Conversation | null = null;
-	let new_message : string = "";
-	let messages_container : HTMLDivElement;
-	let online_status : boolean = false;
+	let current_messages: ChatMessage[] = [];
+	let selected_conversation: Conversation | null = null;
+	let new_message: string = "";
+	let messages_container: HTMLDivElement;
+	let online_status: boolean = false;
 
 	//	******************************************************************************************************	//
 	//													Part 1													//
 	//	******************************************************************************************************	//
 	async function loadConversationList() {
 		console.log("Loading conversation list");
-		const response = await authedFetch("/api/list_conversation/").catch(_ => null);
-		const data = await response?.json().catch(_ => null);
+		const response = await authedFetch("/api/list_conversation/").catch((_) => null);
+		const data = await response?.json().catch((_) => null);
 		//console.log(data);
 		if (data) {
 			for (let element of data) {
@@ -47,14 +48,13 @@
 	async function loadConversationMessages() {
 		console.log("Loading conversation messages");
 		let room_name = selected_conversation?.room_name;
-		console.log("room :",room_name);
-		if (!room_name)
-			return;
+		console.log("room :", room_name);
+		if (!room_name) return;
 		//console.log("room :",room_name);
 		//console.log("selected :",selected);
 		//console.log("list conversation :",list_conversation);
-		const response = await authedFetch("/api/room_messages/" + room_name + '/' ).catch(_ => null);
-		const data = await response?.json().catch(_ => null);
+		const response = await authedFetch("/api/room_messages/" + room_name + "/").catch((_) => null);
+		const data = await response?.json().catch((_) => null);
 		//console.log(data);
 		if (data) {
 			if (data.info) {
@@ -74,120 +74,123 @@
 		loadConversationMessages();
 	}
 
-	// $: messages = selected_conversation.map(
-	// 	(x: { sender: string; message: string; room_name: string }) => {
-	// 		return { 
-	// 			username: x.sender,
-	// 			message: x.message,
-	// 			room_name: x.room_name
-	// 		};
-	// 	});
-	
-	
-
 	//	******************************************************************************************************	//
 	//													Part 4													//
 	//	******************************************************************************************************	//
-	
+
 	function handleWsMessage() {
 		if (new_message.trim() !== "") {
 			const room_name = selected_conversation?.room_name;
-			if (!room_name)
-				return;
+			if (!room_name) return;
 			sendMessage(new_message, room_name);
 			new_message = "";
 		}
 	}
 
-
 	function scrollDownMessages() {
-		if (messages_container)
-			messages_container.scrollTop = messages_container.scrollHeight;
+		if (messages_container) messages_container.scrollTop = messages_container.scrollHeight;
 	}
-
-	function check_invit() {
-		console.log("check_invit");
-		return false;
-	}
-
 </script>
 
-<svelte:window on:wsmessage={async (e) => { 
-	console.log('DispatchEvent', e);
+<svelte:window
+	on:wsmessage={async (event) => {
+		console.log("DispatchEvent", event);
 
-	list_conversation.set(e.detail.room_name, {
-		...(list_conversation.get(e.detail.room_name) ?? { room_name: e.detail.room_name, chatting_with: e.detail.sender}), 
-		last_message: e.detail.message,
-		last_message_sender: e.detail.sender
-	});
-	list_conversation = list_conversation;
-	if (e.detail.room_name === selected_conversation?.room_name) {
-		current_messages = [...current_messages, e.detail];
-		if (messages_container.scrollTop >= messages_container.scrollHeight - messages_container.clientHeight - 15) {
+		const details = event.detail;
+
+		list_conversation.set(details.room_name, {
+			...(list_conversation.get(details.room_name) ?? {
+				room_name: details.room_name,
+				chatting_with: details.sender,
+			}),
+			last_message: details.message,
+			last_message_sender: details.sender,
+		});
+		list_conversation = list_conversation;
+
+		if (details.room_name === selected_conversation?.room_name) {
+			current_messages = [...current_messages, event.detail];
 			await tick();
 			scrollDownMessages();
 		}
-	}
-
- }} on:wsonlinestatus={async (e) => {
-	 console.log('OnlineStatus', e.detail);
-	 online_status = e.detail;
- }} />
-
+	}}
+	on:wsonlinestatus={async (e) => {
+		console.log("OnlineStatus", e.detail);
+		online_status = e.detail;
+	}}
+/>
 
 <div class="row h-100 m-0 gap-3">
-	<div class="col-3 p-0 card border-2 d-flex flex-column h-100 overflow-auto" id="users">
+	<div class="col-3 p-0 card border-2 d-flex flex-column h-100 overflow-y-auto" id="users">
 		{#if list_conversation.size === 0}
 			<div class="d-flex justify-content-center align-items-center h-100">
 				<h2>No conversation available</h2>
 			</div>
 		{:else}
 			{#each list_conversation.values() as conversation}
-				<UserSelect {conversation} selected={selected_conversation?.room_name == conversation.room_name} on:select={() => { selected_conversation = conversation; }} />
+				<UserSelect
+					{conversation}
+					selected={selected_conversation?.room_name == conversation.room_name}
+					on:select={() => {
+						selected_conversation = conversation;
+					}}
+				/>
 			{/each}
 		{/if}
 	</div>
-	<div class="col card border-2 p-3 h-100" id="chat">
+	<div class="col card border-2 p-3 h-100 overflow-auto" id="chat">
 		{#if selected_conversation !== null}
 			<div class="header d-flex justify-content-between">
-				<div class="user d-flex flex-row align-items-center gap-3">
-					<img
-						src="https://via.placeholder.com/128"
-						class="rounded-circle"
-						style="width: 48px; height: 48px"
-						alt=""
+				<div class="user d-flex flex-row align-items-center gap-3 w-100">
+					<Avatar
+						src={selected_conversation.chatting_with.profile_image}
+						size={48}
+						showStatus={true}
+						online={online_status}
 					/>
-					<h2 class="m-0 fw-bold">{selected_conversation.chatting_with}</h2>
-					<span class="mt-2 badge rounded-pill bg-success">Online</span>
-					<button type="button" class="btn btn-primary" on:click={() => { 
-						//send message with type_message = 'invitation'
-						const room_name = selected_conversation?.room_name;
-						if (!room_name)
-							return;
-						sendInvitation('invitation', room_name);
-					 }}>
+					<a
+						class="m-0 fw-bold h2 text-decoration-none"
+						href="/profile/{selected_conversation.chatting_with.username}"
+					>
+						{selected_conversation.chatting_with.display_name}
+					</a>
+					<button
+						type="button"
+						class="btn btn-primary ms-auto"
+						on:click={() => {
+							const room_name = selected_conversation?.room_name;
+							if (!room_name) return;
+							sendInvitation("invitation", room_name);
+						}}
+					>
+						<Fa icon={faUserPlus} class="me-1" />
 						Invite to a game
+					</button>
 				</div>
 			</div>
 			<hr />
-			<div bind:this={messages_container} id="messages" class="overflow-auto d-flex flex-column gap-3">
+			<div bind:this={messages_container} id="messages" class="overflow-y-auto d-flex flex-column gap-3 mt-auto">
 				{#if current_messages.length === 0}
 					<div class="d-flex justify-content-center align-items-center h-100">
 						<h2>No messages available</h2>
 					</div>
 				{:else}
 					{#each current_messages as message}
-						{#if message.message_type === 'invitation'}
-							<GameInvite game_type='casual' self={message.sender !== selected_conversation.chatting_with} invitation_date={message.timestamp} is_accepted={message.is_accepted} room_name={message.room_name} />
+						{#if message.message_type === "invitation"}
+							<GameInvite
+								game_type="casual"
+								self={message.sender !== selected_conversation.chatting_with.username}
+								invitation_date={message.timestamp}
+								is_accepted={message.is_accepted}
+								room_name={message.room_name}
+							/>
 						{:else}
-							<Message message={message.message} self={message.sender !== selected_conversation.chatting_with} />
+							<Message
+								message={message.message}
+								self={message.sender !== selected_conversation.chatting_with.username}
+							/>
 						{/if}
 					{/each}
-					<!-- {#each $wsMessages as message}
-						{#if message.room_name === selected_conversation.room_name}
-							<Message message={message.message} self={message.sender !== selected} />
-						{/if}
-					{/each} -->
 				{/if}
 			</div>
 			<form>
@@ -199,7 +202,9 @@
 						aria-label="Enter message"
 						aria-describedby="basic-addon2"
 						bind:value={new_message}
-						on:keyup={e => { if (e.key === "Enter") handleWsMessage(); }}
+						on:keyup={(e) => {
+							if (e.key === "Enter") handleWsMessage();
+						}}
 					/>
 					<div class="input-group-append">
 						<button class="btn btn-outline-secondary" type="button" on:click={handleWsMessage}>Send</button>

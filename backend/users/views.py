@@ -1,3 +1,4 @@
+import sys
 from django.views.generic import RedirectView
 from django.contrib.auth import get_user_model
 from rest_framework import generics, permissions
@@ -10,7 +11,7 @@ from .serializers import AccountSerializer, ProfileSerializer, LoginSerializer, 
 from rest_framework_simplejwt.tokens import RefreshToken
 import re, requests, os
 from django.http import JsonResponse
-from friend.models import OnlineStatus
+from friend.models import Block, Friend, FriendRequest, OnlineStatus
 from django.contrib.auth.hashers import make_password
 
 # *******************************************************************************************************************
@@ -190,13 +191,18 @@ class UserProfile(generics.RetrieveAPIView):
 
         if user is None:
             return Response({"message": "User not found"}, status=404)
+        
+        friendRelation = Friend.objects.filter(user=request.user, friend=user).first()
+        blockRelation = Block.objects.filter(user=request.user, blocked_user=user).first()
 
         return Response({
             "id": user.id,
             "username": user.username,
             "profile_image": user.get_profile_image_url(),
             "display_name": user.display_name,
-            "is_online": user.is_online
+            "is_online": user.is_online,
+            "friends_with": True if friendRelation is not None else False,
+            "blocked": True if blockRelation is not None else False
         })
 
 # update user profile

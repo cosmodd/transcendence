@@ -40,12 +40,6 @@
 			<Fa icon={faPlay} class="me-2" />
 			Play your next game
 		</a>
-		{#if status === "looking_for_players"}
-			<button class="btn btn-primary">
-				<Fa icon={faUserPlus} class="me-1" />
-				Invite players
-			</button>
-		{/if}
 	</div>
 {/if}
 

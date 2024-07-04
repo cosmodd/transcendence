@@ -5,7 +5,7 @@
 	import { createEventDispatcher } from "svelte";
 	import Fa from "svelte-fa";
 	import Avatar from "../Avatar.svelte";
-
+	
 	export let data: FriendRequestData;
 	$: fromUser = data.from_user;
 
@@ -15,7 +15,7 @@
 		const response = await authedFetch('/api/accept-friend-request/', {
 			method: 'PUT',
 			body: JSON.stringify({
-				from_user: fromUser?.username,
+				username: fromUser?.username,
 			})
 		});
 
@@ -37,7 +37,7 @@
 		const response = await authedFetch('/api/reject-friend-request/', {
 			method: 'DELETE',
 			body: JSON.stringify({
-				from_user: fromUser?.username,
+				username: fromUser?.username,
 			})
 		});
 

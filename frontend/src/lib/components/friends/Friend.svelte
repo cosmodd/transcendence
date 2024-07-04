@@ -1,19 +1,55 @@
 <script lang="ts">
-	import { faMessage, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-	import Avatar from "../Avatar.svelte";
+	import { authedFetch } from "$lib/stores/auth";
+	import toasts from "$lib/stores/toasts";
+	import { faMessage, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
+	import Avatar from "../Avatar.svelte";
+    import { createEventDispatcher } from "svelte";
+    import { goto } from "$app/navigation";
+
+	const dispatch = createEventDispatcher();
 
 	export let data: FriendRelationData;
 	$: friend = data.friend;
 
-	function sendMessage() {
-		// TODO: Implement message sending
-		console.log("💬 Redirecting to message page with", friend.username);
+	async function sendMessage() {
+		const response = await authedFetch(`/api/chat/${friend.username}/`);
+
+		if (!response.ok) {
+			const json = await response.json();
+			toasts.error({
+				description: json.error,
+				duration: 5000,
+			});
+			return;
+		}
+
+		goto(`/chat/`);
 	}
-	
-	function invite() {
-		// TODO: Implement inviting
-		console.log("🎮 Sending game invitation to", friend.username);
+
+	async function unfriend() {
+		const response = await authedFetch("/api/remove-friend/", {
+			method: "DELETE",
+			body: JSON.stringify({
+				username: friend.username,
+			})
+		});
+
+		if (!response.ok) {
+			const json = await response.json();
+			toasts.error({
+				description: json.error,
+				duration: 5000,
+			});
+			return;
+		}
+
+		toasts.success({
+			description: "Friend removed!",
+			duration: 5000,
+		});
+
+		dispatch('remove');
 	}
 </script>
 
@@ -30,7 +66,7 @@
 	</div>
 	<div class="actions d-flex flex-row gap-1 ms-auto">
 		<button class="btn btn-primary btn-sm" on:click={sendMessage}><Fa icon={faMessage} /></button>
-		<button class="btn btn-success btn-sm" on:click={invite}><Fa icon={faUserPlus} /></button>
+		<button class="btn btn-danger btn-sm" on:click={unfriend}><Fa icon={faUserMinus} /></button>
 	</div>
 </div>
 

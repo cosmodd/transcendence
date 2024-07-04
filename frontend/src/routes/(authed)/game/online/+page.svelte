@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
 	import Init from "../shared/sources/main.js";
-	import { beforeNavigate } from "$app/navigation";
-	import { page } from "$app/stores";
 
 	onDestroy(() => {
 		ServerAPI.websocket.close();
@@ -10,18 +8,6 @@
 
 	onMount(() => {
 		Init("game_type_online");
-	});
-
-	beforeNavigate(({ to }) => {
-		// return if the user navigates to another page
-		console.log($page.url.pathname, to?.url.pathname);
-		if ($page.url.pathname !== to?.url.pathname) return;
-		console.log("NEED TO RELOAD THE GAME HERE!!!!!!");
-
-		// ServerAPI.websocket.close();
-		// ServerAPI.websocket = null;
-
-		// Init("game_type_online");
 	});
 </script>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import type { Conversation } from "$lib/stores/websocket";
+    import Avatar from "../Avatar.svelte";
 
 	export let conversation: Conversation;
 	export let selected: boolean;
@@ -14,18 +15,13 @@
 </script>
 
 <button
-	class="d-flex flex-row gap-3 align-items-center py-2 px-3 text-decoration-none text-reset"
+	class="d-flex flex-row gap-3 align-items-center py-2 px-3 text-decoration-none text-reset text-start"
 	class:active={selected}
 	on:click|preventDefault={handleClick}
 >
-	<img
-		class="rounded-circle bg-primary"
-		src="https://via.placeholder.com/128"
-		style="width: 32px; height: 32px;"
-		alt=""
-	/>
-	<div class="d-flex flex-column flex-grow-1" style="min-width: 0;">
-		<div class="fw-bold">{conversation.chatting_with}</div>
+	<Avatar src={conversation.chatting_with.profile_image} size={32} showStatus online={conversation.chatting_with.is_online}/>
+	<div class="d-flex flex-column" style="min-width: 0;">
+		<div class="fw-bold">{conversation.chatting_with.display_name}</div>
 		<div class="text-muted text-truncate">
 			{conversation.last_message ?? "No message yet"}
 		</div>
