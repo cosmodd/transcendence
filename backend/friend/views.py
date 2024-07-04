@@ -91,6 +91,23 @@ class RejectFriendRequestView(generics.DestroyAPIView):
     def get_object(self, request, *args, **kwargs):
         target = Account.objects.get(username=request.data['from_user'])
         return FriendRequest.objects.get(from_user=target, to_user=request.user)
+    
+#remove a friend
+class RemoveFriendView(generics.DestroyAPIView):
+    serializer_class = FriendSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            friend = self.get_object()
+            friend.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response({'error': 'Friend not found'}, status=404)
+
+    def get_object(self, request, *args, **kwargs):
+        target = Account.objects.get(username=request.data['friend'])
+        return Friend.objects.get(user=request.user, friend=target)
         
 # when the user blocks another user
 class BlockUserView(generics.CreateAPIView):
