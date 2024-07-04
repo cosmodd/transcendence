@@ -35,6 +35,10 @@ function createToastStore() {
 	return {
 		subscribe,
 		add,
+		success: (options: ToastOptions) => add({ ...options, type: "success" }),
+		error: (options: ToastOptions) => add({ ...options, type: "error" }),
+		warning: (options: ToastOptions) => add({ ...options, type: "warning" }),
+		info: (options: ToastOptions) => add({ ...options, type: "info" }),
 		clear: () => set([])
 	};
 }

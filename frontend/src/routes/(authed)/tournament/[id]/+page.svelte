@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import Matchup from "$lib/components/tournament/Matchup.svelte";
+	import { faPlay, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+	import Fa from "svelte-fa";
 
 	let tournament: Tournament;
 	let rounds: TournamentGame[][];
@@ -8,8 +10,7 @@
 	$: tournament = $page.data.tournament;
 	$: rounds = $page.data.arrangedGames;
 
-	$: console.log(rounds);
-
+	$: status = tournament.status;
 </script>
 
 <div class="d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
@@ -33,9 +34,20 @@
 	</div>
 </div>
 
-<div class="buttons d-flex flex-row">
-	<button type="button" class="btn btn-primary">Submit</button>
-</div>
+{#if ["looking_for_players", "in_progress"].includes(status)}
+	<div class="buttons d-flex flex-row justify-content-center gap-2">
+		<a href="/game/online" class="btn btn-primary px-4 {status !== 'in_progress' ? 'disabled' : ''}">
+			<Fa icon={faPlay} class="me-2" />
+			Play your next game
+		</a>
+		{#if status === "looking_for_players"}
+			<button class="btn btn-primary">
+				<Fa icon={faUserPlus} class="me-1" />
+				Invite players
+			</button>
+		{/if}
+	</div>
+{/if}
 
 <style>
 	.connectors {

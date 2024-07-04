@@ -1,3 +1,16 @@
+// ------------------------------------------ //
+// Users                                      //
+// ------------------------------------------ //
+interface SimpleUser {
+	display_name: string;
+	username: string;
+	profile_image: string;
+	is_online: boolean;
+};
+
+// ------------------------------------------ //
+// Tournaments                                //
+// ------------------------------------------ //
 interface Tournament {
 	name: string;
 	id: number;
@@ -19,6 +32,10 @@ interface TournamentGame {
 	date_begin: string;
 };
 
+
+// ------------------------------------------ //
+// Toasts                                     //
+// ------------------------------------------ //
 interface ToastData {
 	uid: number;
 	duration: number;
@@ -42,5 +59,22 @@ interface ToastOptions {
 	title?: string;
 	type?: "info" | "success" | "warning" | "error";
 	showProgress?: boolean;
-	buttons?: Partial<ToastButton>[];
+	buttons?: ToastButton[];
 };
+
+// ------------------------------------------ //
+// Friends                                    //
+// ------------------------------------------ //
+interface FriendRelationData {
+	id: number;
+	user: SimpleUser;
+	friend: SimpleUser;
+	created_at: string;
+};
+
+interface FriendRequestData {
+	id: number;
+	from_user: SimpleUser;
+	to_user: SimpleUser;
+	created_at: string;
+}

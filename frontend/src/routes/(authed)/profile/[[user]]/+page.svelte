@@ -2,6 +2,7 @@
 	import { page } from "$app/stores";
 	import MatchSummary from "$lib/components/profile/GameSummary.svelte";
 	import { authedFetch } from "$lib/stores/auth";
+    import toasts from "$lib/stores/toasts";
 	import { user } from "$lib/stores/user";
 	import {
 		faBan,
@@ -15,7 +16,6 @@
 	import Fa from "svelte-fa";
 
 	let userData: any = null;
-	let userStatus: any = null;
 	let games: any[] = [];
 
 	$: queriedUsername = $page.params.user;
@@ -35,16 +35,6 @@
 		userData = await response.json();
 	}
 
-	async function loadStatus() {
-		if (userData == null) return;
-
-		const response = await authedFetch(`/api/user_status/${userData.username}/`);
-
-		if (!response.ok) return;
-
-		userStatus = await response.json();
-	}
-
 	function loadGames() {
 		if (userData == null) return;
 
@@ -56,10 +46,32 @@
 		});
 	}
 
+	async function addAsFriend() {
+		const response = await authedFetch("/api/send-friend-request/", {
+			method: "POST",
+			body: JSON.stringify({
+				to_user: userData.username,
+			})
+		});
+
+		if (!response.ok) {
+			const json = await response.json();
+			toasts.error({
+				description: json.error,
+				duration: 5000,
+			});
+			return;
+		}
+
+		toasts.success({
+			description: "Friend request sent!",
+			duration: 5000,
+		});
+	}
+
 	$: {
 		queriedUsername;
 		loadUser().then(() => {
-			loadStatus();
 			loadGames();
 		});
 	}
@@ -85,7 +97,7 @@
 				/>
 				<h3 class="m-0 mt-2 fw-bold">{userData.display_name}</h3>
 				<p class="m-0 text-muted">@{userData.username}</p>
-				{#if userStatus != null && userStatus.is_online}
+				{#if self || userData.is_online}
 					<span class="mt-2 badge rounded-pill bg-success">Online</span>
 				{:else}
 					<span class="mt-2 badge rounded-pill bg-secondary">Offline</span>
@@ -129,7 +141,7 @@
 			</div>
 			{#if !self}
 				<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
-					<button class="btn btn-success w-100"><Fa icon={faUserPlus} class="me-1" />Add friend</button>
+					<button class="btn btn-success w-100" on:click={addAsFriend}><Fa icon={faUserPlus} class="me-1" />Add friend</button>
 					<button class="btn btn-primary w-100"><Fa icon={faMessage} class="me-1" />Message</button>
 					<button class="btn btn-danger w-100"><Fa icon={faBan} class="me-1" />Block</button>
 				</div>

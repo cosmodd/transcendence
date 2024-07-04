@@ -63,7 +63,7 @@ class AcceptFriendRequestView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         try:
-            friend_request = self.get_object()
+            friend_request = self.get_object(request, *args, **kwargs)
             Friend.objects.create(user=friend_request.to_user, friend=friend_request.from_user)
             Friend.objects.create(user=friend_request.from_user, friend=friend_request.to_user)
             friend_request.delete()
@@ -82,7 +82,7 @@ class RejectFriendRequestView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            friend_request = self.get_object()
+            friend_request = self.get_object(request, *args, **kwargs)
             friend_request.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
@@ -99,7 +99,7 @@ class RemoveFriendView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            friend = self.get_object()
+            friend = self.get_object(request, *args, **kwargs)
             friend.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
@@ -146,7 +146,7 @@ class UnblockUserView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            block = self.get_object()
+            block = self.get_object(request, *args, **kwargs)
             block.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:

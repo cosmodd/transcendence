@@ -13,7 +13,7 @@ export async function load({ params }) {
 	const rounds = Array.from({ length: Math.log2(tournament.size) }, (_, i) => Math.pow(2, i)).reverse();
 
 
-	let gamesCopy = tournament.games.slice().concat(Array(tournament.size - 1 - tournament.games.length).fill(null));
+	let gamesCopy = tournament.games.slice().concat(Array(Math.max(tournament.size - 1 - tournament.games.length, 0)).fill(null));
 	const arrangedGames: TournamentGame[][] = rounds.reduce((acc: TournamentGame[][], gamesCount) => [...acc, gamesCopy.splice(0, gamesCount)], [])
 
 	return { tournament, arrangedGames };

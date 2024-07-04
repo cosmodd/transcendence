@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
 	import TournamentCard from "$lib/components/tournament/TournamentCard.svelte";
 	import { authedFetch } from "$lib/stores/auth";
 	import { user } from "$lib/stores/user";
-	import { faPlus, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+	import { faPlus, faTriangleExclamation, faTrophy } from "@fortawesome/free-solid-svg-icons";
 	import { onMount } from "svelte";
 	import Fa from "svelte-fa";
 
@@ -41,7 +42,7 @@
 			return;
 		}
 
-		await loadTournaments();
+		goto(`/tournament/${json.id}`);
 
 		const modalInstance = bootstrap.Modal.getInstance(document.getElementById("tournamentModal"));
 		if (modalInstance) modalInstance.hide();
@@ -54,9 +55,12 @@
 
 <div class="container h-100 d-flex flex-column">
 	<div class="header d-flex flex-row justify-content-between align-items-center">
-		<h1 class="fw-bold mb-3">Tournaments</h1>
+		<h3 class="fw-bold mb-3">
+			<Fa icon={faTrophy} class="me-1" />
+			Tournaments
+		</h3>
 		<div class="buttons d-flex flex-row">
-			<button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#tournamentModal">
+			<button class="btn btn-primary px-3" data-bs-toggle="modal" data-bs-target="#tournamentModal" disabled={isUserInTournament}>
 				<Fa icon={faPlus} class="me-1" />
 				Create Tournament
 			</button>

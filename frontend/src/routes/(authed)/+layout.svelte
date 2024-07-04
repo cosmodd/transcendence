@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import Avatar from "$lib/components/Avatar.svelte";
 	import NavLink from "$lib/components/NavLink.svelte";
 	import ToastContainer from "$lib/components/toasts/ToastContainer.svelte";
 	import { logout } from "$lib/stores/auth";
-    import toasts from "$lib/stores/toasts";
+	import toasts from "$lib/stores/toasts";
 	import { user } from "$lib/stores/user";
 	import { faTableTennisPaddleBall } from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
@@ -24,11 +25,13 @@
 			type: "info",
 			title: "Tournament",
 			description: message,
-			buttons: [{
-				label: "Go to match!",
-				action: () => goto('/game/online/'),
-				dismiss: true
-			}],
+			buttons: [
+				{
+					label: "Go to match!",
+					action: () => goto("/game/online/"),
+					dismiss: true,
+				},
+			],
 			duration: 30_000, // Refer to .\backend\websockets\pong_server\gamelogic.py
 		});
 	}
@@ -50,6 +53,9 @@
 					<NavLink href="/" strict>Play</NavLink>
 				</li>
 				<li class="nav-item">
+					<NavLink href="/chat">Chat</NavLink>
+				</li>
+				<li class="nav-item">
 					<NavLink href="/friends">Friends</NavLink>
 				</li>
 			</ul>
@@ -61,13 +67,7 @@
 						class="text-decoration-none text-reset d-flex align-items-center gap-2 fw-bold bg-transparent border-0"
 					>
 						{$user.display_name}
-						<img
-							src={$user.profile_image}
-							alt="Avatar"
-							class="rounded-circle me-2"
-							width="32"
-							height="32"
-						/>
+						<Avatar src={$user.profile_image} size={32} />
 					</button>
 					<ul class="dropdown-menu dropdown-menu-end mt-2">
 						<li>
@@ -82,8 +82,10 @@
 								type="button"
 								class="dropdown-item text-danger"
 								on:click={logoutButton}
-								aria-label="Logout">Logout</button
+								aria-label="Logout"
 							>
+								Logout
+							</button>
 						</li>
 					</ul>
 				</div>

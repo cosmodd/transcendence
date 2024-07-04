@@ -1,6 +1,8 @@
-<script lang='ts'>
-    import { onDestroy, onMount } from "svelte";
+<script lang="ts">
+	import { onDestroy, onMount } from "svelte";
 	import Init from "../shared/sources/main.js";
+	import { beforeNavigate } from "$app/navigation";
+	import { page } from "$app/stores";
 
 	onDestroy(() => {
 		ServerAPI.websocket.close();
@@ -8,14 +10,20 @@
 
 	onMount(() => {
 		Init("game_type_online");
-	})
-</script>
+	});
 
-<style>
-	.blur-5 {
-		filter: blur(5px);
-    }
-</style>
+	beforeNavigate(({ to }) => {
+		// return if the user navigates to another page
+		console.log($page.url.pathname, to?.url.pathname);
+		if ($page.url.pathname !== to?.url.pathname) return;
+		console.log("NEED TO RELOAD THE GAME HERE!!!!!!");
+
+		// ServerAPI.websocket.close();
+		// ServerAPI.websocket = null;
+
+		// Init("game_type_online");
+	});
+</script>
 
 <div class="wrapper h-100 position-relative">
 	<div class="blur-5" id="blurcul">
@@ -28,5 +36,11 @@
 			<span id="right_username" class="px-3 py-2"></span>
 		</div>
 	</div>
-	<button class="position-absolute start-50 top-50 translate-middle btn btn-primary" id="ready" ></button>
+	<button class="position-absolute start-50 top-50 translate-middle btn btn-primary" id="ready"></button>
 </div>
+
+<style>
+	.blur-5 {
+		filter: blur(5px);
+	}
+</style>

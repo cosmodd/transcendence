@@ -167,7 +167,8 @@ class ProfileView(generics.RetrieveAPIView):
             "display_name": user.display_name,
             "enabled_2FA": user.enabled_2FA,
             "qrcode_2FA": user.qrcode_2FA.url,
-            "third_party_auth": True if user.login_intra else False
+            "third_party_auth": True if user.login_intra else False,
+            "is_online": user.is_online
         })
 
 
@@ -194,7 +195,8 @@ class UserProfile(generics.RetrieveAPIView):
             "id": user.id,
             "username": user.username,
             "profile_image": user.get_profile_image_url(),
-            "display_name": user.display_name
+            "display_name": user.display_name,
+            "is_online": user.is_online
         })
 
 # update user profile
