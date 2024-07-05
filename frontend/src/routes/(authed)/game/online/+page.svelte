@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { onDestroy, onMount } from "svelte";
 	import Init from "../shared/sources/main.js";
+	import { page } from "$app/stores";
 
 	onDestroy(() => {
 		ServerAPI.websocket.close();
@@ -8,6 +10,9 @@
 
 	onMount(() => {
 		Init("game_type_online");
+		ServerAPI.websocket.addEventListener("close", () => {
+			goto("/");
+		});
 	});
 </script>
 

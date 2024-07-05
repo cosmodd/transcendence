@@ -36,6 +36,8 @@
 	});
 </script>
 
+<svelte:window on:wsonlinestatus={() => reloadLists()}/>
+
 <div class="container d-flex flex-column gap-4 h-100">
 	{#if requests.length > 0}
 		<div class="d-flex flex-column">

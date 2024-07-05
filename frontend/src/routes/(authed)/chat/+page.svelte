@@ -6,9 +6,9 @@
 	import { authedFetch } from "$lib/stores/auth";
 	import type { ChatMessage, Conversation } from "$lib/stores/websocket";
 	import { sendInvitation, sendMessage } from "$lib/stores/websocket";
-    import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+	import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 	import { tick } from "svelte";
-    import Fa from "svelte-fa";
+	import Fa from "svelte-fa";
 
 	//	******************************************************************************************************	//
 	//													Code													//
@@ -72,6 +72,7 @@
 
 	$: if (selected_conversation) {
 		loadConversationMessages();
+		online_status = selected_conversation.chatting_with.is_online;
 	}
 
 	//	******************************************************************************************************	//
@@ -115,8 +116,7 @@
 		}
 	}}
 	on:wsonlinestatus={async (e) => {
-		console.log("OnlineStatus", e.detail);
-		online_status = e.detail;
+		online_status = e.detail.is_online;
 	}}
 />
 

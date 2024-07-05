@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import type { Conversation } from "$lib/stores/websocket";
-    import Avatar from "../Avatar.svelte";
+	import Avatar from "../Avatar.svelte";
 
 	export let conversation: Conversation;
 	export let selected: boolean;
@@ -19,7 +19,7 @@
 	class:active={selected}
 	on:click|preventDefault={handleClick}
 >
-	<Avatar src={conversation.chatting_with.profile_image} size={32} showStatus online={conversation.chatting_with.is_online}/>
+	<Avatar src={conversation.chatting_with.profile_image} size={32} />
 	<div class="d-flex flex-column" style="min-width: 0;">
 		<div class="fw-bold">{conversation.chatting_with.display_name}</div>
 		<div class="text-muted text-truncate">

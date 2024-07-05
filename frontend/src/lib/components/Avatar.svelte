@@ -25,8 +25,12 @@
 		width: calc(var(--size) / 4);
 		height: calc(var(--size) / 4);
 		border-radius: 50%;
-		background-color: var(--bs-success);
+		background-color: var(--bs-secondary);
 		border: var(--bs-body-bg) solid calc(var(--size) / 16);
 		box-sizing: content-box;
+	}
+
+	.avatar.show-status.online::after {
+		background-color: var(--bs-success);
 	}
 </style>

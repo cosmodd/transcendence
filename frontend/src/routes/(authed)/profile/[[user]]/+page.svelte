@@ -1,20 +1,20 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
 	import MatchSummary from "$lib/components/profile/GameSummary.svelte";
 	import { authedFetch } from "$lib/stores/auth";
 	import toasts from "$lib/stores/toasts";
 	import { user } from "$lib/stores/user";
 	import {
-	    faBan,
-	    faFaceFrown,
-	    faGamepad,
-	    faMessage,
-	    faStar,
-	    faTrophy,
-	    faUnlock,
-	    faUserMinus,
-	    faUserPlus
+		faBan,
+		faFaceFrown,
+		faGamepad,
+		faMessage,
+		faStar,
+		faTrophy,
+		faUnlock,
+		faUserMinus,
+		faUserPlus,
 	} from "@fortawesome/free-solid-svg-icons";
 	import Fa from "svelte-fa";
 
@@ -23,7 +23,6 @@
 
 	$: queriedUsername = $page.params.user;
 	$: self = queriedUsername == null || $user.username == queriedUsername;
-
 
 	async function loadUser() {
 		if (self) {
@@ -54,7 +53,7 @@
 			method: "POST",
 			body: JSON.stringify({
 				username: userData.username,
-			})
+			}),
 		});
 
 		if (!response.ok) {
@@ -77,7 +76,7 @@
 			method: "DELETE",
 			body: JSON.stringify({
 				username: userData.username,
-			})
+			}),
 		});
 
 		if (!response.ok) {
@@ -117,7 +116,7 @@
 			method: "POST",
 			body: JSON.stringify({
 				username: userData.username,
-			})
+			}),
 		});
 
 		if (!response.ok) {
@@ -133,7 +132,7 @@
 			description: "User blocked!",
 			duration: 5000,
 		});
-		
+
 		userData.blocked = true;
 	}
 
@@ -142,7 +141,7 @@
 			method: "DELETE",
 			body: JSON.stringify({
 				username: userData.username,
-			})
+			}),
 		});
 
 		if (!response.ok) {
@@ -169,6 +168,14 @@
 		});
 	}
 </script>
+
+<svelte:window
+	on:wsonlinestatus={(event) => {
+		const { user, is_online } = event.detail;
+
+		if (user == userData?.username) userData.is_online = is_online;
+	}}
+/>
 
 {#if userData == null}
 	<div class="d-flex flex-column justify-content-center align-items-center h-100 gap-2">
@@ -226,22 +233,35 @@
 						<p class="m-0">Win Rate</p>
 					</div>
 					<p class="m-0">
-						{((games.filter((game) => game.winner == userData.username).length / games.length) * 100).toFixed(0)}%
+						{(
+							(games.filter((game) => game.winner == userData.username).length / games.length) *
+							100
+						).toFixed(0)}%
 					</p>
 				</div>
 			</div>
 			{#if !self}
 				<div class="buttons d-flex flex-column gap-2 align-items-center mt-auto">
 					{#if !userData.friends_with}
-						<button class="btn btn-success w-100" on:click={addAsFriend}><Fa icon={faUserPlus} class="me-1" />Add friend</button>
+						<button class="btn btn-success w-100" on:click={addAsFriend}
+							><Fa icon={faUserPlus} class="me-1" />Add friend</button
+						>
 					{:else}
-						<button class="btn btn-danger w-100" on:click={unfriend}><Fa icon={faUserMinus} class="me-1" />Remove friend</button>
+						<button class="btn btn-danger w-100" on:click={unfriend}
+							><Fa icon={faUserMinus} class="me-1" />Remove friend</button
+						>
 					{/if}
-					<button class="btn btn-primary w-100" on:click={sendMessage}><Fa icon={faMessage} class="me-1" />Message</button>
+					<button class="btn btn-primary w-100" on:click={sendMessage}
+						><Fa icon={faMessage} class="me-1" />Message</button
+					>
 					{#if !userData.blocked}
-						<button class="btn btn-danger w-100" on:click={block}><Fa icon={faBan} class="me-1" />Block</button>
+						<button class="btn btn-danger w-100" on:click={block}
+							><Fa icon={faBan} class="me-1" />Block</button
+						>
 					{:else}
-						<button class="btn btn-success w-100" on:click={unblock}><Fa icon={faUnlock} class="me-1" />Unblock</button>
+						<button class="btn btn-success w-100" on:click={unblock}
+							><Fa icon={faUnlock} class="me-1" />Unblock</button
+						>
 					{/if}
 				</div>
 			{/if}
