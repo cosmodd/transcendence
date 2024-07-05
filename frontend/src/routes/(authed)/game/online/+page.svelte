@@ -1,8 +1,14 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { beforeNavigate, goto } from "$app/navigation";
 	import { onDestroy, onMount } from "svelte";
 	import Init from "../shared/sources/main.js";
-	import { page } from "$app/stores";
+    import toasts from "$lib/stores/toasts.js";
+
+	let cancelRedirect: boolean = false;
+
+	beforeNavigate(() => {
+		cancelRedirect = true;
+	});
 
 	onDestroy(() => {
 		ServerAPI.websocket.close();
@@ -11,7 +17,16 @@
 	onMount(() => {
 		Init("game_type_online");
 		ServerAPI.websocket.addEventListener("close", () => {
-			goto("/");
+			toasts.add({
+				description: "Game finished, redirecting to home...",
+				duration: 2000,
+			});
+
+			setTimeout(() => {
+				if (!cancelRedirect) {
+					goto("/");
+				}
+			}, 2000);
 		});
 	});
 </script>
