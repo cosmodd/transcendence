@@ -66,7 +66,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = self.context['request'].user
 
-        if not re.match("^[a-zA-Z0-9_.]{8,32}$", data['display_name']):
+        if 'display_name' in data and not re.match("^[a-zA-Z0-9_.]{8,32}$", data['display_name']):
             raise serializers.ValidationError({"display_name": "Display name can only contain alphanumeric characters, underscores and dots"})
 
         # Check if field old_password and password are present
