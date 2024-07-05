@@ -35,9 +35,6 @@ class MyAccountManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
 
-def profile_image_path(instance, filename):
-    return None
-
 def profile_image(instance, filename):
     extension = filename.split('.')[-1]
     timestamp = timezone.now().strftime('%Y%m%d%H%M%S')
