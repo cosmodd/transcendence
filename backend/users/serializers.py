@@ -70,7 +70,7 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
             if len(data['display_name']) < 2 or len(data['display_name']) > 32:
                 raise serializers.ValidationError({"display_name": "must be between 2 and 32 characters long"})
 
-            if not re.match("^[a-zA-Z0-9_.]$", data['display_name']):
+            if not re.match("^[a-zA-Z0-9_.]+$", data['display_name']):
                 raise serializers.ValidationError({"display_name": "can only contain alphanumeric characters, underscores and dots"})
 
         # Check if field old_password and password are present
