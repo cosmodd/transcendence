@@ -32,8 +32,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'online_users',
             self.channel_name
         )
-        #print list of channels room group name
-        print(self.channel_layer.groups, file=sys.stderr)
         await self.accept()
         await self.increment_user_connection_count()
 
@@ -59,8 +57,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         blocked = await self.get_blocked_users(room_name)
         if blocked:
             return
-
-        print(f"Message_type: {message_type}", file=sys.stderr)
 
         if message_type == 'invitation':
             await self.send_invitation(room_name)
@@ -121,9 +117,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if self.user not in room_members:
             return
-        print (f"User test: {self.user}", file=sys.stderr)
         for receiver in room_members:
-            print("test", file=sys.stderr)
             await self.channel_layer.group_send(
                 f'chat_{receiver.id}',
                 {
@@ -134,7 +128,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         sender = self.user
-        print(f"Sender: {sender}", file=sys.stderr)
         await self.save_message(sender, message, room)
 
     async def send_invitation(self, room_name):
@@ -143,9 +136,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if self.user not in room_members:
             return
-        print (f"User test INVITATION: {self.user}", file=sys.stderr)
         messages = await self.get_all_messages(room)
-        print(f"Messages INVITATION: {messages}", file=sys.stderr)
         for message in messages:
             if message.message_type == 'invitation' and message.status == 'pending':
                 string_format = "%Y-%m-%d %H:%M:%S"
@@ -154,9 +145,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 invit_date = datetime.strptime(message_time.strftime(string_format), string_format)
                 invit_date = invit_date + timedelta(minutes=120)
                 diff = current_time - invit_date
-                print(f"\033[91mCurrent time: {current_time}\033[00m", file=sys.stderr)
-                print(f"\033[91mInvitation time: {invit_date}\033[00m", file=sys.stderr)
-                print(f"\033[91mTime difference: {diff}\033[00m", file=sys.stderr)
                 if diff.total_seconds() > 60:
                     await self.update_invitation_status(room, 'expired')
                 elif message.status == 'pending':
@@ -197,16 +185,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 invit_date = datetime.strptime(message_time.strftime(string_format), string_format)
                 invit_date = invit_date + timedelta(minutes=120)
                 diff = current_time - invit_date
-                print(f"\033[91mCurrent time: {current_time}\033[00m", file=sys.stderr)
-                print(f"\033[91mInvitation time: {invit_date}\033[00m", file=sys.stderr)
-                print(f"\033[91mTime difference: {diff}\033[00m", file=sys.stderr)
                 if diff.total_seconds() > 60:
                     await self.update_invitation_status(room, 'expired')
                     return
                 elif message.status == 'pending':
-                    print(f"Invitation status normaly pending: {message.status}", file=sys.stderr)
                     await self.update_invitation_status(room, 'accepted')
-                    print("Invitation after accepted", file=sys.stderr)
 
         for receiver in room_members:
             await self.channel_layer.group_send(
@@ -233,22 +216,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.connection_count == 1:
             self.user.is_online = True
             await self.send_user_online_status(True)
-            print(f"-----------------------------------------------------------------", file=sys.stderr)
-            print(f"User '{self.user.username}' is online: {self.user.is_online}", file=sys.stderr)
-            print(f"-----------------------------------------------------------------", file=sys.stderr)
         
         await database_sync_to_async(self.user.save)()
 
     async def decrement_user_connection_count(self):
         self.user = await database_sync_to_async(Account.objects.get)(username=self.user.username)
-        print(f"User '{self.user.username}' connection count: {self.user.connection_count}", file=sys.stderr)
         self.user.connection_count -= 1
 
         if self.user.connection_count <= 0:
             self.user.is_online = False
             self.user.connection_count = 0
             await self.send_user_online_status(False)
-            print(f"User '{self.user.username}' is online: {self.user.is_online}", file=sys.stderr)
         
         await database_sync_to_async(self.user.save)()
 
@@ -256,10 +234,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             jwt_authentication = JWTAuthentication()
             access_token = AccessToken(token)
-            print('access_token stage', file=sys.stderr)
             user = await sync_to_async(jwt_authentication.get_user)(access_token)
             # return the user if authenticated, otherwise return AnonymousUser
-            # user is a tuple of (user, token)
             if user is not None:
                 return user
             else:
@@ -301,8 +277,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         METHOD = "Method"
         DATA_PLAYER_PLAYER1 = "p1"
         DATA_PLAYER_PLAYER2 = "p2"
-        print(f"Player1: {player1}", file=sys.stderr)
-        print(f"Player2: {player2}", file=sys.stderr)
 
         uri = "wss://localhost:8888"
         ssl_context = ssl._create_unverified_context()
