@@ -16,6 +16,10 @@ class TournamentManager(models.Manager):
 		return tournament
 
 	def JoinTournament(self, id, user, display_name):
+		# User already in a game
+		if user.games.filter(status='in_progress').exists():	
+			raise ValueError("You are already in a game lobby.")
+		
 		# User already signed somewhere
 		if user.active_tournaments.exists():
 			raise ValueError("An user is already signed in a tournament.")
