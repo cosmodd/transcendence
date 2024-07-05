@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { login } from "$lib/stores/auth"
+	import { login } from "$lib/stores/auth";
 	import Logo42 from "$lib/assets/icons/42.svelte";
 	import UsernameField from "$lib/components/auth/UsernameField.svelte";
 	import PasswordField from "$lib/components/auth/PasswordField.svelte";
@@ -62,7 +62,7 @@
 
 	{#if alertMessage}
 		<div class="alert alert-danger m-0" role="alert">
-			<Fa icon={faTriangleExclamation} class="me-1"/>
+			<Fa icon={faTriangleExclamation} class="me-1" />
 			{alertMessage}
 		</div>
 	{/if}
@@ -70,15 +70,7 @@
 	<UsernameField />
 	<div id="emailField">
 		<label for="email" class="visually-hidden">Email</label>
-		<input
-			type="email"
-			id="email"
-			name="email"
-			class="form-control"
-			placeholder="mail@domain.ext"
-			value="username@user.com"
-			required
-		/>
+		<input type="email" id="email" name="email" class="form-control" placeholder="mail@domain.com" required />
 	</div>
 	<PasswordField />
 	<p class="mb-0 text-muted">Already have an account? <a href="/login">Login</a></p>

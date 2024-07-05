@@ -27,7 +27,9 @@ async function loadUser() {
 	user.set(data);
 }
 
-export async function load() {
+export async function load({ url }) {
+	url.pathname; // Executes this function when the pathname changes
+
 	if (!isAuthed()) redirect(302, '/login');
 	await loadUser();
 	initWebsocket();

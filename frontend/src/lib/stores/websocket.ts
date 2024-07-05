@@ -20,8 +20,9 @@ export type Conversation = {
 export let socket: WebSocket | null = null;
 
 export function initWebsocket() {
-	const token = authToken();
+	if (socket != null) return;
 
+	const token = authToken();
 	socket = new WebSocket(`wss://${window.location.host}/ws/chat/${token}/`);
 
 	socket.onopen = () => {
@@ -56,10 +57,7 @@ export function initWebsocket() {
 
 	socket.onclose = () => {
 		console.log('Disconnected from websocket');
-	};
-
-	socket.onerror = () => {
-		console.log('Error in websocket connection');
+		socket = null;
 	};
 }
 
