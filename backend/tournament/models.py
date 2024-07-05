@@ -15,7 +15,7 @@ class TournamentManager(models.Manager):
 		tournament.save()
 		return tournament
 
-	def JoinTournament(self, id, user):
+	def JoinTournament(self, id, user, display_name):
 		# User already signed somewhere
 		if user.active_tournaments.exists():
 			raise ValueError("An user is already signed in a tournament.")
@@ -24,6 +24,12 @@ class TournamentManager(models.Manager):
 		tournament = self.get(id=id)
 		if (tournament.is_full):
 			raise ValueError("Tournament is full")
+
+		# Existing display name
+		if tournament.active_players.filter(display_name=display_name).exists():
+			raise ValueError("An user already has this display name.")
+		user.display_name = display_name
+		user.save()
 
 		tournament.active_players.add(user)
 
