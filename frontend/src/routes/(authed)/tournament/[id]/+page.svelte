@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
 	import Matchup from "$lib/components/tournament/Matchup.svelte";
 	import { faPlay, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+	import { onDestroy, onMount } from "svelte";
 	import Fa from "svelte-fa";
 
 	let tournament: Tournament;
@@ -11,7 +13,21 @@
 	$: rounds = $page.data.arrangedGames;
 
 	$: status = tournament.status;
+
+	let interval_id: NodeJS.Timeout | undefined;
+
+	onDestroy(() => {
+		if (interval_id) clearInterval(interval_id);
+	});
+
+	onMount(() => {
+		interval_id = setInterval(() => {
+			invalidateAll();
+		}, 5000);
+	});
 </script>
+
+<svelte:window on:notification={() => invalidateAll()} />
 
 <div class="d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
 	<div class="bracket d-flex flex-row my-auto">
