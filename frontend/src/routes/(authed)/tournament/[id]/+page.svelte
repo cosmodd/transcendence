@@ -16,18 +16,25 @@
 
 	let interval_id: NodeJS.Timeout | undefined;
 
+	function reloadData() {
+		if (tournament == null) return;
+		if (!["looking_for_players", "in_progress"].includes(status)) return;
+
+		invalidateAll();
+	}
+
 	onDestroy(() => {
 		if (interval_id) clearInterval(interval_id);
 	});
 
 	onMount(() => {
 		interval_id = setInterval(() => {
-			invalidateAll();
-		}, 5000);
+			reloadData();
+		}, 2000);
 	});
 </script>
 
-<svelte:window on:notification={() => invalidateAll()} />
+<svelte:window on:notification={() => reloadData()} />
 
 <div class="d-flex flex-row justify-content-center card border-2 mb-2 flex-grow-1">
 	<div class="bracket d-flex flex-row my-auto">
