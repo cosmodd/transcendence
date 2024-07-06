@@ -44,7 +44,8 @@ class UserGameList(generics.RetrieveAPIView):
                         "winner": game.winner.username if game.winner else None,
                         "timeout": game.ended_with_timeout,
                         "date_begin": game.date_begin,
-                        "round": game.round
+                        "round": game.round,
+                        "tournament": game.tournament.first().id if game.type == 'tournament' else None
                     }
                 )
             return Response({"games": games_list}, status=status.HTTP_200_OK)

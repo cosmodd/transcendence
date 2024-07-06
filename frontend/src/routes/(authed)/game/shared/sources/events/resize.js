@@ -1,22 +1,20 @@
-export function ResizeCanvas()
-{
+export function ResizeCanvas() {
 	let canvas = document.getElementById('glcanvas');
+	let parent = canvas.parentElement;
 
-	// canvas.height = canvas.clientHeight;
-	// canvas.width = canvas.height * 1.25;
-	canvas.width = canvas.clientWidth;
-	canvas.height = canvas.width * 0.8;
-	if (window.innerHeight <= canvas.height) {
-		canvas.classList.remove('w-100');
-		canvas.classList.add('h-100');
-	}
-	else {
-		canvas.classList.add('w-100');
-		canvas.classList.remove('h-100');
+	const parentWidth = parent.clientWidth - 20;
+	const parentHeight = parent.clientHeight - 20;
+
+	if (parentWidth > parentHeight * 1.25) {
+		canvas.width = parentHeight * 1.25;
+		canvas.height = parentHeight;
+	} else {
+		canvas.width = parentWidth;
+		canvas.height = parentWidth / 1.25;
 	}
 }
 
 
-window.addEventListener('resize', (event) => { 
+window.addEventListener('resize', (event) => {
 	ResizeCanvas();
 });

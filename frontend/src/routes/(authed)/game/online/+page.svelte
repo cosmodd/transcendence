@@ -33,8 +33,8 @@
 </script>
 
 <div class="wrapper h-100 position-relative">
-	<div class="blur-5" id="blurcul">
-		<canvas class="position-relative card border-2 mx-auto w-100" id="glcanvas"></canvas>
+	<div class="blur-5 h-100 w-100" id="blurcul">
+		<canvas class="position-relative card border-2 mx-auto" id="glcanvas"></canvas>
 		<div class="position-absolute top-0 start-50 translate-middle-x text-center d-flex flex-row">
 			<span id="left_username" class="px-3 py-2"></span>
 			<span id="score1" class="bg-secondary px-3 py-2 rounded-start"></span>
