@@ -14,6 +14,7 @@
 		status: "in_progress" | "over" | "cancelled";
 		timeout: boolean;
 		round: "none" | "quarter" | "semi" | "final";
+		tournament: number | null;
 	}
 
 	export let game: Game;
@@ -25,11 +26,12 @@
 			game.players = game.players.reverse();
 		}
 
-		if ((game.winner === user.username && game.scores[0] < game.scores[1]) ||
-                            (game.winner !== user.username && game.scores[0] > game.scores[1])) {
+		if (
+			(game.winner === user.username && game.scores[0] < game.scores[1]) ||
+			(game.winner !== user.username && game.scores[0] > game.scores[1])
+		) {
 			game.scores = game.scores.reverse();
 		}
-
 	}
 	$: hasWon = game.winner === user.username;
 	$: resultColor = hasWon ? "success" : "danger";
@@ -39,12 +41,21 @@
 
 <div class="d-flex justify-content-between align-items-center p-3 border-start border-3 border-{resultColor}">
 	<div class="start row gap-2 w-100">
-		<div class="gameType d-flex gap-2 align-items-center col-4">
-			<Fa icon={game.type === "tournament" ? faTrophy : faUserGroup} />
-			<span class="fw-bold">{formattedType}</span>
-		</div>
+		{#if game.type === "tournament"}
+			<a class="gameType user-link d-flex gap-2 align-items-center col-4" href="/tournament/{game.tournament}">
+				<Fa icon={faUserGroup} />
+				<span class="fw-bold">{formattedType}</span>
+			</a>
+		{:else}
+			<div class="gameType d-flex gap-2 align-items-center col-4">
+				<Fa icon={faUserGroup} />
+				<span class="fw-bold">{formattedType}</span>
+			</div>
+		{/if}
 		<div class="d-flex gap-2 col align-items-center">
-			<span class="badge rounded-pill bg-{resultColor}">{`${hasWon ? "Won" : "Lost"}${game.type === "tournament" ? ` / ${game.round}` : ""}`}</span>
+			<span class="badge rounded-pill bg-{resultColor}"
+				>{`${hasWon ? "Won" : "Lost"}${game.type === "tournament" ? ` / ${game.round}` : ""}`}</span
+			>
 			<div class="score d-flex gap-2 fw-bold align-items-center" style="font-variant-numeric: tabular-nums">
 				<span class="text-{resultColor}">
 					{game.scores[0].toString().padStart(2, "0")}
@@ -53,7 +64,10 @@
 				<span class="text-{!hasWon ? 'success' : 'danger'}">
 					{game.scores[1].toString().padStart(2, "0")}
 				</span>
-				<a href={`/profile/${game.players[1].username}`} class="text-decoration-none text-body user-link py-1 px-2 rounded-3">
+				<a
+					href={`/profile/${game.players[1].username}`}
+					class="text-decoration-none text-body user-link py-1 px-2 rounded-3"
+				>
 					{game.players[1].display_name}
 				</a>
 			</div>
