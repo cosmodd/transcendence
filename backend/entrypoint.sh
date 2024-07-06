@@ -26,5 +26,5 @@ echo "Starting game websocket server in the background..."
 export DJANGO_SETTINGS_MODULE=core.settings
 
 # Start server
-python manage.py runserver 0.0.0.0:8000
-#daphne -b 0.0.0.0 -p 8001 core.asgi:application
+# python manage.py runserver 0.0.0.0:8000
+daphne -b 0.0.0.0 -e ssl:443:privateKey=/certification/key.pem:certKey=/certification/cert.pem core.asgi:application
