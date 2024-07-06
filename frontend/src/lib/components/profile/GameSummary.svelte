@@ -42,8 +42,11 @@
 <div class="d-flex justify-content-between align-items-center p-3 border-start border-3 border-{resultColor}">
 	<div class="start row gap-2 w-100">
 		{#if game.type === "tournament"}
-			<a class="gameType user-link d-flex gap-2 align-items-center col-4" href="/tournament/{game.tournament}">
-				<Fa icon={faUserGroup} />
+			<a
+				class="gameType user-link text-decoration-none text-body rounded-3 d-flex gap-2 align-items-center col-4"
+				href="/tournament/{game.tournament}"
+			>
+				<Fa icon={faTrophy} />
 				<span class="fw-bold">{formattedType}</span>
 			</a>
 		{:else}
