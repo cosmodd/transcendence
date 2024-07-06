@@ -66,7 +66,7 @@ class ChatView(APIView):
         if not target_user:
             return Response({'error': 'User not found'}, status=404)
 
-        room_name = f'chat_{current_user.id}_{target_user.id}'
+        room_name = f'chat_{min(current_user.id, target_user.id)}_{max(current_user.id, target_user.id)}'
         room = Rooms.objects.filter(name=room_name)
 
         if not room.exists():
