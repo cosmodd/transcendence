@@ -1,4 +1,7 @@
-FROM python:3.9-alpine
+FROM python:3.9
+
+# Install netcat
+RUN apt-get update && apt-get install -y netcat-openbsd
 
 # Set the working directory to /app
 WORKDIR /app
