@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { invalidate, invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
 	import Matchup from "$lib/components/tournament/Matchup.svelte";
 	import { faPlay, faUserPlus } from "@fortawesome/free-solid-svg-icons";
@@ -20,7 +20,7 @@
 		if (tournament == null) return;
 		if (!["looking_for_players", "in_progress"].includes(status)) return;
 
-		invalidateAll();
+		invalidate('/tournament/' + tournament.id);
 	}
 
 	onDestroy(() => {
